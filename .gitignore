@@ -1,0 +1,11 @@
+# MCP and browser test artifacts
+.playwright-mcp/
+**/.playwright-mcp/
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+*.log
+
+# Dependencies
+node_modules/

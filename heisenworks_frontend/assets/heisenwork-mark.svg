@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 114" fill="currentColor">
+  <!-- HW Hexagonal Frame -->
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M50 3 L94 28.5 L94 85.5 L50 111 L6 85.5 L6 28.5 Z M50 12 L14 33 L14 81 L50 102 L86 81 L86 33 Z" />
+  <!-- Monogram HW -->
+  <path d="M22 36 h9 v15 h10 v-15 h9 v42 h-9 v-18 h-10 v18 h-9 Z" />
+  <path d="M53 36 h8 l5 25 5-25 h7 l5 25 5-25 h8 l-8 42 h-8 l-5-23-5 23 h-8 Z" />
+</svg>
