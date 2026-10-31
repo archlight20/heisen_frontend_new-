@@ -1,0 +1,18 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/contact",
+      "destination": "/heisenworks_frontend/api/contact"
+    },
+    {
+      "source": "/",
+      "destination": "/heisenworks_frontend/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/heisenworks_frontend/$1"
+    }
+  ]
+}
+
