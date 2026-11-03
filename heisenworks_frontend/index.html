@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>HeisenWorks — Independent Design & Engineering Studio</title>
   <link rel="icon" type="image/png" href="assets/heisenwork-logo.png" />
   <meta name="description"
@@ -22,6 +22,35 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    :root {
+      --sat: env(safe-area-inset-top, 0px);
+      --sar: env(safe-area-inset-right, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
+      --sal: env(safe-area-inset-left, 0px);
+    }
+
+    :focus-visible {
+      outline: 2px solid #cf8047;
+      outline-offset: 3px;
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid #cf8047;
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
     }
 
     html {
@@ -770,6 +799,14 @@
     .line-reveal-clip {
       display: block;
       overflow: hidden;
+      padding-bottom: 0.12em;
+      margin-bottom: -0.12em;
+    }
+
+    @media (max-width: 767px) {
+      .line-reveal-clip {
+        overflow: visible;
+      }
     }
 
     .line-reveal-inner {
@@ -1330,9 +1367,12 @@
 
     .create-band-list {
       display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      padding: 2.5rem 1.25rem;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 1.25rem 1rem;
+      width: 100%;
     }
 
     @media (min-width: 640px) {
@@ -1344,7 +1384,8 @@
     }
 
     .create-band-item {
-      flex: 1;
+      flex: 1 1 0;
+      min-width: 0;
       opacity: 0;
       transform: translateY(28px);
       transition:
@@ -1360,18 +1401,29 @@
     .create-tile {
       display: grid;
       place-items: center;
-      height: 6rem;
+      height: 3.25rem;
       border-radius: 9999px;
-      font-size: 1.875rem;
-      font-weight: 500;
-      transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-      user-select: none;
+      font-size: clamp(0.8125rem, 3.4vw, 1.125rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      padding-inline: 0.25rem;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .create-tile svg {
+      width: 1.125rem;
+      height: 1.125rem;
     }
 
     @media (min-width: 640px) {
       .create-tile {
         height: 10rem;
         font-size: 2.25rem;
+        padding-inline: 0;
+      }
+      .create-tile svg {
+        width: 1.5rem;
+        height: 1.5rem;
       }
     }
 
@@ -1470,17 +1522,18 @@
 
     .portfolio-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 1.5rem;
     }
 
     @media (min-width: 768px) {
       .portfolio-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
     .portfolio-item {
+      min-width: 0;
       opacity: 0;
       transform: translateY(48px);
       transition:
@@ -1502,7 +1555,7 @@
       padding: 0;
       color: #ffffff;
       box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
-      cursor: pointer;
+      cursor: default;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -1549,7 +1602,7 @@
     .portfolio-preview-video {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       object-position: center;
       display: block;
     }
@@ -1563,26 +1616,59 @@
         transform: translateY(-8px) scale(1.01);
       }
 
-      .portfolio-card:hover .portfolio-badge {
+      .portfolio-card:hover .portfolio-badge,
+      .portfolio-badge:hover {
         background: #ffffff;
         color: #0a0a0a;
-        transform: rotate(45deg) scale(1.08);
+        transform: scale(1.08);
+      }
+
+      .portfolio-card:hover .portfolio-video-preview {
+        opacity: 1;
+      }
+
+      .portfolio-card:hover .portfolio-meta-info,
+      .portfolio-card:hover .portfolio-main-block,
+      .portfolio-card:hover .portfolio-watermark {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .portfolio-card:hover .portfolio-badge .play-icon {
+        display: none;
+      }
+
+      .portfolio-card:hover .portfolio-badge .pause-icon {
+        display: block;
       }
     }
 
-    .portfolio-card:hover .portfolio-video-preview,
     .portfolio-card.is-previewing .portfolio-video-preview {
       opacity: 1;
+      pointer-events: auto;
+      cursor: pointer;
     }
 
-    .portfolio-card:hover .portfolio-meta-info,
-    .portfolio-card:hover .portfolio-main-block,
-    .portfolio-card:hover .portfolio-watermark,
     .portfolio-card.is-previewing .portfolio-meta-info,
     .portfolio-card.is-previewing .portfolio-main-block,
     .portfolio-card.is-previewing .portfolio-watermark {
       opacity: 0;
       pointer-events: none;
+    }
+
+    .portfolio-card.is-previewing .portfolio-badge {
+      background: #ffffff;
+      color: #0a0a0a;
+      border-color: #ffffff;
+      transform: scale(1.05);
+    }
+
+    .portfolio-card.is-previewing .portfolio-badge .play-icon {
+      display: none;
+    }
+
+    .portfolio-card.is-previewing .portfolio-badge .pause-icon {
+      display: block;
     }
 
     .portfolio-top-meta {
@@ -1624,10 +1710,30 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       position: relative;
       z-index: 6;
+      cursor: pointer;
+      padding: 0;
+      outline: none;
+      font: inherit;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
       transition:
         transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
         background 0.3s ease,
-        color 0.3s ease;
+        color 0.3s ease,
+        border-color 0.3s ease;
+    }
+
+    .portfolio-badge:active {
+      transform: scale(0.94);
+    }
+
+    .portfolio-badge .play-icon {
+      display: block;
+      transform: translateX(1px);
+    }
+
+    .portfolio-badge .pause-icon {
+      display: none;
     }
 
     .portfolio-watermark {
@@ -2648,6 +2754,668 @@
       font-weight: 500;
       color: rgba(17, 17, 17, 0.65);
     }
+
+    /* ==========================================================================
+       MOBILE & TABLET RESPONSIVE SYSTEM (Scoped to max-width: 1023px)
+       Desktop (>= 1024px) remains strictly identical.
+       ========================================================================== */
+
+    @media (max-width: 1023px) {
+      /* --- HEADER SAFE AREAS --- */
+      #header {
+        padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+        padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
+        padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+      }
+
+      .menu-btn {
+        min-width: 44px;
+        min-height: 44px;
+        justify-content: center;
+      }
+
+      /* --- HERO SECTION (DECLUTTERED FOR PHONE) --- */
+      #home {
+        min-height: 100dvh;
+        border-radius: 0 0 1.5rem 1.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-content {
+        padding: calc(5.25rem + env(safe-area-inset-top, 0px)) 1.25rem calc(2.5rem + env(safe-area-inset-bottom, 0px));
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 1.5rem;
+      }
+
+      .hero-col-left {
+        display: flex;
+        flex-direction: column;
+        gap: 1.15rem;
+        max-width: 100%;
+        z-index: 2;
+      }
+
+      .hero-h1 {
+        font-size: clamp(2.25rem, 8vw, 3rem);
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+      }
+
+      .hero-rating {
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        font-size: 0.8125rem;
+      }
+
+      .hero-cta-row {
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 0.25rem;
+      }
+
+      .hero-cta-row .pill-btn {
+        min-height: 48px;
+        padding: 0.75rem 1.35rem;
+      }
+
+      /* Declutter phone hero: hide heavy floating widgets so 3D background & text shine */
+      @media (max-width: 767px) {
+        .hero-card-wrap,
+        .hero-watermark,
+        .hero-status-bar,
+        .hero-partners-wrap {
+          display: none !important;
+        }
+
+        .hero-cta-row {
+          flex-wrap: nowrap;
+          gap: 0.625rem;
+        }
+
+        .hero-cta-row .pill-btn {
+          white-space: nowrap;
+          padding: 0.7rem 1.15rem;
+        }
+      }
+
+      @media (min-width: 768px) and (max-width: 1023px) {
+        .hero-card-wrap {
+          max-width: 20rem;
+          margin-top: 0.5rem;
+        }
+
+        .hero-watermark {
+          font-size: clamp(3rem, 10vw, 5.5rem);
+          bottom: 4.5rem;
+        }
+
+        .hero-status-bar {
+          padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+        }
+
+        .status-inner {
+          flex-direction: column;
+          gap: 0.35rem;
+          text-align: center;
+          font-size: 0.75rem;
+        }
+
+        .status-center,
+        .status-right {
+          display: none;
+        }
+      }
+
+            /* --- SELECTED WORK PROJECT CARDS (SMOOTH ACCORDION SHRINK / STRETCH) --- */
+      .portfolio-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .portfolio-item {
+        min-width: 0;
+      }
+
+      .portfolio-card {
+        min-width: 0;
+        max-width: 100%;
+        min-height: auto;
+        border-radius: 1.35rem;
+        overflow: hidden;
+        transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                    box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                    background 0.45s ease;
+        will-change: transform, box-shadow;
+      }
+
+      .portfolio-card-body {
+        min-width: 0;
+        padding: 1.25rem 1.25rem 0.85rem;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: padding 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .portfolio-main-block {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        transition: margin 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* Collapsible section for description and tags: animates smoothly 1fr <-> 0fr */
+      .portfolio-collapsible {
+        display: grid;
+        grid-template-rows: 1fr;
+        opacity: 1;
+        transition: grid-template-rows 0.48s cubic-bezier(0.16, 1, 0.3, 1),
+                    opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .portfolio-collapsible-inner {
+        overflow: hidden;
+        min-height: 0;
+      }
+
+      .portfolio-top-meta {
+        margin-bottom: 0.85rem;
+        z-index: 8;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .portfolio-meta-info {
+        font-size: 0.75rem;
+        letter-spacing: 0.06em;
+        transition: opacity 0.3s ease;
+      }
+
+      .portfolio-badge {
+        width: 2.75rem;
+        height: 2.75rem;
+        min-width: 44px;
+        min-height: 44px;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                    background 0.3s ease,
+                    border-color 0.3s ease,
+                    color 0.3s ease;
+      }
+
+      .portfolio-title {
+        font-size: clamp(1.25rem, 5vw, 1.5rem);
+        line-height: 1.22;
+        transition: font-size 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .portfolio-desc {
+        margin-top: 0.5rem;
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.65);
+        display: -webkit-box;
+        -webkit-line-clamp: 6;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .portfolio-tags {
+        margin-top: 0.85rem;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 0.35rem;
+        padding-bottom: 0.25rem;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        -webkit-overflow-scrolling: touch;
+        mask-image: linear-gradient(to right, black 85%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+      }
+
+      .portfolio-tags::-webkit-scrollbar {
+        display: none;
+      }
+
+      .portfolio-card .tag-chip {
+        white-space: nowrap;
+        flex-shrink: 0;
+        font-size: 0.625rem;
+        padding: 0.25rem 0.6rem;
+      }
+
+      .portfolio-footer-block {
+        padding: 0 1.25rem 1.15rem;
+        margin-top: 0;
+        transition: padding 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .portfolio-case-results {
+        padding-top: 0.75rem;
+        font-size: 0.6875rem;
+        line-height: 1.45;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        transition: padding 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .portfolio-watermark {
+        width: 8rem;
+        height: 8rem;
+        right: 0.75rem;
+        opacity: 0.04;
+        transition: opacity 0.3s ease;
+      }
+
+      .portfolio-watermark-svg {
+        width: 8rem;
+        height: 8rem;
+      }
+
+      /* Video preview element: in idle state, collapsed smoothly to 0 */
+      .portfolio-video-preview {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border-radius: calc(1.35rem - 4px);
+        overflow: hidden;
+        background: #000;
+        opacity: 0;
+        max-height: 0;
+        margin-bottom: 0;
+        pointer-events: none;
+        transform: scale(0.97);
+        transition: max-height 0.48s cubic-bezier(0.16, 1, 0.3, 1),
+                    opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                    margin-bottom 0.48s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.48s cubic-bezier(0.16, 1, 0.3, 1);
+        order: -1;
+      }
+
+      .portfolio-preview-video {
+        width: 100%;
+        height: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* Playing State: Card smoothly shrinks in height (collapses desc & tags, expands 16:9 video) */
+      .portfolio-card.is-previewing {
+        background: #0d0d0d;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 16px 36px -8px rgba(0, 0, 0, 0.7);
+      }
+
+      .portfolio-card.is-previewing .portfolio-card-body {
+        padding: 0.85rem 0.85rem 0.5rem;
+      }
+
+      .portfolio-card.is-previewing .portfolio-video-preview {
+        opacity: 1;
+        max-height: 320px;
+        margin-bottom: 0.75rem;
+        transform: scale(1);
+        pointer-events: auto;
+        cursor: pointer;
+      }
+
+      .portfolio-card.is-previewing .portfolio-top-meta {
+        position: absolute;
+        top: 1.25rem;
+        right: 1.25rem;
+        margin-bottom: 0;
+        z-index: 12;
+        pointer-events: none;
+      }
+
+      .portfolio-card.is-previewing .portfolio-meta-info {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .portfolio-card.is-previewing .portfolio-badge {
+        pointer-events: auto;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #ffffff;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+        transform: scale(1);
+      }
+
+      /* Collapsible folds down to 0 smoothly, making the card noticeably shorter */
+      .portfolio-card.is-previewing .portfolio-collapsible {
+        grid-template-rows: 0fr;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .portfolio-card.is-previewing .portfolio-watermark {
+        opacity: 0;
+      }
+
+      .portfolio-card.is-previewing .portfolio-title {
+        font-size: 1.125rem;
+        line-height: 1.2;
+        opacity: 1;
+        color: #ffffff;
+      }
+
+      .portfolio-card.is-previewing .portfolio-footer-block {
+        padding: 0 0.85rem 0.85rem;
+        opacity: 1;
+      }
+
+      .portfolio-card.is-previewing .portfolio-case-results {
+        padding-top: 0.5rem;
+        font-size: 0.6875rem;
+      }
+
+      /* --- STATS SECTION ON MOBILE --- */
+      .stats-panel {
+        padding: 2.25rem 1.25rem;
+        border-radius: 1.5rem;
+      }
+
+      .stats-grid {
+        margin-top: 2rem;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+      }
+
+      .stat-col {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .stats-num-wrap {
+        font-size: clamp(1.75rem, 6.5vw, 2.5rem);
+        letter-spacing: -0.03em;
+      }
+
+      .stats-label {
+        font-size: 0.6875rem;
+        line-height: 1.35;
+        margin-top: 0.25rem;
+      }
+
+      /* --- FOOTER ON MOBILE --- */
+      .footer-inner {
+        padding: 3.5rem 1.25rem max(1.5rem, env(safe-area-inset-bottom, 0px));
+      }
+
+      .footer-cta-row {
+        gap: 1.5rem;
+        padding-bottom: 2.5rem;
+      }
+
+      .footer-cta-actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        width: 100%;
+      }
+
+      .footer-cta-actions .pill-btn {
+        min-height: 48px;
+      }
+
+      .footer-columns {
+        gap: 2rem;
+        padding-block: 2.5rem;
+      }
+    }
+
+    /* ==========================================================================
+       PHONE LANDSCAPE ADAPTATIONS (max-height: 500px and orientation: landscape)
+       Compact height, 2-column cards, scrollable overlay menu.
+       ========================================================================== */
+
+    @media (orientation: landscape) and (max-height: 500px) {
+      /* Hero in landscape phone */
+      #home {
+        min-height: 100dvh;
+      }
+
+      .hero-content {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 1.5rem;
+        align-items: center;
+        min-height: 100dvh;
+        padding: calc(4rem + env(safe-area-inset-top, 0px)) max(1.5rem, env(safe-area-inset-right, 0px)) 1.5rem max(1.5rem, env(safe-area-inset-left, 0px));
+      }
+
+      .hero-col-left {
+        gap: 0.85rem;
+      }
+
+      .hero-h1 {
+        font-size: clamp(1.5rem, 4.2vw, 2.125rem);
+        line-height: 1.05;
+      }
+
+      .hero-rating {
+        display: none;
+      }
+
+      .hero-cta-row {
+        gap: 0.5rem;
+      }
+
+      .hero-card-wrap {
+        max-width: 17rem;
+      }
+
+      .hero-partners-wrap {
+        margin-top: 0.5rem;
+      }
+
+      .hero-watermark {
+        display: none;
+      }
+
+      .hero-status-bar {
+        display: none;
+      }
+
+      /* Nav Overlay in landscape phone */
+      #nav-menu {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: max(0.75rem, env(safe-area-inset-top, 0px)) max(1.5rem, env(safe-area-inset-right, 0px)) max(1rem, env(safe-area-inset-bottom, 0px)) max(1.5rem, env(safe-area-inset-left, 0px));
+      }
+
+      .nav-menu-top {
+        padding: 0.5rem 0;
+      }
+
+      .nav-menu-body {
+        padding: 0.5rem 0;
+      }
+
+      .nav-menu-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.35rem 2rem;
+      }
+
+      .nav-menu-link-btn {
+        font-size: 1.5rem;
+        padding-block: 0.25rem;
+      }
+
+      .nav-menu-bottom {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+      }
+
+      /* Selected Work Cards in Landscape Phone: 2-Column Card fitting viewport height */
+      .portfolio-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 1.25rem !important;
+      }
+
+      .portfolio-card {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr) !important;
+        grid-template-rows: auto auto auto !important;
+        padding: 1.25rem !important;
+        gap: 0.5rem 1.25rem !important;
+        min-height: 240px !important;
+        max-height: calc(100dvh - 2.5rem) !important;
+        border-radius: 1.25rem !important;
+        overflow: hidden !important;
+        position: relative !important;
+      }
+
+      .portfolio-card-body {
+        display: contents !important;
+      }
+
+      .portfolio-top-meta {
+        grid-column: 1 / 2 !important;
+        grid-row: 1 / 2 !important;
+        margin-bottom: 0 !important;
+        position: static !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        z-index: 2 !important;
+      }
+
+      .portfolio-meta-info {
+        display: block !important;
+      }
+
+      .portfolio-watermark {
+        display: none !important;
+      }
+
+      .portfolio-main-block {
+        grid-column: 1 / 2 !important;
+        grid-row: 2 / 3 !important;
+        margin-top: 0 !important;
+        min-width: 0 !important;
+        display: block !important;
+        opacity: 1 !important;
+      }
+
+      .portfolio-title {
+        font-size: 1.25rem !important;
+        line-height: 1.2 !important;
+        display: block !important;
+      }
+
+      .portfolio-desc {
+        margin-top: 0.35rem !important;
+        font-size: 0.75rem !important;
+        line-height: 1.4 !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 3 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+      }
+
+      .portfolio-tags {
+        margin-top: 0.5rem !important;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        gap: 0.25rem !important;
+      }
+
+      .portfolio-footer-block {
+        grid-column: 1 / 2 !important;
+        grid-row: 3 / 4 !important;
+        padding: 0.5rem 0 0 0 !important;
+        margin: 0 !important;
+        display: block !important;
+        opacity: 1 !important;
+      }
+
+      .portfolio-case-results {
+        padding-top: 0.35rem !important;
+        font-size: 0.6875rem !important;
+        line-height: 1.35 !important;
+      }
+
+      .portfolio-video-preview {
+        grid-column: 2 / 3 !important;
+        grid-row: 1 / 4 !important;
+        position: relative !important;
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 180px !important;
+        max-height: calc(100dvh - 3.5rem) !important;
+        border-radius: 0.85rem !important;
+        overflow: hidden !important;
+        background: #000 !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        order: unset !important;
+      }
+
+      .portfolio-preview-video {
+        width: 100% !important;
+        height: 100% !important;
+        aspect-ratio: 16 / 9 !important;
+        object-fit: cover !important;
+        display: block !important;
+      }
+
+      .portfolio-collapsible {
+        display: contents !important;
+      }
+
+      .portfolio-collapsible-inner {
+        overflow: visible !important;
+      }
+
+      .portfolio-card.is-previewing .portfolio-collapsible {
+        display: contents !important;
+        grid-template-rows: 1fr !important;
+        opacity: 1 !important;
+      }
+
+      .portfolio-card.is-previewing .portfolio-desc,
+      .portfolio-card.is-previewing .portfolio-tags,
+      .portfolio-card.is-previewing .portfolio-main-block {
+        display: block !important;
+        opacity: 1 !important;
+      }
+
+      .portfolio-card.is-previewing .portfolio-top-meta {
+        position: static !important;
+        display: flex !important;
+      }
+
+      .portfolio-card.is-previewing .portfolio-meta-info {
+        display: block !important;
+      }
+
+      .portfolio-card.is-previewing .portfolio-footer-block {
+        display: block !important;
+        opacity: 1 !important;
+      }
+      /* Modals in landscape phone */
+      .modal-dialog {
+        max-height: 90dvh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+
   </style>
 </head>
 
@@ -2751,9 +3519,9 @@
       <!-- Full-bleed background liquid reveal container -->
       <div id="hero-liquid" class="hero-liquid-wrap">
         <!-- Base Hero Video (infinite loop, autoplay, muted) -->
-        <video id="hero-base-video" class="hero-base-video" autoplay loop muted playsinline preload="metadata"
+        <video id="hero-base-video" class="hero-base-video" autoplay loop muted playsinline preload="auto" poster="normal_stuff/hex-hero-poster.jpg"
           aria-hidden="true">
-          <source src="normal_stuff/rings_hero_loop_v4.mp4" type="video/mp4" />
+          <source src="normal_stuff/hex_logo_loop.mp4" type="video/mp4" />
         </video>
         <!-- Canvas for brush-revealed orange hover effect -->
         <canvas id="hero-canvas" aria-hidden="true"></canvas>
@@ -3017,10 +3785,10 @@
         <ul class="portfolio-grid">
           <!-- Project 01 -->
           <li class="portfolio-item scroll-reveal" style="transition-delay: 0ms">
-            <article class="portfolio-card" onclick="window.openRequestModal()">
+            <article class="portfolio-card">
               <div class="portfolio-card-body">
                 <div class="portfolio-video-preview" aria-hidden="true">
-                  <video class="portfolio-preview-video" src="normal_stuff/zero-day-care.mp4" muted playsinline loop
+                  <video class="portfolio-preview-video" src="normal_stuff/zero-day-care.mp4" muted playsinline webkit-playsinline loop
                     preload="metadata"></video>
                 </div>
                 <div class="portfolio-top-meta">
@@ -3028,12 +3796,15 @@
                     <span class="portfolio-meta-num">01</span>
                     <span class="portfolio-meta-year">2025</span>
                   </div>
-                  <span class="portfolio-badge">
-                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                      stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M7 17 17 7M8 7h9v9" />
+                  <button type="button" class="portfolio-badge portfolio-play-btn" aria-label="Play video preview">
+                    <svg class="svg-icon play-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86a1 1 0 0 0-1.5.86z" />
                     </svg>
-                  </span>
+                    <svg class="svg-icon pause-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <rect x="6" y="4" width="4" height="16" rx="1" />
+                      <rect x="14" y="4" width="4" height="16" rx="1" />
+                    </svg>
+                  </button>
                 </div>
                 <div class="portfolio-watermark" aria-hidden="true">
                   <svg class="portfolio-watermark-svg" viewBox="0 0 190 214" fill="currentColor">
@@ -3043,7 +3814,9 @@
                 </div>
                 <div class="portfolio-main-block">
                   <h3 class="portfolio-title">CyberRange CTF Platform</h3>
-                  <p class="portfolio-desc">
+                  <div class="portfolio-collapsible">
+                    <div class="portfolio-collapsible-inner">
+                      <p class="portfolio-desc">
                     Self-hosted cybersecurity training and CTF platform for universities. Students tackle 26 disposable,
                     hardened Docker labs covering SQL injection, XSS, IDOR, and JWT flaws with full instructor analytics
                     and competitions.
@@ -3054,6 +3827,8 @@
                     <span class="tag-chip">FastAPI</span>
                     <span class="tag-chip">Docker</span>
                     <span class="tag-chip">gVisor</span>
+                  </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -3069,10 +3844,10 @@
 
           <!-- Project 02 -->
           <li class="portfolio-item scroll-reveal" style="transition-delay: 90ms">
-            <article class="portfolio-card" onclick="window.openRequestModal()">
+            <article class="portfolio-card">
               <div class="portfolio-card-body">
                 <div class="portfolio-video-preview" aria-hidden="true">
-                  <video class="portfolio-preview-video" src="normal_stuff/fly-lab.mp4" muted playsinline loop
+                  <video class="portfolio-preview-video" src="normal_stuff/fly-lab.mp4" muted playsinline webkit-playsinline loop
                     preload="metadata"></video>
                 </div>
                 <div class="portfolio-top-meta">
@@ -3080,12 +3855,15 @@
                     <span class="portfolio-meta-num">02</span>
                     <span class="portfolio-meta-year">2025</span>
                   </div>
-                  <span class="portfolio-badge">
-                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                      stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M7 17 17 7M8 7h9v9" />
+                  <button type="button" class="portfolio-badge portfolio-play-btn" aria-label="Play video preview">
+                    <svg class="svg-icon play-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86a1 1 0 0 0-1.5.86z" />
                     </svg>
-                  </span>
+                    <svg class="svg-icon pause-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <rect x="6" y="4" width="4" height="16" rx="1" />
+                      <rect x="14" y="4" width="4" height="16" rx="1" />
+                    </svg>
+                  </button>
                 </div>
                 <div class="portfolio-watermark" aria-hidden="true">
                   <svg class="portfolio-watermark-svg" viewBox="0 0 190 214" fill="currentColor">
@@ -3095,7 +3873,9 @@
                 </div>
                 <div class="portfolio-main-block">
                   <h3 class="portfolio-title">FlyWire Neural Simulator</h3>
-                  <p class="portfolio-desc">
+                  <div class="portfolio-collapsible">
+                    <div class="portfolio-collapsible-inner">
+                      <p class="portfolio-desc">
                     In-browser whole-brain spiking simulation of a fruit fly powered by the FlyWire connectome. Features
                     139,255 neurons and 2.7M unscripted synapses responding to sensory stimuli with live circuit
                     silencing.
@@ -3106,6 +3886,8 @@
                     <span class="tag-chip">Connectome</span>
                     <span class="tag-chip">Neural Sim</span>
                     <span class="tag-chip">MIT License</span>
+                  </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -3121,10 +3903,10 @@
 
           <!-- Project 03 -->
           <li class="portfolio-item scroll-reveal" style="transition-delay: 180ms">
-            <article class="portfolio-card" onclick="window.openRequestModal()">
+            <article class="portfolio-card">
               <div class="portfolio-card-body">
                 <div class="portfolio-video-preview" aria-hidden="true">
-                  <video class="portfolio-preview-video" src="normal_stuff/field-assist.mp4" muted playsinline loop
+                  <video class="portfolio-preview-video" src="normal_stuff/field-assist.mp4" muted playsinline webkit-playsinline loop
                     preload="metadata"></video>
                 </div>
                 <div class="portfolio-top-meta">
@@ -3132,12 +3914,15 @@
                     <span class="portfolio-meta-num">03</span>
                     <span class="portfolio-meta-year">2024</span>
                   </div>
-                  <span class="portfolio-badge">
-                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                      stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M7 17 17 7M8 7h9v9" />
+                  <button type="button" class="portfolio-badge portfolio-play-btn" aria-label="Play video preview">
+                    <svg class="svg-icon play-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86a1 1 0 0 0-1.5.86z" />
                     </svg>
-                  </span>
+                    <svg class="svg-icon pause-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <rect x="6" y="4" width="4" height="16" rx="1" />
+                      <rect x="14" y="4" width="4" height="16" rx="1" />
+                    </svg>
+                  </button>
                 </div>
                 <div class="portfolio-watermark" aria-hidden="true">
                   <svg class="portfolio-watermark-svg" viewBox="0 0 190 214" fill="currentColor">
@@ -3147,7 +3932,9 @@
                 </div>
                 <div class="portfolio-main-block">
                   <h3 class="portfolio-title">Off-Grid Survival Assistant</h3>
-                  <p class="portfolio-desc">
+                  <div class="portfolio-collapsible">
+                    <div class="portfolio-collapsible-inner">
+                      <p class="portfolio-desc">
                     Offline-first emergency assistant engineered for disaster relief, infrastructure collapse, and
                     prolonged isolation. Pairs a local Ollama LLM with WHO first-aid retrieval and offline OpenStreetMap
                     turn-by-turn routing.
@@ -3157,6 +3944,8 @@
                     <span class="tag-chip">Ollama LLM</span>
                     <span class="tag-chip">GraphHopper</span>
                     <span class="tag-chip">OpenStreetMap</span>
+                  </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -3963,9 +4752,9 @@
       <div class="shell stats-shell">
         <div class="stats-panel scroll-reveal">
           <span class="eyebrow eyebrow-light">By the numbers</span>
-          <h2 class="stats-h2 line-reveal-clip">
-            <span class="line-reveal-inner scroll-reveal-line" style="transition-delay: 120ms">Proof in the work, not
-              the words.</span>
+          <h2 class="stats-h2">
+            <span class="line-reveal-clip"><span class="line-reveal-inner scroll-reveal-line" style="transition-delay: 120ms">Proof in the work,</span></span>
+            <span class="line-reveal-clip"><span class="line-reveal-inner scroll-reveal-line" style="transition-delay: 200ms">not the words.</span></span>
           </h2>
 
           <ul class="stats-grid" id="stats-grid">
@@ -4523,6 +5312,7 @@
     ).matches;
 
     if (heroVideo) {
+      heroVideo.loop = true;
       heroVideo.play().catch(() => { });
     }
 
@@ -5207,37 +5997,109 @@
       });
     }
 
-    // 13. Portfolio Hover Video Preview (YouTube-style)
-    document.querySelectorAll(".portfolio-card").forEach((card) => {
-      const video = card.querySelector(".portfolio-preview-video");
+    // 13. Portfolio Video Preview & Play/Pause Controls (Desktop Hover + Mobile Tap)
+    const previewPlayTimeouts = new Map();
+
+    function startPortfolioPreview(card, video) {
       if (!video) return;
 
-      let playPromise = null;
+      // Clear any pending timer for this card
+      if (previewPlayTimeouts.has(card)) {
+        clearTimeout(previewPlayTimeouts.get(card));
+        previewPlayTimeouts.delete(card);
+      }
 
+      // 1. Immediately activate smooth height-shrink transition and pause button state
+      card.classList.add("is-previewing");
+      const btn = card.querySelector(".portfolio-play-btn");
+      if (btn) btn.setAttribute("aria-label", "Pause video preview");
+
+      video.muted = true;
+      video.playsInline = true;
+
+      // 2. Delay video playback by 0.5s so the user experiences the card smoothly getting shorter first
+      const timer = setTimeout(() => {
+        if (card.classList.contains("is-previewing")) {
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => { });
+          }
+        }
+        previewPlayTimeouts.delete(card);
+      }, 500);
+
+      previewPlayTimeouts.set(card, timer);
+    }
+
+    function stopPortfolioPreview(card, video) {
+      if (!video) return;
+
+      // Clear any pending play timer
+      if (previewPlayTimeouts.has(card)) {
+        clearTimeout(previewPlayTimeouts.get(card));
+        previewPlayTimeouts.delete(card);
+      }
+
+      // 1. Instantly trigger stretch transition back to idle
+      card.classList.remove("is-previewing");
+      const btn = card.querySelector(".portfolio-play-btn");
+      if (btn) btn.setAttribute("aria-label", "Play video preview");
+
+      // 2. Pause and reset video
+      video.pause();
+      video.currentTime = 0;
+    }
+
+    document.querySelectorAll(".portfolio-card").forEach((card) => {
+      const video = card.querySelector(".portfolio-preview-video");
+      const playBtn = card.querySelector(".portfolio-play-btn");
+      const videoPreview = card.querySelector(".portfolio-video-preview");
+      if (!video) return;
+
+      video.muted = true;
+      video.playsInline = true;
+
+      // Play/Pause button click (touch on mobile & click on desktop)
+      if (playBtn) {
+        playBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const isPlaying = card.classList.contains("is-previewing") && !video.paused;
+          if (isPlaying) {
+            stopPortfolioPreview(card, video);
+          } else {
+            // Stop any other active cards so only one video plays at a time
+            document.querySelectorAll(".portfolio-card.is-previewing").forEach((other) => {
+              if (other !== card) {
+                const otherVideo = other.querySelector(".portfolio-preview-video");
+                stopPortfolioPreview(other, otherVideo);
+              }
+            });
+            startPortfolioPreview(card, video);
+          }
+        });
+      }
+
+      // Tapping/clicking the playing preview video pauses it
+      if (videoPreview) {
+        videoPreview.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (card.classList.contains("is-previewing")) {
+            stopPortfolioPreview(card, video);
+          }
+        });
+      }
+
+      // Desktop fine pointer hover preview
       card.addEventListener("mouseenter", () => {
-        card.classList.add("is-previewing");
-        video.currentTime = 0;
-        playPromise = video.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => { });
+        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+          startPortfolioPreview(card, video);
         }
       });
 
       card.addEventListener("mouseleave", () => {
-        card.classList.remove("is-previewing");
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              video.pause();
-              video.currentTime = 0;
-            })
-            .catch(() => {
-              video.pause();
-              video.currentTime = 0;
-            });
-        } else {
-          video.pause();
-          video.currentTime = 0;
+        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+          stopPortfolioPreview(card, video);
         }
       });
 
