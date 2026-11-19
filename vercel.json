@@ -1,8 +1,54 @@
 {
   "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/studio",
+      "destination": "/team",
+      "permanent": true
+    },
+    {
+      "source": "/studio/",
+      "destination": "/team",
+      "permanent": true
+    },
+    {
+      "source": "/studio.html",
+      "destination": "/team",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
-      "source": "/(.*)\\.(mp4|jpg|png|svg|mjs)",
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains; preload"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' blob:; connect-src 'self';"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)\\.(mp4|jpg|jpeg|png|webp|svg|mjs|ico|xml|css|js)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -13,16 +59,28 @@
   ],
   "rewrites": [
     {
-      "source": "/api/contact",
-      "destination": "/heisenworks_frontend/api/contact"
-    },
-    {
       "source": "/",
       "destination": "/heisenworks_frontend/index.html"
     },
     {
-      "source": "/(.*)",
-      "destination": "/heisenworks_frontend/$1"
+      "source": "/:page(work|services|pricing|reviews|team|contact|privacy|terms)",
+      "destination": "/heisenworks_frontend/pages/:page.html"
+    },
+    {
+      "source": "/:page(work|services|pricing|reviews|team|contact|privacy|terms)/",
+      "destination": "/heisenworks_frontend/pages/:page.html"
+    },
+    {
+      "source": "/:page(work|services|pricing|reviews|team|contact|privacy|terms).html",
+      "destination": "/heisenworks_frontend/pages/:page.html"
+    },
+    {
+      "source": "/:dir(css|js|assets)/:path*",
+      "destination": "/heisenworks_frontend/:dir/:path*"
+    },
+    {
+      "source": "/:file(favicon.ico|robots.txt|sitemap.xml|404.html)",
+      "destination": "/heisenworks_frontend/:file"
     }
   ]
 }

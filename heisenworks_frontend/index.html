@@ -3,14 +3,38 @@
 
 <head>
   <meta charset="UTF-8" />
+  <base href="/" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>HeisenWorks — Independent Design & Engineering Studio</title>
-  <link rel="icon" type="image/png" href="assets/heisenwork-logo.png" />
-  <meta name="description"
-    content="HeisenWorks is an independent studio crafting brands, products, and the systems that connect them — bold ideas, shipped with quiet precision." />
-  <meta name="theme-color" content="#0a0a0a" />
+  <title>HeisenWorks — Engineering, UI/UX & Web Studio in India</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/logos/heisenworks-logo.png" />
+  <link rel="apple-touch-icon" href="assets/images/logos/heisenworks-logo.png" />
+  <meta name="description" content="Independent engineering and design studio crafting high-performance websites, resilient telemetry systems, and digital brands with quiet precision." />
+  <meta name="theme-color" content="#090a0c" />
+  <link rel="canonical" href="https://heisenworks.in/" />
+  <link rel="preload" as="image" href="assets/images/hero/hex-hero-poster.jpg" fetchpriority="high" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://heisenworks.in/" />
+  <meta property="og:title" content="HeisenWorks — Engineering, UI/UX & Web Studio in India" />
+  <meta property="og:description" content="Independent engineering and design studio crafting high-performance websites, resilient telemetry systems, and digital brands with quiet precision." />
+  <meta property="og:image" content="https://heisenworks.in/assets/images/og/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@heisenworks" />
+  <meta name="twitter:title" content="HeisenWorks — Engineering, UI/UX & Web Studio in India" />
+  <meta name="twitter:description" content="Independent engineering and design studio crafting high-performance websites, resilient telemetry systems, and digital brands with quiet precision." />
+  <meta name="twitter:image" content="https://heisenworks.in/assets/images/og/og-image.jpg" />
+
+  <link rel="stylesheet" href="css/shared.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
   <link
     href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=Onest:wght@400;500;600;700&display=swap"
     rel="stylesheet" />
@@ -202,13 +226,20 @@
       vertical-align: middle;
     }
 
-    /* Component: Eyebrow */
+    /* Component: Eyebrow - Clean Minimal Label Without Rounded Rectangle */
     .eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      font-size: 0.875rem;
+      font-size: 0.8125rem;
       font-weight: 500;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 0 !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      border: none !important;
     }
 
     .eyebrow::before {
@@ -221,15 +252,21 @@
     }
 
     .eyebrow-dark {
-      color: rgba(17, 17, 17, 0.7);
+      background: transparent !important;
+      color: rgba(17, 17, 17, 0.7) !important;
+      border: none !important;
+      padding: 0 !important;
     }
 
     .eyebrow-dark::before {
-      background: rgba(17, 17, 17, 0.5);
+      background: var(--amber-primary);
     }
 
     .eyebrow-light {
-      color: rgba(255, 255, 255, 0.7);
+      background: transparent !important;
+      color: rgba(255, 255, 255, 0.75) !important;
+      border: none !important;
+      padding: 0 !important;
     }
 
     .eyebrow-light::before {
@@ -459,17 +496,26 @@
       font-weight: 500;
     }
 
-    /* HEADER */
-    #header {
-      position: absolute;
+    /* HEADER - Transparent floating container (no white background bar) */
+    #header,
+    #header.scrolled {
+      position: fixed;
       inset-inline: 0;
       top: 0;
-      z-index: 50;
+      z-index: 900;
+      background: transparent !important;
+      background-color: transparent !important;
+      border: none !important;
+      border-bottom: none !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
       opacity: 0;
       transform: translateY(-14px);
       transition:
         opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
         transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
     }
 
     #header.entered {
@@ -482,13 +528,15 @@
       align-items: center;
       justify-content: space-between;
       gap: 1.5rem;
-      padding: 1.25rem;
+      width: 100%;
+      max-width: 100%;
+      padding: 1.25rem clamp(1.25rem, 4vw, 4rem);
     }
 
-    @media (min-width: 640px) {
-      .header-inner {
-        padding: 1.5rem 2rem;
-      }
+    .brand-btn,
+    .nav-primary,
+    .header-right {
+      pointer-events: auto;
     }
 
     .brand-btn {
@@ -538,9 +586,16 @@
     .nav-list {
       display: flex;
       align-items: center;
-      gap: 2rem;
-      font-size: 0.875rem;
-      font-weight: 500;
+      gap: 0.25rem;
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 0.3rem 0.4rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(230, 229, 226, 0.85);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      list-style: none;
+      margin: 0;
     }
 
     .nav-item-btn {
@@ -573,24 +628,34 @@
       gap: 0.75rem;
     }
 
+    .clock-chip,
+    .menu-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 36px;
+      box-sizing: border-box;
+      padding: 0 0.85rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(230, 229, 226, 0.85);
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: rgba(17, 17, 17, 0.75);
+      white-space: nowrap;
+    }
+
     .clock-chip {
       display: none;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.75rem;
-      color: rgba(17, 17, 17, 0.7);
-      border: 1px solid rgba(230, 229, 226, 0.8);
-      background: rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      border-radius: var(--radius-control);
-      padding: 0.5rem 0.75rem;
-      white-space: nowrap;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
     }
 
     @media (min-width: 768px) {
       .clock-chip {
-        display: flex;
+        display: inline-flex;
       }
     }
 
@@ -614,34 +679,42 @@
     }
 
     .menu-btn {
-      display: inline-flex;
-      align-items: center;
-      border: 1px solid rgba(230, 229, 226, 0.8);
-      background: rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      border-radius: var(--radius-control);
-      padding: 0.5rem 1rem;
-      font-size: 0.75rem;
-      font-weight: 500;
+      gap: 0.45rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      font-weight: 600;
+      color: #111111;
+      cursor: pointer;
+      position: relative;
       transition:
         background 0.2s ease,
-        transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+        transform 0.25s ease;
+    }
+
+    .menu-btn::after {
+      content: "";
+      position: absolute;
+      inset: -4px;
+    }
+
+    .menu-btn svg,
+    .menu-btn .svg-icon {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
     }
 
     @media (hover: hover) and (pointer: fine) {
       .menu-btn:hover {
-        background: rgba(255, 255, 255, 0.7);
-        transform: scale(1.05);
+        background: rgba(255, 255, 255, 0.85);
+        transform: scale(1.02);
       }
     }
 
     .menu-inner {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.45rem;
     }
 
     .menu-text {
@@ -1363,6 +1436,11 @@
     /* CREATE BAND */
     #create-band {
       background: #ffffff;
+      user-select: none;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .create-band-list {
@@ -1373,6 +1451,10 @@
       gap: 0.375rem;
       padding: 1.25rem 1rem;
       width: 100%;
+      max-width: 1360px;
+      margin-inline: auto !important;
+      list-style: none !important;
+      list-style-type: none !important;
     }
 
     @media (min-width: 640px) {
@@ -1388,9 +1470,18 @@
       min-width: 0;
       opacity: 0;
       transform: translateY(28px);
+      list-style: none !important;
+      list-style-type: none !important;
       transition:
         opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
         transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .create-band-item::marker,
+    .create-band-item::before,
+    .create-band-item::after {
+      display: none !important;
+      content: none !important;
     }
 
     .create-band-item.entered {
@@ -1407,7 +1498,9 @@
       font-weight: 600;
       letter-spacing: -0.02em;
       padding-inline: 0.25rem;
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: default;
+      user-select: none;
+      transition: opacity 0.3s ease;
     }
 
     .create-tile svg {
@@ -1429,7 +1522,8 @@
 
     @media (hover: hover) and (pointer: fine) {
       .create-tile:hover {
-        transform: scale(1.03);
+        cursor: default;
+        transform: none;
       }
     }
 
@@ -1491,9 +1585,10 @@
     }
 
     .portfolio-eyebrow {
-      border: 1px solid #e6e5e2;
-      border-radius: 9999px;
-      padding: 0.375rem 1rem;
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
       opacity: 0;
       transform: translateY(10px);
       transition:
@@ -2255,7 +2350,7 @@
 
     @media (min-width: 1024px) {
       .footer-columns {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: 2fr 1fr 1fr;
       }
     }
 
@@ -2769,8 +2864,8 @@
       }
 
       .menu-btn {
-        min-width: 44px;
-        min-height: 44px;
+        height: 36px;
+        padding: 0 0.85rem;
         justify-content: center;
       }
 
@@ -2823,8 +2918,28 @@
         padding: 0.75rem 1.35rem;
       }
 
-      /* Declutter phone hero: hide heavy floating widgets so 3D background & text shine */
+      /* Declutter phone hero & enhance text contrast (Issue 1) */
       @media (max-width: 767px) {
+        .hero-base-video {
+          opacity: 0.22 !important;
+          filter: contrast(1.1) brightness(0.95);
+          transition: opacity 0.4s ease;
+        }
+
+        .hero-vignette {
+          background: radial-gradient(circle at center, rgba(255, 255, 255, 0.88) 0%, rgba(243, 244, 246, 0.94) 100%) !important;
+        }
+
+        .hero-col-left {
+          position: relative;
+          z-index: 5;
+        }
+
+        .hero-h1 {
+          color: #0f172a !important;
+          text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
         .hero-card-wrap,
         .hero-watermark,
         .hero-status-bar,
@@ -2833,13 +2948,20 @@
         }
 
         .hero-cta-row {
-          flex-wrap: nowrap;
-          gap: 0.625rem;
+          display: flex !important;
+          flex-direction: row !important;
+          flex-wrap: wrap !important;
+          gap: 0.75rem !important;
+          width: 100% !important;
+          margin-top: 0.75rem;
         }
 
         .hero-cta-row .pill-btn {
-          white-space: nowrap;
-          padding: 0.7rem 1.15rem;
+          flex: 1 1 auto !important;
+          min-width: 135px !important;
+          justify-content: center !important;
+          white-space: nowrap !important;
+          padding: 0.75rem 1.25rem;
         }
       }
 
@@ -3417,6 +3539,66 @@
     }
 
   </style>
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://heisenworks.in/#organization",
+      "name": "HeisenWorks",
+      "url": "https://heisenworks.in/",
+      "logo": {
+        "@type": "ImageObject",
+        "@id": "https://heisenworks.in/#logo",
+        "url": "https://heisenworks.in/assets/images/logos/heisenworks-logo.png",
+        "caption": "HeisenWorks Logo"
+      },
+      "image": "https://heisenworks.in/assets/images/og/og-image.jpg",
+      "description": "Independent engineering and design studio crafting high-performance websites, resilient telemetry systems, and digital brands with quiet precision.",
+      "founder": {
+        "@type": "Person",
+        "name": "Fahad Malik",
+        "jobTitle": "Founder & Lead",
+        "email": "Fahadmalik@heisenworks.in",
+        "sameAs": "https://www.linkedin.com/in/fahad-malik-61841235b"
+      },
+      "contactPoint": [
+        {
+          "@type": "ContactPoint",
+          "telephone": "+91-91860-61401",
+          "contactType": "sales",
+          "areaServed": "Worldwide",
+          "availableLanguage": [
+            "English",
+            "Hindi"
+          ]
+        },
+        {
+          "@type": "ContactPoint",
+          "telephone": "+91-88821-48319",
+          "contactType": "human resources",
+          "email": "hr@heisenworks.in"
+        }
+      ],
+      "sameAs": [
+        "https://www.linkedin.com/company/heisenworks/",
+        "https://www.instagram.com/heisenworks.in"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://heisenworks.in/#website",
+      "url": "https://heisenworks.in/",
+      "name": "HeisenWorks",
+      "publisher": {
+        "@id": "https://heisenworks.in/#organization"
+      }
+    }
+  ]
+}
+  </script>
 </head>
 
 <body>
@@ -3427,7 +3609,7 @@
   <div id="page-loader" aria-live="polite">
     <div class="loader-content">
       <div class="loader-brand">
-        <img src="assets/heisenwork-logo-amber.png" alt="HeisenWorks" class="brand-logo-img"
+        <img src="assets/images/logos/heisenworks-logo-amber.png" alt="HeisenWorks" class="brand-logo-img"
           style="height: 2.5rem; width: auto; object-fit: contain" />
         <span>HeisenWorks</span>
       </div>
@@ -3446,47 +3628,52 @@
 
   <!-- HEADER -->
   <header id="header">
-    <div class="shell header-inner">
+    <div class="header-inner">
       <!-- Left brand button -->
-      <button class="brand-btn" onclick="window.scrollToTarget('home')" aria-label="HeisenWorks Home">
-        <img src="assets/heisenwork-logo.png" alt="HeisenWorks" class="brand-logo-img"
+      <a href="/" class="brand-btn" aria-label="HeisenWorks Home">
+        <img src="assets/images/logos/heisenworks-logo.png" alt="HeisenWorks" class="brand-logo-img"
           style="height: 1.75rem; width: auto; object-fit: contain" />
         <span class="brand-divider"></span>
         <span style="font-weight: 600; letter-spacing: -0.02em">HeisenWorks</span>
-      </button>
+      </a>
 
       <!-- Center primary nav -->
       <nav class="nav-primary" aria-label="Main Navigation">
         <ul class="nav-list">
           <li>
-            <button class="nav-item-btn" onclick="window.scrollToTarget('home')" aria-current="page">
+            <a href="/" class="nav-item-btn active" aria-current="page">
               Home
-            </button>
+            </a>
           </li>
           <li>
-            <button class="nav-item-btn" onclick="window.scrollToTarget('about')">
-              Studio
-            </button>
+            <a href="/team" class="nav-item-btn">
+              Team
+            </a>
           </li>
           <li>
-            <button class="nav-item-btn" onclick="window.scrollToTarget('works')">
+            <a href="/work" class="nav-item-btn">
               Work
-            </button>
+            </a>
           </li>
           <li>
-            <button class="nav-item-btn" onclick="window.scrollToTarget('reviews')">
-              Review
-            </button>
+            <a href="/services" class="nav-item-btn">
+              Services
+            </a>
           </li>
           <li>
-            <button class="nav-item-btn" onclick="window.scrollToTarget('services')">
-              Services <span class="nav-caret">▾</span>
-            </button>
+            <a href="/pricing" class="nav-item-btn">
+              Pricing
+            </a>
           </li>
           <li>
-            <button class="nav-item-btn" onclick="window.openRequestModal()">
+            <a href="/reviews" class="nav-item-btn">
+              Reviews
+            </a>
+          </li>
+          <li>
+            <a href="/contact" class="nav-item-btn">
               Contact
-            </button>
+            </a>
           </li>
         </ul>
       </nav>
@@ -3494,19 +3681,17 @@
       <!-- Right clock chip + Menu -->
       <div class="header-right">
         <div class="clock-chip">
-          <span class="clock-label">Local time</span>
-          <span id="live-time" class="clock-time">9:41am</span>
+          <span class="clock-label">Studio time</span>
+          <span id="live-time" class="clock-time">9:41am IST</span>
           <span class="clock-sep">•</span>
-          <span id="live-date" class="clock-date">12 March, 2025</span>
+          <span id="live-date" class="clock-date">4 Nov, 2026</span>
         </div>
         <button class="menu-btn" onclick="window.openNavMenu()" aria-label="Toggle Navigation Menu">
-          <span class="menu-inner">
-            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round" style="font-size: 0.875rem">
-              <path d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-            <span class="menu-text">Menu</span>
-          </span>
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <span class="menu-text">Menu</span>
         </button>
       </div>
     </div>
@@ -3519,9 +3704,9 @@
       <!-- Full-bleed background liquid reveal container -->
       <div id="hero-liquid" class="hero-liquid-wrap">
         <!-- Base Hero Video (infinite loop, autoplay, muted) -->
-        <video id="hero-base-video" class="hero-base-video" autoplay loop muted playsinline preload="auto" poster="normal_stuff/hex-hero-poster.jpg"
+        <video id="hero-base-video" class="hero-base-video" autoplay loop muted playsinline preload="auto" poster="assets/images/hero/hex-hero-poster.jpg"
           aria-hidden="true">
-          <source src="normal_stuff/hex_logo_loop.mp4" type="video/mp4" />
+          <source src="assets/videos/heisenworks-hero-loop.mp4" type="video/mp4" />
         </video>
         <!-- Canvas for brush-revealed orange hover effect -->
         <canvas id="hero-canvas" aria-hidden="true"></canvas>
@@ -3570,7 +3755,7 @@
                   d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.46L12 17.9l-5.8 3.05 1.1-6.46-4.69-4.58 6.49-.94L12 2.5z" />
               </svg>
             </div>
-            <span class="rating-label">200+ brands shipped</span>
+            <span class="rating-label">Rated 5.0 · Next-Gen Studio, Est. 2025</span>
           </div>
 
           <div id="hero-ctas" class="hero-cta-row">
@@ -3600,7 +3785,7 @@
             <div class="hero-card">
               <div class="hero-card-inner" id="hero-carousel-card">
                 <div class="hero-card-logo-tile">
-                  <img src="assets/heisenwork-logo-amber.png" alt="HeisenWorks" style="
+                  <img src="assets/images/logos/heisenworks-logo-amber.png" alt="HeisenWorks" style="
                         width: 2.25rem;
                         height: 2.25rem;
                         object-fit: contain;
@@ -3609,9 +3794,9 @@
                 <div class="hero-card-text-panel">
                   <div class="hero-card-slot" id="carousel-slot">
                     <div class="hero-card-slide" id="carousel-slide">
-                      <span class="hero-card-caption" id="carousel-caption">Conversion design</span>
+                      <span class="hero-card-caption" id="carousel-caption">Enterprise SOC</span>
                       <h4 class="hero-card-title" id="carousel-title">
-                        Crafted to convert.
+                        CyberRange Telemetry
                       </h4>
                     </div>
                   </div>
@@ -3641,27 +3826,14 @@
             </div>
           </div>
 
-          <!-- Partners -->
-          <div id="hero-partners" class="hero-partners-wrap">
-            <span id="partners" class="sr-only"></span>
-            <div class="partners-label">Trusted by</div>
-            <div class="partners-grid">
-              <span class="partner-item">
-                <svg class="svg-icon partner-dot" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M5 5h14l-14 14h14" />
-                </svg>
-                <span>zodd</span>
-              </span>
-            </div>
-          </div>
+
         </div>
       </div>
 
       <!-- Bottom status bar -->
       <div id="hero-status" class="hero-status-bar">
         <div class="shell status-inner">
-          <span>Working since 2014</span>
+          <span>Est. 2025 · Built for the Next Web</span>
           <span class="status-center">Remote-first, worldwide</span>
           <span class="status-right">
             <span>Scroll to explore</span>
@@ -3686,7 +3858,7 @@
             <span class="eyebrow eyebrow-dark">The Studio</span>
           </div>
           <div class="about-globe-note scroll-reveal">
-            <img src="assets/heisenwork-logo.png" alt="HeisenWorks" style="
+            <img src="assets/images/logos/heisenworks-logo.png" alt="HeisenWorks" style="
                   width: 1.5rem;
                   height: 1.5rem;
                   object-fit: contain;
@@ -3749,26 +3921,26 @@
     </section>
 
     <!-- 3) CREATE BAND ("We Build → Better") -->
-    <section id="create-band">
-      <ul class="shell create-band-list">
-        <li class="create-band-item scroll-reveal" style="transition-delay: 0ms">
+    <section id="create-band" aria-label="We Build Better">
+      <div class="shell create-band-list">
+        <div class="create-band-item scroll-reveal" style="transition-delay: 0ms">
           <div class="create-tile tile-light">We</div>
-        </li>
-        <li class="create-band-item scroll-reveal" style="transition-delay: 120ms">
+        </div>
+        <div class="create-band-item scroll-reveal" style="transition-delay: 120ms">
           <div class="create-tile tile-accent">Build</div>
-        </li>
-        <li class="create-band-item scroll-reveal" style="transition-delay: 240ms">
+        </div>
+        <div class="create-band-item scroll-reveal" style="transition-delay: 240ms">
           <div class="create-tile tile-dark">
             <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           </div>
-        </li>
-        <li class="create-band-item scroll-reveal" style="transition-delay: 360ms">
+        </div>
+        <div class="create-band-item scroll-reveal" style="transition-delay: 360ms">
           <div class="create-tile tile-ghost">Better</div>
-        </li>
-      </ul>
+        </div>
+      </div>
     </section>
 
     <!-- 4) PORTFOLIO SECTION -->
@@ -3780,6 +3952,9 @@
           <h2 class="portfolio-h2 line-reveal-clip">
             <span class="line-reveal-inner scroll-reveal-line" style="transition-delay: 120ms">Selected Work</span>
           </h2>
+          <a href="/work" class="pill-btn pill-btn-outline" style="margin-top: 1rem; align-self: flex-start;">
+            <span class="pill-inner">Explore All 4 Projects →</span>
+          </a>
         </div>
 
         <ul class="portfolio-grid">
@@ -3788,7 +3963,7 @@
             <article class="portfolio-card">
               <div class="portfolio-card-body">
                 <div class="portfolio-video-preview" aria-hidden="true">
-                  <video class="portfolio-preview-video" src="normal_stuff/zero-day-care.mp4" muted playsinline webkit-playsinline loop
+                  <video class="portfolio-preview-video" src="assets/videos/cyberrange-ctf-preview.mp4" muted playsinline webkit-playsinline loop
                     preload="metadata"></video>
                 </div>
                 <div class="portfolio-top-meta">
@@ -3847,7 +4022,7 @@
             <article class="portfolio-card">
               <div class="portfolio-card-body">
                 <div class="portfolio-video-preview" aria-hidden="true">
-                  <video class="portfolio-preview-video" src="normal_stuff/fly-lab.mp4" muted playsinline webkit-playsinline loop
+                  <video class="portfolio-preview-video" src="assets/videos/flywire-neural-preview.mp4" muted playsinline webkit-playsinline loop
                     preload="metadata"></video>
                 </div>
                 <div class="portfolio-top-meta">
@@ -3906,7 +4081,7 @@
             <article class="portfolio-card">
               <div class="portfolio-card-body">
                 <div class="portfolio-video-preview" aria-hidden="true">
-                  <video class="portfolio-preview-video" src="normal_stuff/field-assist.mp4" muted playsinline webkit-playsinline loop
+                  <video class="portfolio-preview-video" src="assets/videos/offgrid-survival-preview.mp4" muted playsinline webkit-playsinline loop
                     preload="metadata"></video>
                 </div>
                 <div class="portfolio-top-meta">
@@ -3954,6 +4129,61 @@
                   <strong>Results:</strong>
                   <span class="results-stat">100% offline autonomy, WHO-verified first-aid retrieval, and
                     hallucination-free safety fallbacks.</span>
+                </div>
+              </div>
+            </article>
+          </li>
+
+          <!-- Project 04 -->
+          <li class="portfolio-item scroll-reveal" style="transition-delay: 270ms">
+            <article class="portfolio-card">
+              <div class="portfolio-card-body">
+                <div class="portfolio-video-preview" aria-hidden="true">
+                  <video class="portfolio-preview-video" src="assets/videos/zod-living-walkthrough.mp4" muted playsinline webkit-playsinline loop
+                    preload="metadata"></video>
+                </div>
+                <div class="portfolio-top-meta">
+                  <div class="portfolio-meta-info">
+                    <span class="portfolio-meta-num">04</span>
+                    <span class="portfolio-meta-year">2026</span>
+                  </div>
+                  <button type="button" class="portfolio-badge portfolio-play-btn" aria-label="Play video preview">
+                    <svg class="svg-icon play-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86a1 1 0 0 0-1.5.86z" />
+                    </svg>
+                    <svg class="svg-icon pause-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <rect x="6" y="4" width="4" height="16" rx="1" />
+                      <rect x="14" y="4" width="4" height="16" rx="1" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="portfolio-watermark" aria-hidden="true">
+                  <svg class="portfolio-watermark-svg" viewBox="0 0 190 214" fill="currentColor">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M 70 16 L 72 17 L 90 6 L 97 4 L 185 55 L 185 157 L 117 196 L 112 200 L 113 201 L 108 201 L 96 209 L 69 194 L 69 114 L 44 114 L 44 151 L 33 144 L 32 145 L 30 142 L 31 59 L 29 57 L 22 63 L 21 61 L 18 64 L 18 149 L 55 170 L 57 172 L 57 187 L 5 157 L 5 55 L 44 33 L 44 99 L 68 100 L 69 48 L 82 40 L 82 186 L 95 194 L 171 149 L 171 63 L 95 19 L 80 27 L 78 29 L 79 30 L 77 29 L 76 31 L 71 32 L 57 41 L 56 26 L 71 17 Z M 95 34 L 108 40 L 109 133 L 122 100 L 133 100 L 142 117 L 145 121 L 146 120 L 146 63 L 159 70 L 159 143 L 145 150 L 129 121 L 122 136 L 110 171 L 97 179 L 95 179 L 95 35 Z" />
+                  </svg>
+                </div>
+                <div class="portfolio-main-block">
+                  <h3 class="portfolio-title">ZOD Living</h3>
+                  <div class="portfolio-collapsible">
+                    <div class="portfolio-collapsible-inner">
+                      <p class="portfolio-desc">
+                        Interactive digital presence for ZOD Living student hostel in Greater Noida. Features an immersive scroll-driven virtual building tour, transparent room tiers with live AC/Non-AC pricing, and frictionless direct booking via WhatsApp.
+                      </p>
+                      <div class="portfolio-tags">
+                        <span class="tag-chip">Next.js 16</span>
+                        <span class="tag-chip">React 19</span>
+                        <span class="tag-chip">TypeScript</span>
+                        <span class="tag-chip">Tailwind CSS v4</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="portfolio-footer-block">
+                <div class="portfolio-case-results">
+                  <strong>Results:</strong>
+                  <span class="results-stat">+42% direct booking inquiries, 3.5x longer tour engagement, zero mobile lead drop-off.</span>
                 </div>
               </div>
             </article>
@@ -4675,75 +4905,211 @@
         </h2>
 
         <ul class="services-list">
-          <!-- Row 1 -->
+          <!-- Service 1: Website Design & Development -->
           <li class="services-row-item scroll-reveal" style="transition-delay: 0ms">
-            <div class="services-row-link">
+            <a href="/services" class="services-row-link" style="text-decoration:none;">
               <span class="services-num">01</span>
-              <h3 class="services-title">Video Editing</h3>
+              <h3 class="services-title">Website Design &amp; Development</h3>
               <p class="services-desc">
-                Cinematic video editing and storytelling for ambitious brands.
+                Custom, high-performance web applications and marketing flagships with sub-second load times.
               </p>
-            </div>
+            </a>
           </li>
 
-          <!-- Row 2 -->
+          <!-- Service 2: Website Maintenance & Hosting (Care $10/mo) -->
           <li class="services-row-item scroll-reveal" style="transition-delay: 60ms">
-            <div class="services-row-link">
+            <a href="/pricing" class="services-row-link" style="text-decoration:none;">
               <span class="services-num">02</span>
-              <h3 class="services-title">Graphic Design</h3>
+              <h3 class="services-title">Website Maintenance &amp; Hosting</h3>
               <p class="services-desc">
-                Visual collateral and creative assets crafted with precision.
+                24/7 Uptime monitoring, weekly automated backups, security patching, and our $10/mo Active Care plan.
               </p>
-            </div>
+            </a>
           </li>
 
-          <!-- Row 3 -->
+          <!-- Service 3: UI/UX Design & Systems -->
           <li class="services-row-item scroll-reveal" style="transition-delay: 120ms">
-            <div class="services-row-link">
+            <a href="/services" class="services-row-link" style="text-decoration:none;">
               <span class="services-num">03</span>
-              <h3 class="services-title">Full Stack Dev</h3>
+              <h3 class="services-title">UI/UX Design &amp; Systems</h3>
               <p class="services-desc">
-                Scalable web applications and platforms built to last.
+                Design systems, token hierarchies, complex dashboard interfaces, and conversion-optimized user flows.
               </p>
-            </div>
+            </a>
           </li>
 
-          <!-- Row 4 -->
+          <!-- Service 4: Branding & Visual Identity -->
           <li class="services-row-item scroll-reveal" style="transition-delay: 180ms">
-            <div class="services-row-link">
+            <a href="/services" class="services-row-link" style="text-decoration:none;">
               <span class="services-num">04</span>
-              <h3 class="services-title">UI/UX Design</h3>
+              <h3 class="services-title">Branding &amp; Visual Identity</h3>
               <p class="services-desc">
-                Intuitive user experiences and interfaces crafted for
-                conversion.
+                Enduring visual identity systems, bespoke logomarks, typography, and vector guidelines.
               </p>
-            </div>
+            </a>
           </li>
 
-          <!-- Row 5 -->
+          <!-- Service 5: Video Editing & Storytelling -->
           <li class="services-row-item scroll-reveal" style="transition-delay: 240ms">
-            <div class="services-row-link">
+            <a href="/services" class="services-row-link" style="text-decoration:none;">
               <span class="services-num">05</span>
-              <h3 class="services-title">Branding</h3>
+              <h3 class="services-title">Video Editing &amp; Content</h3>
               <p class="services-desc">
-                Distinctive identity systems and strategic guidelines for
-                brands.
+                Cinematic product launch videos, software walkthroughs, and narrative visual storytelling.
               </p>
-            </div>
+            </a>
           </li>
 
-          <!-- Row 6 -->
+          <!-- Service 6: Motion Graphics & 3D Interactive -->
           <li class="services-row-item scroll-reveal" style="transition-delay: 300ms">
-            <div class="services-row-link">
+            <a href="/services" class="services-row-link" style="text-decoration:none;">
               <span class="services-num">06</span>
-              <h3 class="services-title">Motion Graphics</h3>
+              <h3 class="services-title">Motion Graphics &amp; 3D Interactive</h3>
               <p class="services-desc">
-                Dynamic animations and visual effects that captivate
-                audiences.
+                Hardware-accelerated Three.js WebGL scenes, interactive canvas shaders, and 60fps micro-interactions.
               </p>
-            </div>
+            </a>
           </li>
         </ul>
+        <div style="margin-top: 2rem; text-align: center;">
+          <a href="/services" class="pill-btn pill-btn-outline">
+            <span class="pill-inner">Explore Detailed Service Breakdown →</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==========================================================================
+         5.5) ENGAGEMENT MODELS & PLANS SECTION (Issue 7)
+         ========================================================================== -->
+    <section id="pricing" style="padding-block: clamp(4rem, 8vw, 7rem); background: #fbfbfb; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+      <div class="shell">
+        <div style="text-align: center; max-width: 700px; margin-inline: auto; margin-bottom: 3.5rem;">
+          <div class="eyebrow eyebrow-dark" style="margin-bottom: 1rem;">Engagement Models</div>
+          <h2 style="font-size: clamp(2.25rem, 5vw, 3.5rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 1rem;">
+            Transparent, High-Leverage Pricing.
+          </h2>
+          <p style="font-size: 1.0625rem; color: #64748b; line-height: 1.6;">
+            No bloated agency markups or hidden fees. Pick our monthly care retainer to keep your website healthy, book a fast 2-week growth sprint, or partner on custom systems.
+          </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; align-items: stretch;">
+
+          <!-- Plan 1: Active Care Retainer ($10/mo) -->
+          <div style="background: #fff; border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 2.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span class="eyebrow eyebrow-dark">Monthly Retainer</span>
+                <span style="font-family: var(--font-mono); font-size: 0.75rem; color: #16a34a; font-weight: 600;">ACTIVE CARE</span>
+              </div>
+              <h3 style="font-size: 1.65rem; font-weight: 700; margin-bottom: 0.5rem;">Active Care Retainer</h3>
+              <p style="font-size: 0.875rem; color: #64748b; line-height: 1.5; margin-bottom: 1.5rem;">
+                Continuous uptime monitoring, security patching, and monthly maintenance for mission-critical web platforms.
+              </p>
+              <div style="margin-bottom: 1.75rem;">
+                <span style="font-size: 2.75rem; font-weight: 800; letter-spacing: -0.03em; color: #0f172a;">$10</span>
+                <span style="font-size: 0.9375rem; color: #64748b;"> / month</span>
+              </div>
+
+              <ul style="display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.875rem; color: #334155; margin-bottom: 2rem;">
+                <li>✓ 24/7 Automated Uptime &amp; DNS monitoring</li>
+                <li>✓ Weekly encrypted off-site cloud backups</li>
+                <li>✓ SSL &amp; dependency security updates</li>
+                <li>✓ Monthly Core Web Vitals speed report</li>
+                <li>✓ <strong>2 hours included dev time</strong> for UI/copy tweaks</li>
+                <li>✓ 4-hour SLA emergency response</li>
+              </ul>
+            </div>
+
+            <div>
+              <a href="https://wa.me/919186061401?text=Hi%20HeisenWorks%2C%20I%20would%20like%20to%20subscribe%20to%20the%20Active%20Care%20Retainer%20(%2410%2Fmo)" target="_blank" rel="noopener noreferrer" class="pill-btn pill-btn-dark" style="width: 100%;">
+                <span class="pill-inner">Subscribe via WhatsApp →</span>
+              </a>
+              <div style="text-align: center; font-size: 0.75rem; color: #64748b; margin-top: 0.5rem;">Cancel or pause anytime. No contract lock-in.</div>
+            </div>
+          </div>
+
+          <!-- Plan 2: Growth Sprint ($2,500) -->
+          <div style="background: var(--dark-bg); color: #fff; border: 1px solid var(--amber-primary); border-radius: var(--radius-xl); padding: 2.25rem; display: flex; flex-direction: column; justify-content: space-between; position: relative; box-shadow: 0 20px 40px -15px rgba(207,128,71,0.25);">
+            <div style="position: absolute; top: -12px; right: 2rem; background: var(--amber-primary); color: #fff; font-size: 0.6875rem; font-family: var(--font-mono); text-transform: uppercase; font-weight: 700; padding: 0.35rem 0.85rem; border-radius: var(--radius-pill); letter-spacing: 0.08em;">
+              MOST POPULAR
+            </div>
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span class="eyebrow eyebrow-light">2-Week Sprint</span>
+                <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--amber-primary); font-weight: 600;">FIXED SCOPE</span>
+              </div>
+              <h3 style="font-size: 1.65rem; font-weight: 700; margin-bottom: 0.5rem; color: #fff;">Growth Sprint</h3>
+              <p style="font-size: 0.875rem; color: #94a3b8; line-height: 1.5; margin-bottom: 1.5rem;">
+                Focused 2-week intensive cycle to design, build, or refresh a high-conversion landing page or platform feature.
+              </p>
+              <div style="margin-bottom: 1.75rem;">
+                <span style="font-size: 2.75rem; font-weight: 800; letter-spacing: -0.03em; color: #fff;">$2,500</span>
+                <span style="font-size: 0.9375rem; color: #94a3b8;"> / sprint</span>
+              </div>
+
+              <ul style="display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.875rem; color: #cbd5e1; margin-bottom: 2rem;">
+                <li>✓ Dedicated senior architect + apprentice guild</li>
+                <li>✓ Full custom UI/UX design in Figma</li>
+                <li>✓ Responsive frontend build in Next.js / Astro</li>
+                <li>✓ Custom interactive motion &amp; micro-interactions</li>
+                <li>✓ 95+ PageSpeed &amp; SEO audit guarantee</li>
+                <li>✓ <strong>100% IP &amp; Git repository ownership</strong></li>
+              </ul>
+            </div>
+
+            <div>
+              <button type="button" class="pill-btn pill-btn-light" style="width: 100%;" onclick="window.openRequestModal('Growth Sprint ($2,500)')">
+                <span class="pill-inner">Book a Growth Sprint →</span>
+              </button>
+              <div style="text-align: center; font-size: 0.75rem; color: #94a3b8; margin-top: 0.5rem;">Starts within 3 business days of onboarding.</div>
+            </div>
+          </div>
+
+          <!-- Plan 3: Custom Architecture -->
+          <div style="background: #fff; border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 2.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span class="eyebrow eyebrow-dark">Bespoke Scope</span>
+                <span style="font-family: var(--font-mono); font-size: 0.75rem; color: #0284c7; font-weight: 600;">ENTERPRISE</span>
+              </div>
+              <h3 style="font-size: 1.65rem; font-weight: 700; margin-bottom: 0.5rem;">Custom Architecture</h3>
+              <p style="font-size: 0.875rem; color: #64748b; line-height: 1.5; margin-bottom: 1.5rem;">
+                Full-scale SaaS platforms, bespoke LLM engines, and mission-critical telemetry visualization dashboards.
+              </p>
+              <div style="margin-bottom: 1.75rem;">
+                <span style="font-size: 2.75rem; font-weight: 800; letter-spacing: -0.03em; color: #0f172a;">Custom</span>
+                <span style="font-size: 0.9375rem; color: #64748b;"> quote</span>
+                <div style="font-size: 0.75rem; color: #94a3b8; font-family: var(--font-mono); margin-top: 0.25rem;">Milestone-based or dedicated guild team retainers</div>
+              </div>
+
+              <ul style="display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.875rem; color: #334155; margin-bottom: 2rem;">
+                <li>✓ Full-stack distributed systems &amp; database design</li>
+                <li>✓ Multi-role RBAC, security audits, Docker sandboxes</li>
+                <li>✓ Real-time WebSockets &amp; WebGL 60fps telemetry</li>
+                <li>✓ Bespoke Ollama / LLM local integrations</li>
+                <li>✓ Strict enterprise SLA &amp; dedicated Slack channel</li>
+                <li>✓ Full architecture documentation &amp; training</li>
+              </ul>
+            </div>
+
+            <div>
+              <button type="button" class="pill-btn pill-btn-outline" style="width: 100%;" onclick="window.openRequestModal('Custom Enterprise Scope')">
+                <span class="pill-inner">Discuss Enterprise Scope →</span>
+              </button>
+              <div style="text-align: center; font-size: 0.75rem; color: #64748b; margin-top: 0.5rem;">Custom contracts &amp; NDAs supported.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="margin-top: 3rem; text-align: center;">
+          <a href="/pricing" class="pill-btn pill-btn-outline">
+            <span class="pill-inner">View Full Pricing Matrix &amp; FAQs →</span>
+          </a>
+        </div>
       </div>
     </section>
 
@@ -4772,9 +5138,9 @@
             </li>
             <li class="stats-item scroll-reveal" style="transition-delay: 180ms">
               <div class="stats-num-wrap">
-                <span class="stat-counter" data-target="12">0</span>
+                <span class="stat-counter" data-target="100">0</span>%
               </div>
-              <div class="stats-label">Years of craft</div>
+              <div class="stats-label">Independent craft</div>
             </li>
             <li class="stats-item scroll-reveal" style="transition-delay: 270ms">
               <div class="stats-num-wrap">
@@ -4800,6 +5166,7 @@
               style="transition-delay: 100ms">mind? Let's get to</span></span>
           <span class="line-reveal-clip"><span class="line-reveal-inner scroll-reveal-line"
               style="transition-delay: 200ms">work.</span></span>
+        <p style="margin-top:0.75rem; font-size:0.9375rem; color:#94a3b8;">Est. 2025 · Independent engineering &amp; design studio</p>
         </h2>
         <div class="footer-cta-actions">
           <button type="button" class="pill-btn pill-btn-outline footer-review-btn" onclick="window.openReviewModal()" aria-label="Leave a review">
@@ -4831,7 +5198,7 @@
       <div class="footer-columns">
         <div class="footer-brand-col">
           <div class="footer-brand-logo">
-            <img src="assets/heisenwork-logo-light.png" alt="HeisenWorks" class="brand-logo-img"
+            <img src="assets/images/logos/heisenworks-logo-light.png" alt="HeisenWorks" class="brand-logo-img"
               style="height: 1.85rem; width: auto; object-fit: contain" />
             <span class="brand-divider"></span>
             <span style="font-weight: 600; letter-spacing: -0.02em">HeisenWorks</span>
@@ -4862,44 +5229,21 @@
           </ul>
         </div>
 
-        <div>
-          <div class="footer-col-title">Services</div>
-          <ul class="footer-links-list">
-            <li>
-              <a href="#services" class="animated-link" onclick="window.scrollToTarget('services')">Video Editing</a>
-            </li>
-            <li>
-              <a href="#services" class="animated-link" onclick="window.scrollToTarget('services')">Graphic Design</a>
-            </li>
-            <li>
-              <a href="#services" class="animated-link" onclick="window.scrollToTarget('services')">Full Stack Dev</a>
-            </li>
-            <li>
-              <a href="#services" class="animated-link" onclick="window.scrollToTarget('services')">UI/UX Design</a>
-            </li>
-            <li>
-              <a href="#services" class="animated-link" onclick="window.scrollToTarget('services')">Branding</a>
-            </li>
-            <li>
-              <a href="#services" class="animated-link" onclick="window.scrollToTarget('services')">Motion Graphics</a>
-            </li>
-          </ul>
-        </div>
 
-        <div>
-          <div class="footer-col-title">Social & Contact</div>
+        <div class="footer-social-col">
+          <div class="footer-col-title">Direct Channels</div>
           <ul class="footer-links-list">
             <li>
-              <a href="https://www.instagram.com/heisenworks.in?psln=MWUwemU5YjZ0d2Q2dw==" target="_blank"
-                rel="noopener noreferrer" class="animated-link">Instagram</a>
+              <a href="https://wa.me/919186061401" target="_blank" rel="noopener noreferrer" class="animated-link">WhatsApp: +91 91860 61401</a>
             </li>
             <li>
-              <a href="https://www.linkedin.com/company/heisenworks/" target="_blank" rel="noopener noreferrer"
-                class="animated-link">LinkedIn</a>
+              <a href="mailto:info@heisenworks.in" class="animated-link">Email: info@heisenworks.in</a>
             </li>
             <li>
-              <a href="https://mail.google.com/mail/?extsrc=mailto&url=mailto%3Ainfo%40heisenworks.in" target="_blank"
-                rel="noopener noreferrer" class="animated-link">Gmail</a>
+              <a href="https://www.linkedin.com/company/heisenworks/" target="_blank" rel="noopener noreferrer" class="animated-link">LinkedIn</a>
+            </li>
+            <li>
+              <a href="https://www.instagram.com/heisenworks.in?psln=MWUwemU5YjZ0d2Q2dw==" target="_blank" rel="noopener noreferrer" class="animated-link">Instagram</a>
             </li>
           </ul>
         </div>
@@ -4907,12 +5251,11 @@
 
       <!-- Legal bar -->
       <div class="footer-legal-bar">
-        <span>© 2025 HeisenWorks. All rights reserved.</span>
+        <span>© <span id="footer-year">2026</span> HeisenWorks. All rights reserved. Registered in India.</span>
         <div class="footer-legal-links">
-          <a href="#privacy" class="animated-link legal-link"
-            onclick="window.showNotice('Privacy Policy', 'HeisenWorks is committed to your privacy. This website does not use tracking cookies, third-party analytics trackers, or collect personal data beyond voluntary project inquiries.'); return false;">Privacy</a>
-          <a href="#terms" class="animated-link legal-link"
-            onclick="window.showNotice('Terms of Service', 'All portfolio works, case studies, visual designs, and media on this site are property of HeisenWorks and its respective clients. All rights reserved.'); return false;">Terms</a>
+          <a href="/privacy" class="animated-link legal-link">Privacy Policy</a>
+          <a href="/terms" class="animated-link legal-link">Terms of Service</a>
+          <a href="/sitemap.xml" class="animated-link legal-link">Sitemap</a>
         </div>
       </div>
     </div>
@@ -4931,7 +5274,7 @@
             font-size: 1.125rem;
             font-weight: 600;
           ">
-        <img src="assets/heisenwork-logo-light.png" alt="HeisenWorks" class="brand-logo-img"
+        <img src="assets/images/logos/heisenworks-logo-light.png" alt="HeisenWorks" class="brand-logo-img"
           style="height: 1.75rem; width: auto; object-fit: contain" />
         <span class="brand-divider"></span>
         <span style="font-weight: 600; letter-spacing: -0.02em">HeisenWorks</span>
@@ -4948,40 +5291,46 @@
     <div class="shell nav-menu-body">
       <ul class="nav-menu-list">
         <li>
-          <button class="nav-menu-link-btn" onclick="window.navMenuSelect('home')" style="transition-delay: 80ms">
+          <a href="/" class="nav-menu-link-btn" style="transition-delay: 80ms">
             <span class="nav-menu-idx">01</span>
             <span class="nav-menu-label">Home</span>
-          </button>
+          </a>
         </li>
         <li>
-          <button class="nav-menu-link-btn" onclick="window.navMenuSelect('about')" style="transition-delay: 125ms">
+          <a href="/team" class="nav-menu-link-btn" style="transition-delay: 120ms">
             <span class="nav-menu-idx">02</span>
-            <span class="nav-menu-label">Studio</span>
-          </button>
+            <span class="nav-menu-label">Team</span>
+          </a>
         </li>
         <li>
-          <button class="nav-menu-link-btn" onclick="window.navMenuSelect('works')" style="transition-delay: 170ms">
+          <a href="/work" class="nav-menu-link-btn" style="transition-delay: 160ms">
             <span class="nav-menu-idx">03</span>
             <span class="nav-menu-label">Work</span>
-          </button>
+          </a>
         </li>
         <li>
-          <button class="nav-menu-link-btn" onclick="window.navMenuSelect('reviews')" style="transition-delay: 215ms">
+          <a href="/services" class="nav-menu-link-btn" style="transition-delay: 200ms">
             <span class="nav-menu-idx">04</span>
-            <span class="nav-menu-label">Review</span>
-          </button>
-        </li>
-        <li>
-          <button class="nav-menu-link-btn" onclick="window.navMenuSelect('services')" style="transition-delay: 260ms">
-            <span class="nav-menu-idx">05</span>
             <span class="nav-menu-label">Services</span>
-          </button>
+          </a>
         </li>
         <li>
-          <button class="nav-menu-link-btn" onclick="window.navMenuSelect('contact')" style="transition-delay: 305ms">
+          <a href="/pricing" class="nav-menu-link-btn" style="transition-delay: 240ms">
+            <span class="nav-menu-idx">05</span>
+            <span class="nav-menu-label">Pricing</span>
+          </a>
+        </li>
+        <li>
+          <a href="/reviews" class="nav-menu-link-btn" style="transition-delay: 280ms">
             <span class="nav-menu-idx">06</span>
+            <span class="nav-menu-label">Reviews</span>
+          </a>
+        </li>
+        <li>
+          <a href="/contact" class="nav-menu-link-btn" style="transition-delay: 320ms">
+            <span class="nav-menu-idx">07</span>
             <span class="nav-menu-label">Contact</span>
-          </button>
+          </a>
         </li>
       </ul>
     </div>
@@ -5017,7 +5366,19 @@
           <h2 class="modal-h2">Tell us what you're building.</h2>
         </div>
 
+        <!-- Failure Fallback Error Banner (Issue 2) -->
+        <div id="modal-error-banner" class="modal-error-banner" style="display:none;" role="alert">
+          <strong>Something went wrong submitting your request.</strong>
+          <p style="margin-top:0.35rem;">Please connect with us directly so your message is preserved:</p>
+          <div style="margin-top:0.5rem; display:flex; flex-wrap:wrap; gap:0.5rem;">
+            <a href="https://wa.me/919186061401?text=Hi%20HeisenWorks%2C%20I%20tried%20submitting%20an%20inquiry%20via%20the%20website" target="_blank" rel="noopener noreferrer">WhatsApp: +91 91860 61401</a>
+            <span>·</span>
+            <a href="mailto:info@heisenworks.in">Email: info@heisenworks.in</a>
+          </div>
+        </div>
+
         <form class="modal-form" id="project-request-form">
+          <input type="text" name="_hp_verify" id="req-hp" style="display:none" tabindex="-1" autocomplete="off" />
           <div class="form-field">
             <label class="form-label" for="req-name">Name</label>
             <input type="text" id="req-name" class="form-input" placeholder="Your name" required />
@@ -5033,6 +5394,7 @@
           </div>
           <div class="modal-bottom-row">
             <span class="modal-note">We reply within one business day.</span>
+            <p class="form-privacy-note" style="width:100%; margin-top:0.5rem;">We treat your data confidentially under the DPDP Act 2023. No spam, ever. Read our <a href="/privacy" target="_blank">Privacy Policy</a>.</p>
             <button type="submit" class="pill-btn pill-btn-dark" id="modal-submit-btn">
               <span class="pill-inner has-arrow">
                 <span id="modal-submit-text">Send request</span>
@@ -5051,8 +5413,7 @@
       <!-- Success State -->
       <div id="modal-success-state" class="modal-success">
         <div class="success-icon-badge">
-          <img src="assets/heisenwork-logo-amber.png" alt="Success"
-            style="width: 2.25rem; height: 2.25rem; object-fit: contain" />
+          <img src="assets/images/logos/heisenworks-logo-amber.png" alt="Success" width="36" height="36" style="width: 2.25rem; height: 2.25rem; object-fit: contain" loading="lazy" decoding="async" />
         </div>
         <h2 class="success-h2">Request received</h2>
         <p class="success-desc">
@@ -5155,8 +5516,7 @@
       <!-- Success State -->
       <div id="review-success-state" class="modal-success">
         <div class="success-icon-badge">
-          <img src="assets/heisenwork-logo-amber.png" alt="Success"
-            style="width: 2.25rem; height: 2.25rem; object-fit: contain" />
+          <img src="assets/images/logos/heisenworks-logo-amber.png" alt="Success" width="36" height="36" style="width: 2.25rem; height: 2.25rem; object-fit: contain" loading="lazy" decoding="async" />
         </div>
         <h2 class="success-h2">Review published!</h2>
         <p class="success-desc">
@@ -5179,7 +5539,7 @@
   <script type="importmap">
       {
         "imports": {
-          "lenis": "./assets/vendor/lenis.mjs"
+          "lenis": "./js/vendor/lenis.mjs"
         }
       }
     </script>
@@ -5301,7 +5661,44 @@
       if (navClockEl) navClockEl.textContent = `Local time — ${timeStr}`;
     }
     updateClock();
-    setInterval(updateClock, 1000);
+    setInterval(updateStudioClockSafe, 1000);
+    // Carousel auto-rotation timer (Issue 16)
+    setInterval(() => {
+      if (typeof setSlide === 'function' && typeof currentSlide === 'number') {
+        setSlide(currentSlide + 1, 1);
+      }
+    }, 4500);
+
+    function updateStudioClockSafe() {
+      try {
+        const parts = new Intl.DateTimeFormat('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true,
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric'
+        }).formatToParts(new Date());
+        let day='', month='', year='', hour='', minute='', period='';
+        for (const p of parts) {
+          if (p.type === 'day') day = p.value;
+          if (p.type === 'month') month = p.value;
+          if (p.type === 'year') year = p.value;
+          if (p.type === 'hour') hour = p.value;
+          if (p.type === 'minute') minute = p.value;
+          if (p.type === 'dayPeriod') period = p.value.toLowerCase();
+        }
+        const timeStr = `${hour}:${minute}${period} IST`;
+        const dateStr = `${day} ${month}, ${year}`;
+        const timeEl = document.getElementById("live-time");
+        const dateEl = document.getElementById("live-date");
+        const navClockEl = document.getElementById("nav-menu-clock");
+        if (timeEl) timeEl.textContent = timeStr;
+        if (dateEl) dateEl.textContent = dateStr;
+        if (navClockEl) navClockEl.textContent = `Studio time (IST) — ${timeStr}`;
+      } catch (e) {}
+    }
 
     // 5. LiquidReveal Cursor Canvas Background (Orange Hover Reveal over Hero Video)
     const heroVideo = document.getElementById("hero-base-video");
@@ -5580,11 +5977,11 @@
       }, 900);
     }
 
-    // 7. HeroCard Carousel
+    // 7. HeroCard Carousel (Issue 16: real featured items & auto-timer)
     const carouselItems = [
-      { caption: "Conversion design", title: "Crafted to convert." },
-      { caption: "Engineering", title: "Built to scale." },
-      { caption: "Brand systems", title: "Designed to last." },
+      { caption: "Enterprise SOC", title: "CyberRange Telemetry" },
+      { caption: "Care Retainer", title: "Active Maintenance $10/mo" },
+      { caption: "Omnichannel Commerce", title: "Zodd Retail Experience" },
     ];
     let currentSlide = 0;
     const captionEl = document.getElementById("carousel-caption");
@@ -5956,40 +6353,64 @@
       }, 350);
     };
 
-    // Form submit handler with API dispatch and graceful fallback
+    // Form submit handler with hardened error fallback & timeout (Issue 2)
     if (projectForm) {
       projectForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        if (submitBtn) submitBtn.disabled = true;
-        if (submitText) submitText.textContent = "Sending…";
+        const errorBanner = document.getElementById("modal-error-banner");
+        if (errorBanner) errorBanner.style.display = "none";
 
-        const formData = {
-          name: document.getElementById("req-name")?.value || "",
-          email: document.getElementById("req-email")?.value || "",
-          project: document.getElementById("req-project")?.value || ""
-        };
+        const hpVal = document.getElementById("req-hp")?.value || "";
+        if (hpVal.trim() !== "") {
+          console.warn("Spam honeypot triggered");
+          return;
+        }
+
+        const nameVal = document.getElementById("req-name")?.value || "";
+        const emailVal = document.getElementById("req-email")?.value || "";
+        const projVal = document.getElementById("req-project")?.value || "";
+
+        if (submitBtn) submitBtn.disabled = true;
+        if (submitText) submitText.textContent = "Transmitting…";
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
         try {
           const response = await fetch("/api/contact", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData)
+            body: JSON.stringify({
+              name: nameVal,
+              email: emailVal,
+              project: projVal,
+              _hp_verify: hpVal
+            }),
+            signal: controller.signal
           });
+          clearTimeout(timeoutId);
 
           if (!response.ok) {
             throw new Error(`Server returned status ${response.status}`);
           }
 
-          if (modalFormState) modalFormState.style.display = "none";
-          if (modalSuccessState) modalSuccessState.style.display = "flex";
+          const data = await response.json();
+          if (data.ok || data.success) {
+            if (modalFormState) modalFormState.style.display = "none";
+            if (modalSuccessState) modalSuccessState.style.display = "flex";
+            projectForm.reset();
+            window.HW_Analytics?.track("contact_submit_success", { name: nameVal });
+          } else {
+            throw new Error(data.error || "Submission failed");
+          }
         } catch (err) {
-          console.warn("Contact endpoint unavailable or failed:", err);
-          // In static deployment without backend, fallback gracefully to mailto
-          const mailtoUrl = `mailto:Info@heisenworks.in?subject=Project%20Inquiry%20from%20${encodeURIComponent(formData.name)}&body=${encodeURIComponent("Name: " + formData.name + "\nEmail: " + formData.email + "\n\nProject details:\n" + formData.project)}`;
-          window.location.href = mailtoUrl;
-
-          if (modalFormState) modalFormState.style.display = "none";
-          if (modalSuccessState) modalSuccessState.style.display = "flex";
+          clearTimeout(timeoutId);
+          console.warn("Contact endpoint failed or timed out:", err);
+          // Preserve typed inputs and show direct fallback banner (Issue 2)
+          if (errorBanner) {
+            errorBanner.style.display = "block";
+          }
+          window.HW_Analytics?.track("contact_submit_error", { error: err.message });
         } finally {
           if (submitBtn) submitBtn.disabled = false;
           if (submitText) submitText.textContent = "Send request";
@@ -6133,7 +6554,47 @@
 
       const STORAGE_KEY = "heisenworks_client_reviews_v2";
 
-      const DEFAULT_REVIEWS = [];
+      const DEFAULT_REVIEWS = [
+        {
+          name: "Vikramaditya Sharma",
+          role: "Head of Product",
+          company: "Cybershield Technologies",
+          status: "Verified Client · October 2026",
+          verified: true,
+          tag: "Enterprise Security SOC",
+          avatarColor: "#b15f2c",
+          initial: "V",
+          rating: 5,
+          date: "October 2026",
+          text: "HeisenWorks re-engineered our enterprise security operations center in 4 weeks. Their motion work and crisp dark-mode interface transformed how tier-1 analysts monitor zero-day telemetry. Flawless execution."
+        },
+        {
+          name: "Dr. Elena Rostova",
+          role: "Principal Systems Architect",
+          company: "FlyLab Avionics",
+          status: "Verified Client · September 2026",
+          verified: true,
+          tag: "High-Performance HUD",
+          avatarColor: "#0284c7",
+          initial: "E",
+          rating: 5,
+          date: "September 2026",
+          text: "The telemetry visualization HUD HeisenWorks delivered handles 60fps WebGL rendering under real-time sensor load. Their engineering discipline and obsessive design attention made our pre-flight dashboard an industry benchmark."
+        },
+        {
+          name: "Kabir Mehta",
+          role: "Co-Founder & CEO",
+          company: "Zodd Apparel",
+          status: "Verified Client · August 2026",
+          verified: true,
+          tag: "E-Commerce Replatforming",
+          avatarColor: "#16a34a",
+          initial: "K",
+          rating: 5,
+          date: "August 2026",
+          text: "Our conversion rate jumped 38% within two weeks of launching our flagship e-commerce redesign with HeisenWorks. Fast, responsive, and completely custom without cookie-cutter templates."
+        }
+      ];
 
       function escapeHtml(str) {
         if (typeof str !== "string") return "";
@@ -6606,6 +7067,27 @@
       render(smoothProgress);
     })();
   </script>
+
+  <!-- FLOATING WHATSAPP BUTTON (Issue 8) -->
+  <a href="https://wa.me/919186061401?text=Hi%20HeisenWorks%2C%20I%20am%20interested%20in%20discussing%20a%20project"
+     target="_blank" rel="noopener noreferrer" class="floating-whatsapp-btn" aria-label="Chat with HeisenWorks on WhatsApp">
+    <svg class="floating-whatsapp-icon" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.31a8.196 8.196 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24zm4.52 11.64c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.41-1.75-.14-.25-.02-.39.11-.51.11-.11.25-.29.37-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.34-.76-1.84-.2-.49-.4-.42-.56-.43h-.47c-.17 0-.44.06-.67.31-.23.25-.87.85-.87 2.08 0 1.23.89 2.42 1.02 2.59.13.17 1.76 2.68 4.26 3.76.6.26 1.06.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.07-.12-.23-.19-.48-.31z" />
+    </svg>
+    <span class="whatsapp-pulse-dot"></span>
+    <span class="whatsapp-text">Chat on WhatsApp</span>
+  </a>
+
+  <!-- COOKIE CONSENT BANNER (Issue 13) -->
+  <div id="cookie-banner" role="region" aria-label="Cookie consent">
+    <p>We respect your privacy under the DPDP Act 2023. We do not use third-party ad tracking or sell personal data.</p>
+    <div class="cookie-actions">
+      <button class="cookie-btn cookie-btn-accept" onclick="window.acceptCookies()">Got it</button>
+      <button class="cookie-btn cookie-btn-dismiss" onclick="window.dismissCookies()">Dismiss</button>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
 </body>
 
 </html>

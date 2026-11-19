@@ -8,14 +8,24 @@ export default function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    const { name, email, project } = req.body || {};
+    const { name, email, project, _hp_verify } = req.body || {};
+
+    // Spam honeypot detection
+    if (_hp_verify && _hp_verify.trim() !== "") {
+      return res.status(400).json({ ok: false, error: "Spam detected." });
+    }
+
+    if (!name || !email) {
+      return res.status(422).json({ ok: false, error: "Name and email are required." });
+    }
+
     return res.status(200).json({
       ok: true,
-      message: "Thank you for reaching out. We have received your inquiry.",
+      success: true,
+      message: "Thank you for reaching out. We have received your inquiry and will reply within one business day.",
       data: { name: name || "" }
     });
   }
 
-  return res.status(405).json({ error: "Method not allowed" });
+  return res.status(405).json({ ok: false, error: "Method not allowed" });
 }
-

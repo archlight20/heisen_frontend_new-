@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our Team · HeisenWorks</title>
+<meta name="description" content="The designers, developers, editors and marketers behind 200+ brands shipped by HeisenWorks.">
+<script>document.documentElement.classList.add('js');</script>
+
+<!--
+  FONTS: placeholders (Sora + Inter). Replace with the exact fonts used in index.html
+  and update --font-head / --font-body below.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /* =====================================================
+     DESIGN TOKENS — swap these to match index.html exactly
+     ===================================================== */
+  :root{
+    --bg:#0b0a09;
+    --bg-panel:#141312;          /* interns panel colour (per brief) */
+    --ink:#f3ede6;
+    --muted:#a39a90;
+    --copper:#c8773e;
+    --copper-hi:#e39a63;
+    --line:rgba(200,119,62,.30);
+    --hairline:rgba(255,255,255,.08);
+    --ph-a:#3a3936;              /* placeholder greys */
+    --ph-b:#2a2927;
+    --font-head:'Sora',system-ui,sans-serif;
+    --font-body:'Inter',system-ui,sans-serif;
+    --radius:18px;
+    --wrap:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-body);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{width:min(var(--wrap),100% - 40px);margin-inline:auto}
+  section{position:relative}
+  .eyebrow{font:600 .75rem/1 var(--font-body);letter-spacing:.22em;text-transform:uppercase;color:var(--copper);display:inline-flex;align-items:center;gap:12px}
+  .eyebrow::before{content:"";width:34px;height:1px;background:var(--copper)}
+  h1,h2,h3,h4{font-family:var(--font-head);font-weight:700;line-height:1.08;letter-spacing:-.02em}
+  h2{font-size:clamp(1.9rem,4vw,3rem)}
+  .section{padding:clamp(70px,10vw,130px) 0}
+  .section-head{max-width:720px;margin-bottom:clamp(36px,5vw,60px);display:grid;gap:18px}
+
+  /* ---------- Reveal on scroll ---------- */
+  .js .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0s)}
+  .js .reveal.in{opacity:1;transform:none}
+
+  /* =====================================================
+     NAVBAR — PLACEHOLDER. Replace this whole <header> with
+     the navbar markup from index.html so it is identical.
+     ===================================================== */
+  .nav{position:fixed;inset:0 0 auto 0;z-index:50;transition:background .3s,backdrop-filter .3s,border-color .3s;border-bottom:1px solid transparent}
+  .nav.scrolled{background:rgba(11,10,9,.78);backdrop-filter:blur(14px);border-color:var(--hairline)}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:72px}
+  .logo{font:800 1.25rem var(--font-head);letter-spacing:-.03em}
+  .logo b{color:var(--copper)}
+  .nav ul{display:flex;gap:32px;list-style:none;font-size:.92rem;color:var(--muted)}
+  .nav ul a{transition:color .2s}
+  .nav ul a:hover,.nav ul a.active{color:var(--ink)}
+  @media(max-width:720px){.nav ul{display:none}}
+
+  /* =====================================================
+     1. HERO
+     ===================================================== */
+  .hero{min-height:100svh;display:flex;align-items:flex-end;padding:140px 0 80px;overflow:hidden;isolation:isolate}
+  .hero-bg{position:absolute;inset:0;z-index:-2;background:linear-gradient(135deg,var(--ph-a),var(--ph-b));display:grid;place-items:center}
+  .hero-bg span{font:500 .9rem var(--font-body);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35);transform:translateY(-12vh);text-align:center;padding:0 20px}
+  .hero::before{content:"";position:absolute;inset:0;z-index:-1;background:
+      linear-gradient(to top,var(--bg) 6%,rgba(11,10,9,.78) 45%,rgba(11,10,9,.45) 100%),
+      radial-gradient(60% 50% at 85% 20%,rgba(200,119,62,.22),transparent 70%)}
+  .hero-glow{position:absolute;z-index:-1;width:520px;height:520px;right:-120px;top:10%;border-radius:50%;background:radial-gradient(circle,rgba(200,119,62,.28),transparent 65%);filter:blur(20px);animation:float 9s ease-in-out infinite}
+  @keyframes float{50%{transform:translate(-40px,30px) scale(1.08)}}
+  .hero h1{font-size:clamp(2.6rem,8.2vw,6.6rem);max-width:15ch;margin:22px 0 26px;letter-spacing:-.035em}
+  .hero h1 .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em}
+  .hero h1 .w>span{display:inline-block;transform:translateY(105%);animation:rise .95s cubic-bezier(.2,.75,.2,1) forwards;animation-delay:calc(.15s + var(--i)*.09s)}
+  .hero h1 em{font-style:normal;color:var(--copper)}
+  @keyframes rise{to{transform:none}}
+  .hero p.sub{font-size:clamp(1.05rem,2vw,1.35rem);max-width:46ch;color:#d6cdc3;opacity:0;animation:fade 1s .9s forwards}
+  .scroll-cue{position:absolute;right:max(20px,calc((100vw - var(--wrap))/2));bottom:48px;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);writing-mode:vertical-rl;display:flex;align-items:center;gap:14px;opacity:0;animation:fade 1s 1.4s forwards}
+  .scroll-cue::after{content:"";width:1px;height:56px;background:linear-gradient(var(--copper),transparent);animation:drip 2s ease-in-out infinite}
+  @keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+  @keyframes fade{to{opacity:1}}
+  @media(max-width:720px){.scroll-cue{display:none}}
+
+  /* =====================================================
+     COMPANY NUMBERS (verified figures only)
+     ===================================================== */
+  .numbers{padding:0 0 clamp(70px,9vw,110px);margin-top:-30px}
+  .num-grid{display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:18px}
+  .num{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01));border:1px solid var(--hairline);border-radius:var(--radius);padding:30px 30px 28px;position:relative;overflow:hidden}
+  .num::after{content:"";position:absolute;left:0;top:0;height:2px;width:0;background:linear-gradient(90deg,var(--copper),transparent);transition:width 1.2s .3s cubic-bezier(.2,.7,.2,1)}
+  .num.in::after{width:100%}
+  .num .big{font:800 clamp(2.6rem,5vw,4rem)/1 var(--font-head);color:var(--copper);letter-spacing:-.04em}
+  .num .lbl{margin-top:10px;color:var(--muted);font-size:.95rem}
+  .exp-list{list-style:none;display:grid;gap:11px;margin-top:6px}
+  .exp-list li{display:grid;grid-template-columns:130px 1fr auto;align-items:center;gap:14px;font-size:.88rem;color:#d6cdc3}
+  .exp-list .bar{height:5px;border-radius:9px;background:rgba(255,255,255,.07);overflow:hidden}
+  .exp-list .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--copper),var(--copper-hi));border-radius:9px;transition:width 1.3s .4s cubic-bezier(.2,.7,.2,1)}
+  .num.in .bar i{width:var(--w)}
+  .exp-list .pill{font-size:.72rem}
+  .num h3{font-size:1rem;font-family:var(--font-body);font-weight:600;letter-spacing:0;margin-bottom:14px;color:var(--ink)}
+  @media(max-width:900px){.num-grid{grid-template-columns:1fr 1fr}.num:last-child{grid-column:1/-1}}
+  @media(max-width:520px){.num-grid{grid-template-columns:1fr}.exp-list li{grid-template-columns:100px 1fr auto}}
+
+  .pill{display:inline-block;padding:5px 12px;border-radius:99px;background:rgba(200,119,62,.14);border:1px solid var(--line);color:var(--copper-hi);font:600 .74rem/1 var(--font-body);letter-spacing:.04em;white-space:nowrap}
+
+  /* ---------- Photo placeholder (use for every missing photo) ---------- */
+  .ph{position:absolute;inset:0;display:grid;place-items:center;background:
+        repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 10px,transparent 10px 20px),
+        linear-gradient(160deg,var(--ph-a),var(--ph-b))}
+  .ph span{font:500 .78rem var(--font-body);letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.42);padding:8px 14px;border:1px dashed rgba(255,255,255,.22);border-radius:8px}
+
+  /* =====================================================
+     2. FOUNDER
+     ===================================================== */
+  .founder-card{display:grid;grid-template-columns:5fr 7fr;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:linear-gradient(135deg,#15130f,#0e0d0b);position:relative}
+  .founder-card::before{content:"";position:absolute;inset:0;background:radial-gradient(500px 300px at var(--mx,70%) var(--my,10%),rgba(200,119,62,.16),transparent 70%);pointer-events:none;transition:background .1s}
+  .founder-photo{position:relative;min-height:520px}
+  .founder-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,transparent 70%,#12100d)}
+  .founder-body{padding:clamp(28px,5vw,64px);display:flex;flex-direction:column;justify-content:center;gap:22px;position:relative}
+  .founder-body h2{font-size:clamp(2.2rem,5vw,3.6rem)}
+  .role{color:var(--copper-hi);font-weight:600;letter-spacing:.02em}
+  .founder-body .bio{color:#d6cdc3;font-size:1.06rem;max-width:56ch}
+  .tags{display:flex;flex-wrap:wrap;gap:10px;list-style:none}
+  .tags li{padding:8px 16px;border-radius:99px;border:1px solid var(--line);font-size:.84rem;color:var(--ink);background:rgba(200,119,62,.07);transition:background .25s,transform .25s}
+  .tags li:hover{background:rgba(200,119,62,.2);transform:translateY(-2px)}
+  .contact-row{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:6px}
+  .icon-btn{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--copper-hi);transition:background .25s,color .25s,transform .25s}
+  .icon-btn:hover{background:var(--copper);color:#0b0a09;transform:translateY(-3px)}
+  .icon-btn svg{width:20px;height:20px}
+  .mail-link{display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:99px;border:1px solid var(--hairline);font-size:.92rem;transition:border-color .25s,color .25s}
+  .mail-link:hover{border-color:var(--copper);color:var(--copper-hi)}
+  .mail-link svg{width:18px;height:18px;color:var(--copper)}
+  .todo{font-style:italic;opacity:.8}
+  @media(max-width:860px){.founder-card{grid-template-columns:1fr}.founder-photo{min-height:380px}.founder-photo::after{background:linear-gradient(to bottom,transparent 70%,#12100d)}}
+
+  /* =====================================================
+     3. CORE TEAM
+     ===================================================== */
+  .dept{margin-top:clamp(36px,5vw,56px)}
+  .dept:first-of-type{margin-top:0}
+  .dept-label{display:flex;align-items:center;gap:18px;margin-bottom:24px;font:600 .78rem var(--font-body);letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+  .dept-label::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+  .dept-label b{color:var(--copper);font-weight:600}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,300px));gap:22px}
+  .card{background:#121110;border:1px solid var(--hairline);border-radius:var(--radius);overflow:hidden;position:relative;transform-style:preserve-3d;transition:border-color .3s,box-shadow .3s,transform .25s ease-out;will-change:transform}
+  .card::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(200,119,62,.18),transparent 70%);opacity:0;transition:opacity .3s}
+  .card:hover{border-color:var(--line);box-shadow:0 24px 60px -24px rgba(200,119,62,.35)}
+  .card:hover::before{opacity:1}
+  .photo{position:relative;aspect-ratio:4/5;overflow:hidden;outline:none}
+  .photo img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+  .photo .ph{transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+  .card:hover .photo .ph,.card:hover .photo img,.photo:focus-visible .ph{transform:scale(1.06)}
+  .photo .badge{position:absolute;top:14px;right:14px;z-index:3;backdrop-filter:blur(6px);background:rgba(11,10,9,.7)}
+  .hover-line{position:absolute;inset:auto 0 0 0;z-index:3;padding:34px 18px 16px;font:500 .92rem/1.4 var(--font-body);color:#fff;background:linear-gradient(to top,rgba(11,10,9,.95) 20%,transparent);transform:translateY(101%);transition:transform .45s cubic-bezier(.2,.7,.2,1)}
+  .hover-line::before{content:"“";color:var(--copper);font:700 1.6rem/0 var(--font-head);margin-right:6px;vertical-align:-.35em}
+  .card:hover .hover-line,.photo:focus .hover-line,.photo:focus-within .hover-line{transform:none}
+  .card .body{padding:20px 20px 24px;display:grid;gap:6px}
+  .card h4{font-size:1.2rem}
+  .card .role{font-size:.88rem}
+  .card .one{font-size:.9rem;color:var(--muted);margin-top:6px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr 1fr;gap:14px}.card .body{padding:14px 14px 18px}.card h4{font-size:1.02rem}.card .one{font-size:.82rem}}
+  @media(max-width:400px){.grid{grid-template-columns:1fr}}
+
+  /* =====================================================
+     4. INTERNS — one full-width band, no photos
+     ===================================================== */
+  .interns{background:var(--bg-panel);border:1px solid var(--copper);border-radius:28px;padding:clamp(34px,6vw,80px);position:relative;overflow:hidden;isolation:isolate}
+  .interns .mark{position:absolute;right:-2%;bottom:-18%;z-index:-1;font:800 clamp(14rem,34vw,30rem)/.8 var(--font-head);letter-spacing:-.08em;color:var(--copper);opacity:.07;user-select:none;pointer-events:none;transition:transform 1.4s cubic-bezier(.2,.7,.2,1)}
+  .interns:hover .mark{transform:translate(-14px,-10px) rotate(-2deg)}
+  .interns h2{margin:18px 0 22px;max-width:16ch}
+  .interns p.desc{max-width:62ch;color:#d6cdc3;font-size:1.08rem}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:32px;list-style:none}
+  .chips li{display:flex;align-items:center;gap:9px;padding:10px 16px;border-radius:99px;background:rgba(255,255,255,.04);border:1px solid var(--hairline);font-size:.86rem;transition:border-color .25s,transform .25s}
+  .chips li::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--copper)}
+  .chips li:hover{border-color:var(--copper);transform:translateY(-2px)}
+
+  /* =====================================================
+     5. HOW WE WORK
+     ===================================================== */
+  .work-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;position:relative}
+  .work{padding:34px 30px 36px;border-radius:var(--radius);border:1px solid var(--hairline);background:linear-gradient(180deg,rgba(255,255,255,.03),transparent);position:relative;transition:border-color .3s,transform .3s}
+  .work:hover{border-color:var(--line);transform:translateY(-6px)}
+  .work .ic{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;background:rgba(200,119,62,.12);border:1px solid var(--line);color:var(--copper-hi);margin-bottom:26px;transition:background .3s,color .3s}
+  .work:hover .ic{background:var(--copper);color:#0b0a09}
+  .work .ic svg{width:26px;height:26px}
+  .work .n{position:absolute;top:26px;right:28px;font:800 3rem/1 var(--font-head);color:rgba(255,255,255,.05)}
+  .work h3{font-size:1.28rem;margin-bottom:10px}
+  .work p{color:var(--muted)}
+  @media(max-width:860px){.work-grid{grid-template-columns:1fr}}
+
+  /* =====================================================
+     BEHIND THE SCENES (4–6 real photos)
+     ===================================================== */
+  .bts{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:150px;gap:14px}
+  .bts figure{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--hairline)}
+  .bts figure img{width:100%;height:100%;object-fit:cover}
+  .bts figure .ph{transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+  .bts figure:hover .ph,.bts figure:hover img{transform:scale(1.05)}
+  .bts .a{grid-column:span 3;grid-row:span 3}
+  .bts .b{grid-column:span 3;grid-row:span 2}
+  .bts .c{grid-column:span 2;grid-row:span 2}
+  .bts .d{grid-column:span 1;grid-row:span 1}
+  .bts .e{grid-column:span 2;grid-row:span 2}
+  .bts .f{grid-column:span 2;grid-row:span 2}
+  .bts .b{grid-row:span 1}
+  @media(max-width:760px){.bts{grid-template-columns:1fr 1fr;grid-auto-rows:150px}.bts figure{grid-column:span 1!important;grid-row:span 1!important}.bts .a{grid-column:span 2!important;grid-row:span 2!important}}
+
+  /* =====================================================
+     JOIN US + 6. FINAL CTA
+     ===================================================== */
+  .join{padding:0 0 clamp(60px,8vw,100px)}
+  .join-inner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;padding:34px 40px;border-radius:var(--radius);border:1px dashed var(--line)}
+  .join-inner h3{font-size:clamp(1.3rem,2.6vw,1.9rem);max-width:26ch}
+  .link-arrow{display:inline-flex;align-items:center;gap:10px;color:var(--copper-hi);font-weight:600;transition:gap .25s}
+  .link-arrow:hover{gap:16px}
+
+  .cta{text-align:center;padding:clamp(90px,12vw,170px) 0;position:relative;overflow:hidden;isolation:isolate}
+  .cta::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(55% 60% at 50% 100%,rgba(200,119,62,.28),transparent 70%)}
+  .cta h2{font-size:clamp(2.2rem,6vw,4.6rem);max-width:16ch;margin:0 auto 40px}
+  .wa{display:inline-flex;align-items:center;gap:14px;padding:20px 36px;border-radius:99px;background:var(--copper);color:#0b0a09;font:700 1.05rem var(--font-body);position:relative;transition:transform .3s,box-shadow .3s,background .3s}
+  .wa::after{content:"";position:absolute;inset:-6px;border-radius:inherit;border:1px solid var(--copper);opacity:0;animation:pulse 2.6s ease-out infinite}
+  @keyframes pulse{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(1.14,1.4)}}
+  .wa:hover{transform:translateY(-4px);background:var(--copper-hi);box-shadow:0 18px 50px -12px rgba(200,119,62,.6)}
+  .wa svg{width:24px;height:24px}
+  .hr-line{margin-top:22px;font-size:.88rem;color:var(--muted)}
+  .hr-line a{color:var(--copper-hi);border-bottom:1px solid var(--line);transition:border-color .2s}
+  .hr-line a:hover{border-color:var(--copper-hi)}
+
+  /* focus + motion preferences */
+  :focus-visible{outline:2px solid var(--copper-hi);outline-offset:3px}
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    .js .reveal{opacity:1;transform:none}
+    .hero h1 .w>span{transform:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR PLACEHOLDER: replace with the navbar from index.html ===== -->
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a href="index.html" class="logo">Heisen<b>Works</b></a>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="team.html" class="active">Team</a></li>
+    </ul>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ 1. HERO ============ -->
+<section class="hero" aria-labelledby="hero-title">
+  <!-- Replace .hero-bg contents with <img src="team-group.jpg" alt="The HeisenWorks team"> once an approved group photo exists -->
+  <div class="hero-bg" aria-hidden="true"><span>Image required · team group photo</span></div>
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="wrap">
+    <span class="eyebrow">Our Team</span>
+    <h1 id="hero-title" aria-label="The people behind 200+ brands.">
+      <span class="w" style="--i:0"><span>The</span></span>
+      <span class="w" style="--i:1"><span>people</span></span>
+      <span class="w" style="--i:2"><span>behind</span></span>
+      <span class="w" style="--i:3"><span><em>200+</em></span></span>
+      <span class="w" style="--i:4"><span>brands.</span></span>
+    </h1>
+    <p class="sub">Designers, developers, editors and marketers who treat your brand like their own.</p>
+  </div>
+  <div class="scroll-cue" aria-hidden="true">Scroll</div>
+</section>
+
+<!-- ============ COMPANY NUMBERS (verified figures only) ============ -->
+<section class="numbers" aria-label="Company numbers">
+  <div class="wrap num-grid">
+    <div class="num reveal">
+      <div class="big"><span data-count="200">200</span>+</div>
+      <div class="lbl">Brands shipped</div>
+    </div>
+    <div class="num reveal" style="--d:.1s">
+      <div class="big"><span data-count="30">30</span>+</div>
+      <div class="lbl">Hackathons led by our founder</div>
+    </div>
+    <div class="num reveal" style="--d:.2s">
+      <h3>Hands-on experience in the team</h3>
+      <ul class="exp-list">
+        <li><span>Mohd. Naved</span><span class="bar"><i style="--w:100%"></i></span><span class="pill">4+ yrs</span></li>
+        <li><span>Uttam Singh</span><span class="bar"><i style="--w:75%"></i></span><span class="pill">3+ yrs</span></li>
+        <li><span>Kritanshu</span><span class="bar"><i style="--w:50%"></i></span><span class="pill">2+ yrs</span></li>
+        <li><span>Piyush</span><span class="bar"><i style="--w:50%"></i></span><span class="pill">2+ yrs</span></li>
+        <li><span>Kanishk Sharma</span><span class="bar"><i style="--w:25%"></i></span><span class="pill">1+ yr</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. FOUNDER ============ -->
+<section class="section" style="padding-top:0" aria-labelledby="founder-name">
+  <div class="wrap">
+    <article class="founder-card reveal" id="founderCard">
+      <div class="founder-photo">
+        <!-- Replace .ph with <img src="fahad-malik.jpg" alt="Fahad Malik, Founder of HeisenWorks"> -->
+        <div class="ph"><span>Image required</span></div>
+      </div>
+      <div class="founder-body">
+        <span class="eyebrow">Founder</span>
+        <h2 id="founder-name">Fahad Malik</h2>
+        <p class="role">Founder · Clients &amp; Growth</p>
+        <p class="bio">Fahad started HeisenWorks after spotting a gap: growing businesses needed a studio that builds well and stays reachable after launch. He has led teams in 30+ hackathons, organised many successful events, and brings strong client-relationship experience to every project. We keep things flexible: if a client ever has a problem, they can talk to Fahad directly.</p>
+        <ul class="tags">
+          <li>Client relationships</li>
+          <li>Team leadership</li>
+          <li>30+ hackathons</li>
+          <li>Event management</li>
+        </ul>
+        <div class="contact-row">
+          <!-- TODO: paste Fahad's real LinkedIn URL in href (do not invent one) -->
+          <a class="icon-btn" href="#" target="_blank" rel="noopener" aria-label="Fahad Malik on LinkedIn" title="LinkedIn (URL required)">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3V9.75Zm6.5 0h3.83v1.54h.06c.53-1 1.84-2.06 3.78-2.06 4.04 0 4.78 2.66 4.78 6.1V21h-4v-5.1c0-1.22-.02-2.78-1.7-2.78-1.7 0-1.96 1.33-1.96 2.69V21h-4V9.75Z"/></svg>
+          </a>
+          <!-- TODO: replace FOUNDER_EMAIL_HERE (in href and text) with Fahad's real email. Email #1 of 2 allowed on this page. -->
+          <a class="mail-link" href="mailto:FOUNDER_EMAIL_HERE">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            <span class="todo">[Fahad's email required]</span>
+          </a>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 3. CORE TEAM ============ -->
+<section class="section" style="padding-top:0" aria-labelledby="team-title">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Core team</span>
+      <h2 id="team-title">The crew that ships your work.</h2>
+    </div>
+
+    <!--
+      TO ADD A NEW MEMBER: copy one <article class="card"> block into the right department grid.
+      No email or phone number on cards. Hover line = member-provided personality line.
+      For a photo, replace <div class="ph">…</div> with <img src="name.jpg" alt="Name, Role">.
+    -->
+
+    <div class="dept">
+      <div class="dept-label reveal"><b>01</b> Tech</div>
+      <div class="grid">
+        <article class="card reveal">
+          <div class="photo" tabindex="0">
+            <div class="ph"><span>Image required</span></div>
+            <span class="pill badge">2+ yrs</span>
+            <p class="hover-line">Turning coffee into clean code.</p>
+          </div>
+          <div class="body">
+            <h4>Kritanshu</h4>
+            <p class="role">Software Developer</p>
+            <p class="one">Builds fast, reliable websites and web apps, with 2+ years of hands-on field experience.</p>
+          </div>
+        </article>
+
+        <article class="card reveal" style="--d:.1s">
+          <div class="photo" tabindex="0">
+            <div class="ph"><span>Image required</span></div>
+            <span class="pill badge">2+ yrs</span>
+            <p class="hover-line">Fuels on chai, ships in Figma.</p>
+          </div>
+          <div class="body">
+            <h4>Piyush</h4>
+            <p class="role">Software Developer</p>
+            <p class="one">Turns designs into clean, working products, with 2+ years of hands-on field experience.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="dept">
+      <div class="dept-label reveal"><b>02</b> Creative</div>
+      <div class="grid">
+        <article class="card reveal">
+          <div class="photo" tabindex="0">
+            <div class="ph"><span>Image required</span></div>
+            <span class="pill badge">3+ yrs</span>
+            <p class="hover-line">Making every frame count.</p>
+          </div>
+          <div class="body">
+            <h4>Uttam Singh</h4>
+            <p class="role">Video Editor &amp; Motion Designer</p>
+            <p class="one">Creates reels, ads and product films with high-level motion graphics that stop the scroll.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="dept">
+      <div class="dept-label reveal"><b>03</b> Marketing</div>
+      <div class="grid">
+        <article class="card reveal">
+          <div class="photo" tabindex="0">
+            <div class="ph"><span>Image required</span></div>
+            <span class="pill badge">4+ yrs</span>
+            <p class="hover-line">Finds your audience before they find you.</p>
+          </div>
+          <div class="body">
+            <h4>Mohd. Naved Khan Yousufi</h4>
+            <p class="role">Marketing Executive</p>
+            <p class="one">Brings 4+ years of marketing experience to help brands reach the right customers.</p>
+          </div>
+        </article>
+
+        <article class="card reveal" style="--d:.1s">
+          <div class="photo" tabindex="0">
+            <div class="ph"><span>Image required</span></div>
+            <span class="pill badge">1+ yr</span>
+            <p class="hover-line">Keeping your feed alive, every single week.</p>
+          </div>
+          <div class="body">
+            <h4>Kanishk Sharma</h4>
+            <p class="role">Social Media Manager</p>
+            <p class="one">Plans and runs our clients' social media so their brand shows up every week.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. INTERNS ============ -->
+<section class="section" style="padding-top:0" aria-labelledby="interns-title">
+  <div class="wrap">
+    <div class="interns reveal">
+      <div class="mark" aria-hidden="true">HW</div>
+      <span class="eyebrow">The Next Generation</span>
+      <h2 id="interns-title">Our interns, building on real work.</h2>
+      <p class="desc">We're blessed with a hard-working team of interns who learn by shipping real client projects alongside our leads. Every intern gets hands-on mentoring, code and design reviews, and the skills to be industry-ready from day one.</p>
+      <ul class="chips">
+        <li>Real client projects</li>
+        <li>Learning alongside leads</li>
+        <li>Hands-on mentoring</li>
+        <li>Code &amp; design reviews</li>
+        <li>Industry-ready skills</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. HOW WE WORK ============ -->
+<section class="section" style="padding-top:0" aria-labelledby="work-title">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">How we work</span>
+      <h2 id="work-title">Three promises on every project.</h2>
+    </div>
+    <div class="work-grid">
+      <article class="work reveal">
+        <span class="n" aria-hidden="true">01</span>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6l-8-3Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg></div>
+        <h3>Senior Review on Every Project</h3>
+        <p>Nothing ships without a lead checking it.</p>
+      </article>
+      <article class="work reveal" style="--d:.12s">
+        <span class="n" aria-hidden="true">02</span>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M9 11h6M9 14h3"/></svg></div>
+        <h3>One Point of Contact</h3>
+        <p>You always know who to talk to.</p>
+      </article>
+      <article class="work reveal" style="--d:.24s">
+        <span class="n" aria-hidden="true">03</span>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21v-9"/><path d="M12 12c0-4 2.5-6.5 7-6.5 0 4-2.5 6.5-7 6.5Z"/><path d="M12 15c0-3-2-5-5.5-5 0 3 2 5 5.5 5Z"/></svg></div>
+        <h3>We Grow Talent</h3>
+        <p>Our interns learn on real client work, guided by experienced leads.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BEHIND THE SCENES ============ -->
+<section class="section" style="padding-top:0" aria-labelledby="bts-title">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Behind the scenes</span>
+      <h2 id="bts-title">The people and the place.</h2>
+    </div>
+    <!-- 4–6 real, approved photos only. Replace each .ph with <img src="..." alt="describe the photo"> -->
+    <div class="bts">
+      <figure class="a reveal"><div class="ph"><span>Image required</span></div></figure>
+      <figure class="b reveal" style="--d:.08s"><div class="ph"><span>Image required</span></div></figure>
+      <figure class="c reveal" style="--d:.16s"><div class="ph"><span>Image required</span></div></figure>
+      <figure class="e reveal" style="--d:.08s"><div class="ph"><span>Image required</span></div></figure>
+      <figure class="f reveal" style="--d:.16s"><div class="ph"><span>Image required</span></div></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ JOIN US ============ -->
+<section class="join" aria-label="Careers">
+  <div class="wrap">
+    <div class="join-inner reveal">
+      <h3>We're always looking for hungry designers and developers.</h3>
+      <a class="link-arrow" href="#cta">Careers &amp; HR contact below <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. FINAL CTA ============ -->
+<section class="cta" id="cta" aria-labelledby="cta-title">
+  <div class="wrap">
+    <h2 id="cta-title" class="reveal">Want this team on your project?</h2>
+    <a class="wa reveal" style="--d:.1s" href="https://wa.me/919186061401" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2a9.9 9.9 0 0 0-8.5 14.9L2 22l5.25-1.5A9.9 9.9 0 1 0 12.04 2Zm5.8 14.1c-.25.7-1.45 1.3-2 1.4-.5.07-1.1.1-1.8-.1-.4-.13-.95-.3-1.6-.6-2.8-1.2-4.6-4-4.75-4.2-.14-.2-1.1-1.5-1.1-2.8s.7-2 .95-2.25c.25-.25.55-.3.7-.3h.5c.17 0 .4-.05.6.45l.85 2c.07.15.1.3 0 .5l-.3.45-.4.45c-.13.13-.27.28-.12.55.15.27.7 1.15 1.5 1.85 1 .9 1.9 1.2 2.15 1.33.27.13.43.1.6-.07l.9-1.05c.2-.25.4-.2.65-.1l1.9.9c.25.13.4.2.47.3.06.1.06.62-.2 1.3Z"/></svg>
+      WhatsApp us · +91 91860 61401
+    </a>
+    <!-- TODO: replace HR_EMAIL_HERE (href and text) with the real HR email. Email #2 of 2 allowed on this page. -->
+    <p class="hr-line reveal" style="--d:.2s">Careers &amp; HR: <a href="mailto:HR_EMAIL_HERE"><span class="todo">[HR email required]</span></a></p>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* navbar background on scroll */
+  var nav = document.getElementById('nav');
+  function onScroll(){ nav.classList.toggle('scrolled', window.scrollY > 30); }
+  onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+
+  /* reveal on scroll */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting) return;
+      e.target.classList.add('in');
+      e.target.querySelectorAll('[data-count]').forEach(countUp);
+      io.unobserve(e.target);
+    });
+  },{threshold:.15, rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal, .num').forEach(function(el){ io.observe(el); });
+
+  /* count-up for verified numbers */
+  function countUp(el){
+    var target = +el.dataset.count;
+    if(reduce){ el.textContent = target; return; }
+    var start = null, dur = 1400;
+    function step(t){
+      if(!start) start = t;
+      var p = Math.min((t-start)/dur,1);
+      el.textContent = Math.round(target * (1 - Math.pow(1-p,3)));
+      if(p<1) requestAnimationFrame(step);
+    }
+    el.textContent = 0; requestAnimationFrame(step);
+  }
+
+  /* cursor spotlight + subtle tilt on cards (mouse only) */
+  if(window.matchMedia('(hover:hover) and (pointer:fine)').matches && !reduce){
+    document.querySelectorAll('.card').forEach(function(card){
+      card.addEventListener('mousemove', function(e){
+        var r = card.getBoundingClientRect();
+        var x = e.clientX - r.left, y = e.clientY - r.top;
+        card.style.setProperty('--mx', x+'px');
+        card.style.setProperty('--my', y+'px');
+        var rx = ((y / r.height) - .5) * -6, ry = ((x / r.width) - .5) * 6;
+        card.style.transform = 'perspective(900px) rotateX('+rx+'deg) rotateY('+ry+'deg) translateY(-4px)';
+      });
+      card.addEventListener('mouseleave', function(){ card.style.transform = ''; });
+    });
+    var fc = document.getElementById('founderCard');
+    fc.addEventListener('mousemove', function(e){
+      var r = fc.getBoundingClientRect();
+      fc.style.setProperty('--mx', (e.clientX-r.left)+'px');
+      fc.style.setProperty('--my', (e.clientY-r.top)+'px');
+    });
+  }
+})();
+</script>
+</body>
+</html>

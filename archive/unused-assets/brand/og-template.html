@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HeisenWorks OG Card</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+      background: #090a0c;
+      color: #f3f4f6;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 70px 80px;
+      position: relative;
+    }
+    .ambient-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      top: -100px;
+      right: -100px;
+      background: radial-gradient(circle, rgba(234, 88, 12, 0.18) 0%, rgba(217, 119, 6, 0.08) 40%, transparent 70%);
+      pointer-events: none;
+    }
+    .ambient-glow-2 {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      bottom: -150px;
+      left: 100px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 2;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .brand svg {
+      width: 44px;
+      height: 50px;
+      fill: #f59e0b;
+    }
+    .brand-name {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+      color: #9ca3af;
+    }
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+    .main {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+    }
+    .tagline {
+      font-size: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #f59e0b;
+      font-weight: 600;
+      margin-bottom: 16px;
+      font-family: ui-monospace, monospace;
+    }
+    h1 {
+      font-size: 58px;
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      margin-bottom: 24px;
+    }
+    .sub {
+      font-size: 22px;
+      line-height: 1.5;
+      color: #9ca3af;
+      max-width: 760px;
+    }
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      z-index: 2;
+    }
+    .pills {
+      display: flex;
+      gap: 12px;
+    }
+    .pill {
+      padding: 6px 14px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 13px;
+      color: #d1d5db;
+    }
+    .domain {
+      font-size: 16px;
+      font-family: ui-monospace, monospace;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <div class="ambient-glow-2"></div>
+
+  <div class="top-bar">
+    <div class="brand">
+      <svg viewBox="0 0 100 114">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M50 3 L94 28.5 L94 85.5 L50 111 L6 85.5 L6 28.5 Z M50 12 L14 33 L14 81 L50 102 L86 81 L86 33 Z" />
+        <path d="M22 36 h9 v15 h10 v-15 h9 v42 h-9 v-18 h-10 v18 h-9 Z" />
+        <path d="M53 36 h8 l5 25 5-25 h7 l5 25 5-25 h8 l-8 42 h-8 l-5-23-5 23 h-8 Z" />
+      </svg>
+      <span class="brand-name">HeisenWorks</span>
+    </div>
+    <div class="badge">
+      <span class="badge-dot"></span>
+      <span>Available for Q4 / 2026 Engagements</span>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="tagline">Independent Engineering &amp; UI Studio</div>
+    <h1>Bold ideas, shipped with quiet precision.</h1>
+    <p class="sub">High-performance web applications, telemetry interfaces, design systems, and resilient cloud architectures crafted for modern teams.</p>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="pills">
+      <span class="pill">Web Design &amp; Development</span>
+      <span class="pill">Website Maintenance &amp; Care</span>
+      <span class="pill">UI/UX Systems</span>
+      <span class="pill">Brand &amp; Motion</span>
+    </div>
+    <div class="domain">heisenworks.in</div>
+  </div>
+</body>
+</html>
+
