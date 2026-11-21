@@ -155,9 +155,8 @@ function updateStudioClockSafe() {
   } catch (e) { }
 }
 
-// 5. LiquidReveal Cursor Canvas Background (Orange Hover Reveal over Hero Video)
+// 5. Liquid Cursor Reveal — brush-reveals hero poster image over the video base
 const heroVideo = document.getElementById("hero-base-video");
-const canvas = document.getElementById("hero-canvas");
 const heroLiquidWrap = document.getElementById("hero-liquid");
 const prefersReducedMotion = window.matchMedia(
   "(prefers-reduced-motion: reduce)",
@@ -222,166 +221,158 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(layoutHero
 let heroLayoutTimer;
 window.addEventListener("resize", () => { clearTimeout(heroLayoutTimer); heroLayoutTimer = setTimeout(layoutHeroVideo, 120); });
 
-if (canvas && heroLiquidWrap && !prefersReducedMotion) {
-  const ctx = canvas.getContext("2d");
-  const brushRadius = 190;
-  const decay = 0.016;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+// 5b. Liquid Cursor Reveal — brush reveals hero poster over the video base
+(function liquidReveal() {
+  const BRUSH_RADIUS = 143;        // CSS px
+  const DECAY        = 0.016;
+  const FADE_FRAMES  = 120;
+  const dpr          = Math.min(window.devicePixelRatio || 1, 2);
+  const BASE_SRC     = "assets/images/hero/hex-hero-poster.jpg";
+  const REVEAL_SRC   = "assets/images/hero/hex-hero-poster.jpg";
 
-  let rect = heroLiquidWrap.getBoundingClientRect();
-  let cWidth = 0;
-  let cHeight = 0;
+  // Respect reduced motion — show only the base; no canvas painting
+  if (prefersReducedMotion) return;
 
-  // Offscreen brush canvas for smooth gradient stamping
-  const brushCanvas = document.createElement("canvas");
-  const brushCtx = brushCanvas.getContext("2d");
+  const container = document.getElementById("hero-liquid");
+  const canvas    = document.getElementById("hero-canvas");
+  if (!container || !canvas) return;
 
-  function resizeCanvas() {
-    rect = heroLiquidWrap.getBoundingClientRect();
-    cWidth = Math.round(rect.width * dpr);
-    cHeight = Math.round(rect.height * dpr);
-    if (cWidth === 0 || cHeight === 0) return;
+  const ctx    = canvas.getContext("2d");
+  const radius = BRUSH_RADIUS * dpr;
+  const diam   = Math.ceil(radius * 2);
 
-    canvas.width = cWidth;
-    canvas.height = cHeight;
-    canvas.style.width = `${rect.width}px`;
-    canvas.style.height = `${rect.height}px`;
+  // ── Offscreen "cover" canvas: reveal image drawn object-fit:cover ──────────
+  const coverCvs = document.createElement("canvas");
+  const coverCtx = coverCvs.getContext("2d");
 
-    const radius = brushRadius * dpr;
-    const diam = Math.ceil(radius * 2);
-    brushCanvas.width = diam;
-    brushCanvas.height = diam;
+  // ── Offscreen "brush" canvas: radial-gradient mask + clipped reveal image ──
+  const brushCvs = document.createElement("canvas");
+  brushCvs.width  = diam;
+  brushCvs.height = diam;
+  const brushCtx = brushCvs.getContext("2d");
 
-    // Pre-render delicate, translucent ambient orange halo matching reference
-    const c = radius;
-    brushCtx.clearRect(0, 0, diam, diam);
-    const grad = brushCtx.createRadialGradient(c, c, 0, c, c, radius);
-    grad.addColorStop(0, "rgba(255, 175, 38, 0.26)");
-    grad.addColorStop(0.28, "rgba(246, 115, 16, 0.20)");
-    grad.addColorStop(0.6, "rgba(215, 75, 10, 0.12)");
-    grad.addColorStop(0.85, "rgba(175, 45, 6, 0.04)");
-    grad.addColorStop(1, "rgba(135, 25, 0, 0)");
+  let cw = 0, ch = 0;
+  let lrRect = { left: 0, top: 0 };
 
-    brushCtx.fillStyle = grad;
-    brushCtx.beginPath();
-    brushCtx.arc(c, c, radius, 0, Math.PI * 2);
-    brushCtx.fill();
+  // Load reveal image
+  const revealImg = new Image();
+  revealImg.src = REVEAL_SRC;
+
+  function buildCover() {
+    if (!revealImg.naturalWidth || !cw || !ch) return;
+    coverCvs.width  = cw;
+    coverCvs.height = ch;
+    const iw = revealImg.naturalWidth, ih = revealImg.naturalHeight;
+    const scale = Math.max(cw / iw, ch / ih);
+    const sw = iw * scale, sh = ih * scale;
+    const sx = (cw - sw) / 2, sy = (ch - sh) / 2;
+    coverCtx.clearRect(0, 0, cw, ch);
+    coverCtx.drawImage(revealImg, sx, sy, sw, sh);
   }
 
-  resizeCanvas();
-  const ro = new ResizeObserver(resizeCanvas);
-  ro.observe(heroLiquidWrap);
+  function resize() {
+    lrRect = container.getBoundingClientRect();
+    cw = Math.round(lrRect.width  * dpr);
+    ch = Math.round(lrRect.height * dpr);
+    if (!cw || !ch) return;
+    canvas.width  = cw;
+    canvas.height = ch;
+    canvas.style.width  = lrRect.width  + "px";
+    canvas.style.height = lrRect.height + "px";
+    buildCover();
+  }
 
-  // Pointer trail interpolation
-  let points = [];
-  let lastPoint = null;
-  let idle = 0;
+  revealImg.onload = buildCover;
+  resize();
+  new ResizeObserver(resize).observe(container);
 
-  window.addEventListener(
-    "pointermove",
-    (e) => {
-      rect = heroLiquidWrap.getBoundingClientRect();
-      const clientX = e.clientX;
-      const clientY = e.clientY;
-
-      const x = (clientX - rect.left) * dpr;
-      const y = (clientY - rect.top) * dpr;
-      const radius = brushRadius * dpr;
-
-      // Ignore if far outside canvas
-      if (
-        x < -radius ||
-        x > cWidth + radius ||
-        y < -radius ||
-        y > cHeight + radius
-      ) {
-        lastPoint = null;
-        return;
-      }
-
-      const newPoint = { x, y };
-      if (lastPoint) {
-        const dx = newPoint.x - lastPoint.x;
-        const dy = newPoint.y - lastPoint.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist < 12) return; // Prevent dense stacking when hovering in place
-        const step = Math.max(radius * 0.45, 25);
-        const n = Math.min(Math.ceil(dist / step), 10);
-
-        for (let i = 1; i <= n; i++) {
-          points.push({
-            x: lastPoint.x + dx * (i / n),
-            y: lastPoint.y + dy * (i / n),
-          });
-        }
-      } else {
-        points.push(newPoint);
-      }
-      lastPoint = newPoint;
-      scheduleTick();
-    },
-    { passive: true },
-  );
+  // ── Point queue & state ────────────────────────────────────────────────────
+  let lrPoints   = [];
+  let lrLast     = null;
+  let lrIdle     = 0;
+  let lrTicking  = false;
 
   function stamp(x, y) {
-    const radius = brushRadius * dpr;
     const c = radius;
+    // 1. Build white radial gradient on brush canvas
+    brushCtx.clearRect(0, 0, diam, diam);
+    brushCtx.globalCompositeOperation = "source-over";
+    const g = brushCtx.createRadialGradient(c, c, 0, c, c, radius);
+    g.addColorStop(0,    "rgba(255,255,255,1)");
+    g.addColorStop(0.55, "rgba(255,255,255,0.82)");
+    g.addColorStop(1,    "rgba(255,255,255,0)");
+    brushCtx.fillStyle = g;
+    brushCtx.fillRect(0, 0, diam, diam);
+    // 2. Clip to the reveal image slice
+    brushCtx.globalCompositeOperation = "source-in";
+    brushCtx.drawImage(coverCvs, x - c, y - c, diam, diam, 0, 0, diam, diam);
+    // 3. Paint onto main canvas
     ctx.globalCompositeOperation = "source-over";
-    ctx.globalAlpha = 0.65;
-    ctx.drawImage(brushCanvas, x - c, y - c);
-    ctx.globalAlpha = 1.0;
+    ctx.drawImage(brushCvs, x - c, y - c);
   }
 
-  let isTicking = false;
-  function scheduleTick() {
-    if (!isTicking) {
-      isTicking = true;
-      requestAnimationFrame(tick);
-    }
+  function schedule() {
+    if (!lrTicking) { lrTicking = true; requestAnimationFrame(tick); }
   }
 
   function tick() {
-    if (document.hidden) {
-      isTicking = false;
+    if (document.hidden) { lrTicking = false; return; }
+
+    const drawing = lrPoints.length > 0;
+    if (drawing) lrIdle = 0; else lrIdle++;
+
+    if (lrIdle >= FADE_FRAMES) {
+      ctx.clearRect(0, 0, cw, ch);
+      lrTicking = false;
       return;
     }
 
-    const drawing = points.length > 0;
+    const fade = drawing
+      ? DECAY
+      : Math.min(DECAY + lrIdle * 0.004, 0.5);
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.fillStyle = "rgba(0,0,0," + fade + ")";
+    ctx.fillRect(0, 0, cw, ch);
+
     if (drawing) {
-      idle = 0;
-    } else {
-      idle++;
+      const pts = lrPoints.splice(0);
+      for (let i = 0; i < pts.length; i++) stamp(pts[i].x, pts[i].y);
     }
 
-    if (idle <= 120) {
-      const fade = drawing ? decay : Math.min(decay + idle * 0.004, 0.5);
-      ctx.globalCompositeOperation = "destination-out";
-      ctx.fillStyle = `rgba(0,0,0,${fade})`;
-      ctx.fillRect(0, 0, cWidth, cHeight);
-
-      if (drawing) {
-        for (let i = 0; i < points.length; i++) {
-          stamp(points[i].x, points[i].y);
-        }
-        points = [];
-      }
-
-      if (idle === 120) {
-        ctx.clearRect(0, 0, cWidth, cHeight);
-      }
-      requestAnimationFrame(tick);
-    } else {
-      isTicking = false;
-    }
+    requestAnimationFrame(tick);
   }
 
-  document.addEventListener("visibilitychange", () => {
-    if (!document.hidden && idle < 120) {
-      scheduleTick();
+  window.addEventListener("pointermove", function (e) {
+    lrRect = container.getBoundingClientRect();
+    const x = (e.clientX - lrRect.left) * dpr;
+    const y = (e.clientY - lrRect.top)  * dpr;
+
+    // Ignore if the pointer is well outside the canvas
+    if (x < -radius || x > cw + radius || y < -radius || y > ch + radius) {
+      lrLast = null;
+      return;
     }
+
+    const np = { x, y };
+    if (lrLast) {
+      const dx = np.x - lrLast.x, dy = np.y - lrLast.y;
+      const dist = Math.hypot(dx, dy);
+      const step = Math.max(radius * 0.3, 1);
+      const n    = Math.min(Math.ceil(dist / step), 60);
+      for (let i = 1; i <= n; i++) {
+        lrPoints.push({ x: lrLast.x + dx * (i / n), y: lrLast.y + dy * (i / n) });
+      }
+    } else {
+      lrPoints.push(np);
+    }
+    lrLast = np;
+    schedule();
+  }, { passive: true });
+
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden && lrIdle < FADE_FRAMES) schedule();
   });
-  scheduleTick();
-}
+}());
 
 // 6. PageLoader Animation & Entrance Gating
 let ready = false;
