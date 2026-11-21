@@ -92,6 +92,7 @@ async function runTests() {
     '/assets/images/team/vipul-rana.webp',
     '/assets/images/team/team-office.jpg',
     '/assets/images/team/team-office.webp',
+    '/assets/images/team/himanshu.svg',
     '/assets/videos/heisenworks-hero-loop.mp4',
     '/assets/videos/cyberrange-ctf-preview.mp4',
     '/assets/videos/flywire-neural-preview.mp4',

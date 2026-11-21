@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <defs>
+    <!-- Warm studio portrait gradient -->
+    <radialGradient id="studioBg" cx="50%" cy="38%" r="68%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="55%" stop-color="#f6f5f1" />
+      <stop offset="100%" stop-color="#ece8df" />
+    </radialGradient>
+
+    <!-- Subtle warm amber studio halo -->
+    <radialGradient id="amberHalo" cx="50%" cy="44%" r="52%">
+      <stop offset="0%" stop-color="#cf8047" stop-opacity="0.16" />
+      <stop offset="60%" stop-color="#cf8047" stop-opacity="0.06" />
+      <stop offset="100%" stop-color="#cf8047" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Circular portrait card backdrop -->
+    <radialGradient id="circleGrad" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="80%" stop-color="#f3efe8" />
+      <stop offset="100%" stop-color="#e8e2d6" />
+    </radialGradient>
+
+    <!-- HeisenWorks Signature Amber Gradient for the figure -->
+    <linearGradient id="amberFigure" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#df8f54" />
+      <stop offset="50%" stop-color="#cf8047" />
+      <stop offset="100%" stop-color="#be6f37" />
+    </linearGradient>
+
+    <!-- Subtle drop shadow -->
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#cf8047" flood-opacity="0.12" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000000" flood-opacity="0.06" />
+    </filter>
+  </defs>
+
+  <!-- Studio Background -->
+  <rect width="400" height="500" fill="url(#studioBg)" />
+
+  <!-- Diagonal texture matching website placeholder pattern -->
+  <g opacity="0.035" stroke="#111111" stroke-width="1.2">
+    <line x1="0" y1="50" x2="50" y2="0" />
+    <line x1="0" y1="100" x2="100" y2="0" />
+    <line x1="0" y1="150" x2="150" y2="0" />
+    <line x1="0" y1="200" x2="200" y2="0" />
+    <line x1="0" y1="250" x2="250" y2="0" />
+    <line x1="0" y1="300" x2="300" y2="0" />
+    <line x1="0" y1="350" x2="350" y2="0" />
+    <line x1="0" y1="400" x2="400" y2="0" />
+    <line x1="0" y1="450" x2="400" y2="50" />
+    <line x1="0" y1="500" x2="400" y2="100" />
+    <line x1="50" y1="500" x2="400" y2="150" />
+    <line x1="100" y1="500" x2="400" y2="200" />
+    <line x1="150" y1="500" x2="400" y2="250" />
+    <line x1="200" y1="500" x2="400" y2="300" />
+    <line x1="250" y1="500" x2="400" y2="350" />
+    <line x1="300" y1="500" x2="400" y2="400" />
+    <line x1="350" y1="500" x2="400" y2="450" />
+  </g>
+
+  <!-- Ambient Amber Glow behind portrait circle -->
+  <circle cx="200" cy="235" r="160" fill="url(#amberHalo)" />
+
+  <!-- Circular Portrait Halo (similar to reference silhouette circle) -->
+  <circle cx="200" cy="235" r="132" fill="url(#circleGrad)" stroke="#cf8047" stroke-opacity="0.25" stroke-width="1.5" filter="url(#softShadow)" />
+
+  <!-- Avatar Figure in HeisenWorks Signature Amber (Head + Shoulders Passport Silhouette) -->
+  <g fill="url(#amberFigure)">
+    <!-- Head -->
+    <circle cx="200" cy="192" r="44" />
+    <!-- Shoulders / Upper Torso -->
+    <path d="M128 296 C128 250 160 240 200 240 C240 240 272 250 272 296 C272 316 260 324 242 324 L158 324 C140 324 128 316 128 296 Z" />
+  </g>
+
+  <!-- Passport Card Framing Accent -->
+  <rect x="14" y="14" width="372" height="472" rx="18" fill="none" stroke="#cf8047" stroke-opacity="0.18" stroke-width="1.2" />
+
+  <!-- Corner Focus Guides in brand amber -->
+  <path d="M26 40 L26 26 L40 26" fill="none" stroke="#cf8047" stroke-width="2" stroke-linecap="round" opacity="0.6" />
+  <path d="M374 40 L374 26 L360 26" fill="none" stroke="#cf8047" stroke-width="2" stroke-linecap="round" opacity="0.6" />
+  <path d="M26 460 L26 474 L40 474" fill="none" stroke="#cf8047" stroke-width="2" stroke-linecap="round" opacity="0.6" />
+  <path d="M374 460 L374 474 L360 474" fill="none" stroke="#cf8047" stroke-width="2" stroke-linecap="round" opacity="0.6" />
+
+  <!-- Studio Label Pill at bottom -->
+  <rect x="136" y="440" width="128" height="26" rx="13" fill="#ffffff" fill-opacity="0.92" stroke="#cf8047" stroke-opacity="0.3" stroke-width="1" />
+  <text x="200" y="457" fill="#be6f37" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" letter-spacing="0.1em" text-anchor="middle">TEAM · HW</text>
+</svg>
