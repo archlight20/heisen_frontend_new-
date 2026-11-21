@@ -679,11 +679,13 @@ const navMenu = document.getElementById("nav-menu");
 window.openNavMenu = function () {
   if (!navMenu) return;
   navMenu.classList.add("open");
+  document.body.classList.add("nav-menu-open");
   stopScroll();
 };
 window.closeNavMenu = function () {
   if (!navMenu) return;
   navMenu.classList.remove("open");
+  document.body.classList.remove("nav-menu-open");
   startScroll();
 };
 window.navMenuSelect = function (id) {

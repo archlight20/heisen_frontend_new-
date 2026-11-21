@@ -52,7 +52,7 @@ const COMMON_HEADER = (activePage) => `
         <li><a href="/team" class="nav-item-btn ${activePage === 'team' ? 'active' : ''}">Team</a></li>
         <li><a href="/work" class="nav-item-btn ${activePage === 'work' ? 'active' : ''}">Work</a></li>
         <li><a href="/services" class="nav-item-btn ${activePage === 'services' ? 'active' : ''}">Services</a></li>
-        <li><a href="/pricing" class="nav-item-btn ${activePage === 'pricing' ? 'active' : ''}">Pricing</a></li>
+        <li><a href="/pricing" class="nav-item-btn ${activePage === 'pricing' ? 'active' : ''}">FAQ</a></li>
         <li><a href="/reviews" class="nav-item-btn ${activePage === 'reviews' ? 'active' : ''}">Reviews</a></li>
         <li><a href="/contact" class="nav-item-btn ${activePage === 'contact' ? 'active' : ''}">Contact</a></li>
       </ul>
@@ -98,7 +98,7 @@ const COMMON_DRAWER = (activePage) => `
       <li><a href="/team" class="nav-menu-link-btn ${activePage === 'team' ? 'active' : ''}"><span class="nav-menu-idx">02</span><span>Team</span></a></li>
       <li><a href="/work" class="nav-menu-link-btn ${activePage === 'work' ? 'active' : ''}"><span class="nav-menu-idx">03</span><span>Work</span></a></li>
       <li><a href="/services" class="nav-menu-link-btn ${activePage === 'services' ? 'active' : ''}"><span class="nav-menu-idx">04</span><span>Services</span></a></li>
-      <li><a href="/pricing" class="nav-menu-link-btn ${activePage === 'pricing' ? 'active' : ''}"><span class="nav-menu-idx">05</span><span>Pricing</span></a></li>
+      <li><a href="/pricing" class="nav-menu-link-btn ${activePage === 'pricing' ? 'active' : ''}"><span class="nav-menu-idx">05</span><span>FAQ</span></a></li>
       <li><a href="/reviews" class="nav-menu-link-btn ${activePage === 'reviews' ? 'active' : ''}"><span class="nav-menu-idx">06</span><span>Reviews</span></a></li>
       <li><a href="/contact" class="nav-menu-link-btn ${activePage === 'contact' ? 'active' : ''}"><span class="nav-menu-idx">07</span><span>Contact</span></a></li>
     </ul>

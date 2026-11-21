@@ -277,8 +277,13 @@ img {
   color: #111;
 }
 
+.pill-btn-outline {
+  border: 1px solid rgba(17, 17, 17, 0.15);
+  background: transparent;
+}
+
 .pill-btn-outline .pill-inner {
-  border: 1px solid #e6e5e2;
+  border: none !important;
   background: transparent;
   color: #111;
 }
@@ -370,7 +375,7 @@ img {
   gap: 2rem;
   background: #0a0a0a;
   color: #fff;
-  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  border-radius: 0;
   opacity: 1;
   transition: opacity 0.5s ease;            /* smooth fade out (LOADER_FADE_MS in js/home.js) */
   will-change: opacity;
@@ -2267,10 +2272,9 @@ html.hw-intro-active {
   }
 }
 
-.footer-review-btn .pill-inner {
+.footer-review-btn {
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
   background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #ffffff;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition:
@@ -2279,9 +2283,17 @@ html.hw-intro-active {
     transform 0.3s ease;
 }
 
-.footer-review-btn:hover .pill-inner {
+.footer-review-btn:hover {
   background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.footer-review-btn .pill-inner {
+  background: transparent;
+  border: none !important;
+  color: #ffffff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .footer-review-btn .pill-badge {
@@ -2413,7 +2425,7 @@ html.hw-intro-active {
 #nav-menu {
   position: fixed;
   inset: 0;
-  z-index: 115;
+  z-index: 1000;
   display: flex;
   flex-direction: column;
   background: #0a0a0a;
@@ -2426,6 +2438,14 @@ html.hw-intro-active {
 #nav-menu.open {
   opacity: 1;
   pointer-events: auto;
+}
+
+body.nav-menu-open #header,
+#nav-menu.open ~ #header {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  transition: none !important;
 }
 
 .nav-menu-top {

@@ -95,6 +95,7 @@
   window.openNavMenu = function () {
     if (navMenu) {
       navMenu.classList.add('open');
+      document.body.classList.add('nav-menu-open');
       document.body.style.overflow = 'hidden';
       window.HW_Analytics.track('nav_menu_open');
     }
@@ -102,6 +103,7 @@
   window.closeNavMenu = function () {
     if (navMenu) {
       navMenu.classList.remove('open');
+      document.body.classList.remove('nav-menu-open');
       document.body.style.overflow = '';
     }
   };

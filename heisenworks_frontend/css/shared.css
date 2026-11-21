@@ -574,7 +574,7 @@ img {
 #nav-menu {
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: 1000;
   background: rgba(9, 10, 12, 0.96);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -591,6 +591,14 @@ img {
 #nav-menu.open {
   opacity: 1;
   pointer-events: auto;
+}
+
+body.nav-menu-open #header,
+#nav-menu.open ~ #header {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  transition: none !important;
 }
 
 .nav-menu-top {

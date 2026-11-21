@@ -138,6 +138,16 @@ const server = http.createServer((req, res) => {
         return;
       }
 
+      // 301 Redirect: /faq -> /pricing
+      if (reqPath === '/faq' || reqPath === '/faq/' || reqPath === '/faq.html') {
+        res.writeHead(301, {
+          'Location': '/pricing',
+          ...SECURITY_HEADERS
+        });
+        res.end();
+        return;
+      }
+
       // Normalize path and prevent directory traversal
       let normalizedRelPath = path.normalize(reqPath).replace(/^(\.\.[/\\])+/, '');
       let filePath = path.resolve(WEB_ROOT, '.' + normalizedRelPath);

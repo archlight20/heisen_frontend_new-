@@ -43,3 +43,24 @@ const studioDir = path.join(WEB_ROOT, 'studio');
 fs.mkdirSync(studioDir, { recursive: true });
 fs.writeFileSync(path.join(studioDir, 'index.html'), studioHtml, 'utf8');
 console.log('[RESTORED] /studio redirect -> studio.html and studio/index.html');
+
+// FAQ redirect to /pricing (handles Live Server / static hosts without server-side redirects)
+const faqHtml = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Redirecting to /pricing...</title>
+  <meta http-equiv="refresh" content="0; url=/pricing" />
+  <link rel="canonical" href="https://heisenworks.in/pricing" />
+</head>
+<body>
+  <script>location.replace('/pricing');</script>
+  <p>Redirecting to <a href="/pricing">/pricing</a>...</p>
+</body>
+</html>
+`;
+fs.writeFileSync(path.join(WEB_ROOT, 'faq.html'), faqHtml, 'utf8');
+const faqDir = path.join(WEB_ROOT, 'faq');
+fs.mkdirSync(faqDir, { recursive: true });
+fs.writeFileSync(path.join(faqDir, 'index.html'), faqHtml, 'utf8');
+console.log('[RESTORED] /faq redirect -> faq.html and faq/index.html');
