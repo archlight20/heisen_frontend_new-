@@ -221,132 +221,143 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(layoutHero
 let heroLayoutTimer;
 window.addEventListener("resize", () => { clearTimeout(heroLayoutTimer); heroLayoutTimer = setTimeout(layoutHeroVideo, 120); });
 
-// 5b. Orange Ambient Glow — cursor hover effect over hero video
-if (!prefersReducedMotion) {
-  const canvas = document.getElementById("hero-canvas");
-  if (canvas && heroLiquidWrap) {
-    const ctx = canvas.getContext("2d");
-    const brushRadius = 190;
-    const decay = 0.016;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+// 5b. Orange Paint-Brush Trail — cursor hover effect over hero video
+(function orangeBrush() {
+  // ── Constants ──────────────────────────────────────────────────────────────
+  const BRUSH_RADIUS  = 143;              // CSS px
+  const DECAY         = 0.016;
+  const FADE_FRAMES   = 120;
+  const BRUSH_COLOR   = [241, 106, 33];  // vivid orange RGB
+  const BRUSH_OPACITY = 0.85;
+  const dpr           = Math.min(window.devicePixelRatio || 1, 2);
 
-    let rect = heroLiquidWrap.getBoundingClientRect();
-    let cWidth = 0;
-    let cHeight = 0;
+  // Skip for reduced-motion visitors — video plays, no canvas
+  if (prefersReducedMotion) return;
 
-    const brushCanvas = document.createElement("canvas");
-    const brushCtx = brushCanvas.getContext("2d");
+  const container = document.getElementById("hero-liquid");
+  const canvas    = document.getElementById("hero-canvas");
+  if (!container || !canvas) return;
 
-    function resizeCanvas() {
-      rect = heroLiquidWrap.getBoundingClientRect();
-      cWidth = Math.round(rect.width * dpr);
-      cHeight = Math.round(rect.height * dpr);
-      if (cWidth === 0 || cHeight === 0) return;
+  const ctx    = canvas.getContext("2d");
+  const radius = BRUSH_RADIUS * dpr;
+  const diam   = Math.ceil(radius * 2);
+  const [r, g, b] = BRUSH_COLOR;
 
-      canvas.width = cWidth;
-      canvas.height = cHeight;
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
+  // ── Offscreen brush canvas — pre-rendered once per resize ─────────────────
+  const brushCvs = document.createElement("canvas");
+  brushCvs.width  = diam;
+  brushCvs.height = diam;
+  const brushCtx = brushCvs.getContext("2d");
 
-      const radius = brushRadius * dpr;
-      const diam = Math.ceil(radius * 2);
-      brushCanvas.width = diam;
-      brushCanvas.height = diam;
-
-      const c = radius;
-      brushCtx.clearRect(0, 0, diam, diam);
-      const grad = brushCtx.createRadialGradient(c, c, 0, c, c, radius);
-      grad.addColorStop(0,    "rgba(255, 175, 38, 0.26)");
-      grad.addColorStop(0.28, "rgba(246, 115, 16, 0.20)");
-      grad.addColorStop(0.6,  "rgba(215, 75, 10, 0.12)");
-      grad.addColorStop(0.85, "rgba(175, 45, 6, 0.04)");
-      grad.addColorStop(1,    "rgba(135, 25, 0, 0)");
-      brushCtx.fillStyle = grad;
-      brushCtx.beginPath();
-      brushCtx.arc(c, c, radius, 0, Math.PI * 2);
-      brushCtx.fill();
-    }
-
-    resizeCanvas();
-    new ResizeObserver(resizeCanvas).observe(heroLiquidWrap);
-
-    let points = [];
-    let lastPoint = null;
-    let idle = 0;
-
-    window.addEventListener("pointermove", (e) => {
-      rect = heroLiquidWrap.getBoundingClientRect();
-      const x = (e.clientX - rect.left) * dpr;
-      const y = (e.clientY - rect.top)  * dpr;
-      const radius = brushRadius * dpr;
-
-      if (x < -radius || x > cWidth + radius || y < -radius || y > cHeight + radius) {
-        lastPoint = null;
-        return;
-      }
-
-      const newPoint = { x, y };
-      if (lastPoint) {
-        const dx = newPoint.x - lastPoint.x;
-        const dy = newPoint.y - lastPoint.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist < 12) return;
-        const step = Math.max(radius * 0.45, 25);
-        const n = Math.min(Math.ceil(dist / step), 10);
-        for (let i = 1; i <= n; i++) {
-          points.push({ x: lastPoint.x + dx * (i / n), y: lastPoint.y + dy * (i / n) });
-        }
-      } else {
-        points.push(newPoint);
-      }
-      lastPoint = newPoint;
-      scheduleTick();
-    }, { passive: true });
-
-    function stamp(x, y) {
-      const radius = brushRadius * dpr;
-      const c = radius;
-      ctx.globalCompositeOperation = "source-over";
-      ctx.globalAlpha = 0.65;
-      ctx.drawImage(brushCanvas, x - c, y - c);
-      ctx.globalAlpha = 1.0;
-    }
-
-    let isTicking = false;
-    function scheduleTick() {
-      if (!isTicking) { isTicking = true; requestAnimationFrame(tick); }
-    }
-
-    function tick() {
-      if (document.hidden) { isTicking = false; return; }
-
-      const drawing = points.length > 0;
-      if (drawing) idle = 0; else idle++;
-
-      if (idle <= 120) {
-        const fade = drawing ? decay : Math.min(decay + idle * 0.004, 0.5);
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.fillStyle = `rgba(0,0,0,${fade})`;
-        ctx.fillRect(0, 0, cWidth, cHeight);
-
-        if (drawing) {
-          for (let i = 0; i < points.length; i++) stamp(points[i].x, points[i].y);
-          points = [];
-        }
-
-        if (idle === 120) ctx.clearRect(0, 0, cWidth, cHeight);
-        requestAnimationFrame(tick);
-      } else {
-        isTicking = false;
-      }
-    }
-
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden && idle < 120) scheduleTick();
-    });
-    scheduleTick();
+  function buildBrush() {
+    const c = radius;
+    brushCtx.clearRect(0, 0, diam, diam);
+    const grad = brushCtx.createRadialGradient(c, c, 0, c, c, radius);
+    grad.addColorStop(0,    `rgba(${r},${g},${b},1)`);
+    grad.addColorStop(0.55, `rgba(${r},${g},${b},0.82)`);
+    grad.addColorStop(1,    `rgba(${r},${g},${b},0)`);
+    brushCtx.fillStyle = grad;
+    brushCtx.fillRect(0, 0, diam, diam);
   }
-}
+
+  // ── Canvas sizing ──────────────────────────────────────────────────────────
+  let obRect = { left: 0, top: 0 };
+  let cw = 0, ch = 0;
+
+  function resize() {
+    obRect = container.getBoundingClientRect();
+    cw = Math.round(obRect.width  * dpr);
+    ch = Math.round(obRect.height * dpr);
+    if (!cw || !ch) return;
+    canvas.width  = cw;
+    canvas.height = ch;
+    canvas.style.width  = obRect.width  + "px";
+    canvas.style.height = obRect.height + "px";
+    buildBrush();  // re-render brush at new dpr-scaled size
+  }
+
+  resize();
+  new ResizeObserver(resize).observe(container);
+
+  // ── Point queue & rAF state ────────────────────────────────────────────────
+  let obPoints  = [];
+  let obLast    = null;
+  let obIdle    = 0;
+  let obTicking = false;
+
+  function stamp(x, y) {
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = BRUSH_OPACITY;
+    ctx.drawImage(brushCvs, x - radius, y - radius);
+    ctx.globalAlpha = 1;
+  }
+
+  function schedule() {
+    if (!obTicking) { obTicking = true; requestAnimationFrame(tick); }
+  }
+
+  function tick() {
+    if (document.hidden) { obTicking = false; return; }
+
+    const drawing = obPoints.length > 0;
+    if (drawing) obIdle = 0; else obIdle++;
+
+    // Once fully faded, clear and stop the loop
+    if (obIdle >= FADE_FRAMES) {
+      ctx.clearRect(0, 0, cw, ch);
+      obTicking = false;
+      return;
+    }
+
+    // Fade existing paint
+    const fade = drawing
+      ? DECAY
+      : Math.min(DECAY + obIdle * 0.004, 0.5);
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.fillStyle = "rgba(0,0,0," + fade + ")";
+    ctx.fillRect(0, 0, cw, ch);
+
+    // Stamp queued points
+    if (drawing) {
+      const pts = obPoints.splice(0);
+      for (let i = 0; i < pts.length; i++) stamp(pts[i].x, pts[i].y);
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  // ── Pointer listener ───────────────────────────────────────────────────────
+  window.addEventListener("pointermove", function (e) {
+    obRect = container.getBoundingClientRect();
+    const x = (e.clientX - obRect.left) * dpr;
+    const y = (e.clientY - obRect.top)  * dpr;
+
+    // Ignore if well outside the canvas
+    if (x < -radius || x > cw + radius || y < -radius || y > ch + radius) {
+      obLast = null;
+      return;
+    }
+
+    const np = { x, y };
+    if (obLast) {
+      const dx   = np.x - obLast.x, dy = np.y - obLast.y;
+      const dist = Math.hypot(dx, dy);
+      const step = Math.max(radius * 0.3, 1);
+      const n    = Math.min(Math.ceil(dist / step), 60);
+      for (let i = 1; i <= n; i++) {
+        obPoints.push({ x: obLast.x + dx * (i / n), y: obLast.y + dy * (i / n) });
+      }
+    } else {
+      obPoints.push(np);
+    }
+    obLast = np;
+    schedule();
+  }, { passive: true });
+
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden && obIdle < FADE_FRAMES) schedule();
+  });
+}());
 
 // 6. PageLoader Animation & Entrance Gating
 let ready = false;
