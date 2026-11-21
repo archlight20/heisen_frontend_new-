@@ -221,105 +221,149 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(layoutHero
 let heroLayoutTimer;
 window.addEventListener("resize", () => { clearTimeout(heroLayoutTimer); heroLayoutTimer = setTimeout(layoutHeroVideo, 120); });
 
-// 5b. Orange Paint-Brush Trail — cursor hover effect over hero video
-(function orangeBrush() {
+// 5b. Liquid Orange Blob Trail — three-layer metaball-style effect over hero video
+(function liquidBlob() {
   // ── Constants ──────────────────────────────────────────────────────────────
-  const BRUSH_RADIUS  = 143;              // CSS px
-  const DECAY         = 0.016;
-  const FADE_FRAMES   = 120;
-  const BRUSH_COLOR   = [241, 106, 33];  // vivid orange RGB
-  const BRUSH_OPACITY = 0.85;
-  const dpr           = Math.min(window.devicePixelRatio || 1, 2);
+  const BASE_RADIUS  = 150;    // CSS px
+  const DECAY        = 0.018;
+  const FADE_FRAMES  = 140;
+  const dpr          = Math.min(window.devicePixelRatio || 1, 2);
 
-  // Skip for reduced-motion visitors — video plays, no canvas
+  const LAYERS = [
+    { sel: ".lr-canvas--cream",  color: [236, 232, 160], scale: 1.7,  opacity: 0.55 },
+    { sel: ".lr-canvas--rim",    color: [240, 150, 110], scale: 1.08, opacity: 0.9  },
+    { sel: ".lr-canvas--orange", color: [238, 106,  31], scale: 1.0,  opacity: 1.0, mottle: true }
+  ];
+
+  // Skip for reduced-motion or if the wrapper is missing
   if (prefersReducedMotion) return;
 
   const container = document.getElementById("hero-liquid");
-  const canvas    = document.getElementById("hero-canvas");
-  if (!container || !canvas) return;
+  if (!container) return;
 
-  const ctx    = canvas.getContext("2d");
-  const radius = BRUSH_RADIUS * dpr;
-  const diam   = Math.ceil(radius * 2);
-  const [r, g, b] = BRUSH_COLOR;
+  // Resolve canvas elements
+  const layerData = LAYERS.map(function (cfg) {
+    const canvas = container.querySelector(cfg.sel);
+    if (!canvas) return null;
+    const ctx    = canvas.getContext("2d");
+    const radius = BASE_RADIUS * cfg.scale * dpr;
+    const diam   = Math.ceil(radius * 2);
 
-  // ── Offscreen brush canvas — pre-rendered once per resize ─────────────────
-  const brushCvs = document.createElement("canvas");
-  brushCvs.width  = diam;
-  brushCvs.height = diam;
-  const brushCtx = brushCvs.getContext("2d");
+    // ── Pre-render offscreen brush ──────────────────────────────────────────
+    const brushCvs = document.createElement("canvas");
+    brushCvs.width  = diam;
+    brushCvs.height = diam;
+    const brushCtx  = brushCvs.getContext("2d");
 
-  function buildBrush() {
-    const c = radius;
-    brushCtx.clearRect(0, 0, diam, diam);
-    const grad = brushCtx.createRadialGradient(c, c, 0, c, c, radius);
-    grad.addColorStop(0,    `rgba(${r},${g},${b},1)`);
-    grad.addColorStop(0.55, `rgba(${r},${g},${b},0.82)`);
-    grad.addColorStop(1,    `rgba(${r},${g},${b},0)`);
-    brushCtx.fillStyle = grad;
-    brushCtx.fillRect(0, 0, diam, diam);
-  }
+    function buildBrush() {
+      const [r, g, b] = cfg.color;
+      const c = radius;
+      brushCtx.clearRect(0, 0, diam, diam);
 
-  // ── Canvas sizing ──────────────────────────────────────────────────────────
-  let obRect = { left: 0, top: 0 };
+      // Base radial gradient
+      const grad = brushCtx.createRadialGradient(c, c, 0, c, c, radius);
+      grad.addColorStop(0,   `rgba(${r},${g},${b},1)`);
+      grad.addColorStop(0.6, `rgba(${r},${g},${b},0.85)`);
+      grad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+      brushCtx.fillStyle = grad;
+      brushCtx.fillRect(0, 0, diam, diam);
+
+      // Mottled inner patches for the orange layer
+      if (cfg.mottle) {
+        const patches = [
+          { ox: 0.25, oy: -0.2, r: 0.38 },
+          { ox: -0.3, oy:  0.3, r: 0.28 },
+          { ox:  0.1, oy:  0.4, r: 0.22 }
+        ];
+        patches.forEach(function (p) {
+          const px = c + p.ox * radius;
+          const py = c + p.oy * radius;
+          const pr = p.r  * radius;
+          const mg = brushCtx.createRadialGradient(px, py, 0, px, py, pr);
+          mg.addColorStop(0,   "rgba(245,154,64,0.5)");
+          mg.addColorStop(1,   "rgba(245,154,64,0)");
+          brushCtx.globalCompositeOperation = "source-over";
+          brushCtx.fillStyle = mg;
+          brushCtx.fillRect(0, 0, diam, diam);
+        });
+        brushCtx.globalCompositeOperation = "source-over";
+      }
+    }
+
+    buildBrush();
+
+    return { canvas, ctx, radius, diam, brushCvs, buildBrush, opacity: cfg.opacity };
+  }).filter(Boolean);
+
+  if (!layerData.length) return;
+
+  // ── Canvas sizing (all layers at once) ─────────────────────────────────────
+  let lbRect = { left: 0, top: 0 };
   let cw = 0, ch = 0;
 
   function resize() {
-    obRect = container.getBoundingClientRect();
-    cw = Math.round(obRect.width  * dpr);
-    ch = Math.round(obRect.height * dpr);
+    lbRect = container.getBoundingClientRect();
+    cw = Math.round(lbRect.width  * dpr);
+    ch = Math.round(lbRect.height * dpr);
     if (!cw || !ch) return;
-    canvas.width  = cw;
-    canvas.height = ch;
-    canvas.style.width  = obRect.width  + "px";
-    canvas.style.height = obRect.height + "px";
-    buildBrush();  // re-render brush at new dpr-scaled size
+    layerData.forEach(function (ld) {
+      ld.canvas.width  = cw;
+      ld.canvas.height = ch;
+      ld.canvas.style.width  = lbRect.width  + "px";
+      ld.canvas.style.height = lbRect.height + "px";
+      ld.buildBrush();
+    });
   }
 
   resize();
   new ResizeObserver(resize).observe(container);
 
   // ── Point queue & rAF state ────────────────────────────────────────────────
-  let obPoints  = [];
-  let obLast    = null;
-  let obIdle    = 0;
-  let obTicking = false;
+  const baseRadius = BASE_RADIUS * dpr;  // for boundary & interpolation math
+  let lbPoints  = [];
+  let lbLast    = null;
+  let lbIdle    = 0;
+  let lbTicking = false;
 
   function stamp(x, y) {
-    ctx.globalCompositeOperation = "source-over";
-    ctx.globalAlpha = BRUSH_OPACITY;
-    ctx.drawImage(brushCvs, x - radius, y - radius);
-    ctx.globalAlpha = 1;
+    layerData.forEach(function (ld) {
+      ld.ctx.globalCompositeOperation = "source-over";
+      ld.ctx.globalAlpha = ld.opacity;
+      ld.ctx.drawImage(ld.brushCvs, x - ld.radius, y - ld.radius);
+      ld.ctx.globalAlpha = 1;
+    });
   }
 
   function schedule() {
-    if (!obTicking) { obTicking = true; requestAnimationFrame(tick); }
+    if (!lbTicking) { lbTicking = true; requestAnimationFrame(tick); }
   }
 
   function tick() {
-    if (document.hidden) { obTicking = false; return; }
+    if (document.hidden) { lbTicking = false; return; }
 
-    const drawing = obPoints.length > 0;
-    if (drawing) obIdle = 0; else obIdle++;
+    const drawing = lbPoints.length > 0;
+    if (drawing) lbIdle = 0; else lbIdle++;
 
-    // Once fully faded, clear and stop the loop
-    if (obIdle >= FADE_FRAMES) {
-      ctx.clearRect(0, 0, cw, ch);
-      obTicking = false;
+    // Fully dissolved — clear all canvases and stop
+    if (lbIdle >= FADE_FRAMES) {
+      layerData.forEach(function (ld) { ld.ctx.clearRect(0, 0, cw, ch); });
+      lbTicking = false;
       return;
     }
 
-    // Fade existing paint
+    // Apply fade (destination-out shrinks the alpha the SVG filter thresholds on)
     const fade = drawing
       ? DECAY
-      : Math.min(DECAY + obIdle * 0.004, 0.5);
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.fillStyle = "rgba(0,0,0," + fade + ")";
-    ctx.fillRect(0, 0, cw, ch);
+      : Math.min(DECAY + lbIdle * 0.004, 0.5);
+    layerData.forEach(function (ld) {
+      ld.ctx.globalCompositeOperation = "destination-out";
+      ld.ctx.fillStyle = "rgba(0,0,0," + fade + ")";
+      ld.ctx.fillRect(0, 0, cw, ch);
+    });
 
-    // Stamp queued points
+    // Stamp queued points onto every layer
     if (drawing) {
-      const pts = obPoints.splice(0);
+      const pts = lbPoints.splice(0);
       for (let i = 0; i < pts.length; i++) stamp(pts[i].x, pts[i].y);
     }
 
@@ -328,34 +372,34 @@ window.addEventListener("resize", () => { clearTimeout(heroLayoutTimer); heroLay
 
   // ── Pointer listener ───────────────────────────────────────────────────────
   window.addEventListener("pointermove", function (e) {
-    obRect = container.getBoundingClientRect();
-    const x = (e.clientX - obRect.left) * dpr;
-    const y = (e.clientY - obRect.top)  * dpr;
+    lbRect = container.getBoundingClientRect();
+    const x = (e.clientX - lbRect.left) * dpr;
+    const y = (e.clientY - lbRect.top)  * dpr;
 
     // Ignore if well outside the canvas
-    if (x < -radius || x > cw + radius || y < -radius || y > ch + radius) {
-      obLast = null;
+    if (x < -baseRadius || x > cw + baseRadius || y < -baseRadius || y > ch + baseRadius) {
+      lbLast = null;
       return;
     }
 
     const np = { x, y };
-    if (obLast) {
-      const dx   = np.x - obLast.x, dy = np.y - obLast.y;
+    if (lbLast) {
+      const dx   = np.x - lbLast.x, dy = np.y - lbLast.y;
       const dist = Math.hypot(dx, dy);
-      const step = Math.max(radius * 0.3, 1);
+      const step = Math.max(baseRadius * 0.3, 1);
       const n    = Math.min(Math.ceil(dist / step), 60);
       for (let i = 1; i <= n; i++) {
-        obPoints.push({ x: obLast.x + dx * (i / n), y: obLast.y + dy * (i / n) });
+        lbPoints.push({ x: lbLast.x + dx * (i / n), y: lbLast.y + dy * (i / n) });
       }
     } else {
-      obPoints.push(np);
+      lbPoints.push(np);
     }
-    obLast = np;
+    lbLast = np;
     schedule();
   }, { passive: true });
 
   document.addEventListener("visibilitychange", function () {
-    if (!document.hidden && obIdle < FADE_FRAMES) schedule();
+    if (!document.hidden && lbIdle < FADE_FRAMES) schedule();
   });
 }());
 
