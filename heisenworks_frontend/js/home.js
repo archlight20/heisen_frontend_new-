@@ -221,185 +221,309 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(layoutHero
 let heroLayoutTimer;
 window.addEventListener("resize", () => { clearTimeout(heroLayoutTimer); heroLayoutTimer = setTimeout(layoutHeroVideo, 120); });
 
-// 5b. Liquid Orange Blob Trail — three-layer metaball-style effect over hero video
-(function liquidBlob() {
-  // ── Constants ──────────────────────────────────────────────────────────────
-  const BASE_RADIUS  = 150;    // CSS px
-  const DECAY        = 0.018;
-  const FADE_FRAMES  = 140;
-  const dpr          = Math.min(window.devicePixelRatio || 1, 2);
-
-  const LAYERS = [
-    { sel: ".lr-canvas--cream",  color: [236, 232, 160], scale: 1.7,  opacity: 0.55 },
-    { sel: ".lr-canvas--rim",    color: [240, 150, 110], scale: 1.08, opacity: 0.9  },
-    { sel: ".lr-canvas--orange", color: [238, 106,  31], scale: 1.0,  opacity: 1.0, mottle: true }
-  ];
-
-  // Skip for reduced-motion or if the wrapper is missing
+// 5b. Atmospheric Liquid Orange Aura — cursor hover effect over hero video
+(function liquidAura() {
   if (prefersReducedMotion) return;
 
   const container = document.getElementById("hero-liquid");
-  if (!container) return;
+  const canvas    = document.getElementById("hero-canvas");
+  if (!container || !canvas) return;
 
-  // Resolve canvas elements
-  const layerData = LAYERS.map(function (cfg) {
-    const canvas = container.querySelector(cfg.sel);
-    if (!canvas) return null;
-    const ctx    = canvas.getContext("2d");
-    const radius = BASE_RADIUS * cfg.scale * dpr;
-    const diam   = Math.ceil(radius * 2);
+  const ctx = canvas.getContext("2d");
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-    // ── Pre-render offscreen brush ──────────────────────────────────────────
-    const brushCvs = document.createElement("canvas");
-    brushCvs.width  = diam;
-    brushCvs.height = diam;
-    const brushCtx  = brushCvs.getContext("2d");
+  // Aura & Orb Dimensions (CSS px)
+  const ORB_RADIUS     = 105;   // Glowing orange orb radius
+  const AURA_RADIUS    = 195;   // Outer organic champagne aura radius
+  const TRAIL_LIFESPAN = 1200;  // Trail persistence in ms
 
-    function buildBrush() {
-      const [r, g, b] = cfg.color;
-      const c = radius;
-      brushCtx.clearRect(0, 0, diam, diam);
-
-      // Base radial gradient
-      const grad = brushCtx.createRadialGradient(c, c, 0, c, c, radius);
-      grad.addColorStop(0,   `rgba(${r},${g},${b},1)`);
-      grad.addColorStop(0.6, `rgba(${r},${g},${b},0.85)`);
-      grad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
-      brushCtx.fillStyle = grad;
-      brushCtx.fillRect(0, 0, diam, diam);
-
-      // Mottled inner patches for the orange layer
-      if (cfg.mottle) {
-        const patches = [
-          { ox: 0.25, oy: -0.2, r: 0.38 },
-          { ox: -0.3, oy:  0.3, r: 0.28 },
-          { ox:  0.1, oy:  0.4, r: 0.22 }
-        ];
-        patches.forEach(function (p) {
-          const px = c + p.ox * radius;
-          const py = c + p.oy * radius;
-          const pr = p.r  * radius;
-          const mg = brushCtx.createRadialGradient(px, py, 0, px, py, pr);
-          mg.addColorStop(0,   "rgba(245,154,64,0.5)");
-          mg.addColorStop(1,   "rgba(245,154,64,0)");
-          brushCtx.globalCompositeOperation = "source-over";
-          brushCtx.fillStyle = mg;
-          brushCtx.fillRect(0, 0, diam, diam);
-        });
-        brushCtx.globalCompositeOperation = "source-over";
-      }
-    }
-
-    buildBrush();
-
-    return { canvas, ctx, radius, diam, brushCvs, buildBrush, opacity: cfg.opacity };
-  }).filter(Boolean);
-
-  if (!layerData.length) return;
-
-  // ── Canvas sizing (all layers at once) ─────────────────────────────────────
-  let lbRect = { left: 0, top: 0 };
   let cw = 0, ch = 0;
+  let rect = { left: 0, top: 0 };
+
+  // Pre-rendered offscreen sprites for high-performance trail rendering
+  const trailAuraCvs = document.createElement("canvas");
+  const trailAuraCtx = trailAuraCvs.getContext("2d");
+  const trailCoreCvs = document.createElement("canvas");
+  const trailCoreCtx = trailCoreCvs.getContext("2d");
+
+  function buildSprites() {
+    const rAura = Math.ceil(AURA_RADIUS * 0.72 * dpr);
+    const dAura = rAura * 2;
+    trailAuraCvs.width  = dAura;
+    trailAuraCvs.height = dAura;
+    trailAuraCtx.clearRect(0, 0, dAura, dAura);
+    const gAura = trailAuraCtx.createRadialGradient(rAura, rAura, 0, rAura, rAura, rAura);
+    gAura.addColorStop(0,    "rgba(248, 238, 178, 0.22)");
+    gAura.addColorStop(0.65, "rgba(245, 230, 165, 0.12)");
+    gAura.addColorStop(1,    "rgba(240, 212, 138, 0)");
+    trailAuraCtx.fillStyle = gAura;
+    trailAuraCtx.beginPath();
+    trailAuraCtx.arc(rAura, rAura, rAura, 0, Math.PI * 2);
+    trailAuraCtx.fill();
+
+    const rCore = Math.ceil(ORB_RADIUS * 0.68 * dpr);
+    const dCore = rCore * 2;
+    trailCoreCvs.width  = dCore;
+    trailCoreCvs.height = dCore;
+    trailCoreCtx.clearRect(0, 0, dCore, dCore);
+    const gCore = trailCoreCtx.createRadialGradient(rCore, rCore, 0, rCore, rCore, rCore);
+    gCore.addColorStop(0,   "rgba(240, 95, 20, 0.45)");
+    gCore.addColorStop(0.5, "rgba(246, 122, 28, 0.25)");
+    gCore.addColorStop(1,   "rgba(252, 160, 48, 0)");
+    trailCoreCtx.fillStyle = gCore;
+    trailCoreCtx.beginPath();
+    trailCoreCtx.arc(rCore, rCore, rCore, 0, Math.PI * 2);
+    trailCoreCtx.fill();
+  }
 
   function resize() {
-    lbRect = container.getBoundingClientRect();
-    cw = Math.round(lbRect.width  * dpr);
-    ch = Math.round(lbRect.height * dpr);
+    rect = container.getBoundingClientRect();
+    cw = Math.round(rect.width  * dpr);
+    ch = Math.round(rect.height * dpr);
     if (!cw || !ch) return;
-    layerData.forEach(function (ld) {
-      ld.canvas.width  = cw;
-      ld.canvas.height = ch;
-      ld.canvas.style.width  = lbRect.width  + "px";
-      ld.canvas.style.height = lbRect.height + "px";
-      ld.buildBrush();
-    });
+    canvas.width  = cw;
+    canvas.height = ch;
+    canvas.style.width  = rect.width  + "px";
+    canvas.style.height = rect.height + "px";
+    buildSprites();
   }
 
   resize();
   new ResizeObserver(resize).observe(container);
 
-  // ── Point queue & rAF state ────────────────────────────────────────────────
-  const baseRadius = BASE_RADIUS * dpr;  // for boundary & interpolation math
-  let lbPoints  = [];
-  let lbLast    = null;
-  let lbIdle    = 0;
-  let lbTicking = false;
-
-  function stamp(x, y) {
-    layerData.forEach(function (ld) {
-      ld.ctx.globalCompositeOperation = "source-over";
-      ld.ctx.globalAlpha = ld.opacity;
-      ld.ctx.drawImage(ld.brushCvs, x - ld.radius, y - ld.radius);
-      ld.ctx.globalAlpha = 1;
-    });
-  }
+  // Motion & Physics State
+  let targetX = -1000, targetY = -1000;
+  let coreX = -1000, coreY = -1000;
+  let auraX = -1000, auraY = -1000;
+  let velX = 0, velY = 0;
+  let isInside = false;
+  let trailPoints = [];
+  let lastMoveTime = 0;
+  let focalAlpha = 0;
+  let isTicking = false;
+  let animTime = 0;
 
   function schedule() {
-    if (!lbTicking) { lbTicking = true; requestAnimationFrame(tick); }
+    if (!isTicking) {
+      isTicking = true;
+      requestAnimationFrame(tick);
+    }
+  }
+
+  // Draw organic closed curve through array of radial points
+  function drawOrganicBlob(cx, cy, baseR, time, vx, vy) {
+    const numPoints = 12;
+    const points = [];
+    const speed = Math.hypot(vx, vy);
+    const moveAngle = Math.atan2(vy, vx);
+
+    for (let i = 0; i < numPoints; i++) {
+      const theta = (i * Math.PI * 2) / numPoints;
+      // Fluid undulation waves matching the reference organic contour
+      const wave1 = Math.sin(theta * 2 + time * 1.6) * 0.12;
+      const wave2 = Math.cos(theta * 3 - time * 1.1) * 0.08;
+      // Dynamic stretch along direction of motion
+      const stretch = speed > 0.5 ? Math.cos(theta - moveAngle) * Math.min(speed * 0.0025, 0.25) : 0;
+      const r = baseR * (1 + wave1 + wave2 + stretch);
+      points.push({
+        x: cx + Math.cos(theta) * r,
+        y: cy + Math.sin(theta) * r,
+      });
+    }
+
+    ctx.beginPath();
+    // Connect points using smooth curves through midpoints
+    const firstMidX = (points[0].x + points[numPoints - 1].x) / 2;
+    const firstMidY = (points[0].y + points[numPoints - 1].y) / 2;
+    ctx.moveTo(firstMidX, firstMidY);
+
+    for (let i = 0; i < numPoints; i++) {
+      const nextIdx = (i + 1) % numPoints;
+      const midX = (points[i].x + points[nextIdx].x) / 2;
+      const midY = (points[i].y + points[nextIdx].y) / 2;
+      ctx.quadraticCurveTo(points[i].x, points[i].y, midX, midY);
+    }
+    ctx.closePath();
   }
 
   function tick() {
-    if (document.hidden) { lbTicking = false; return; }
-
-    const drawing = lbPoints.length > 0;
-    if (drawing) lbIdle = 0; else lbIdle++;
-
-    // Fully dissolved — clear all canvases and stop
-    if (lbIdle >= FADE_FRAMES) {
-      layerData.forEach(function (ld) { ld.ctx.clearRect(0, 0, cw, ch); });
-      lbTicking = false;
+    if (document.hidden) {
+      isTicking = false;
       return;
     }
 
-    // Apply fade (destination-out shrinks the alpha the SVG filter thresholds on)
-    const fade = drawing
-      ? DECAY
-      : Math.min(DECAY + lbIdle * 0.004, 0.5);
-    layerData.forEach(function (ld) {
-      ld.ctx.globalCompositeOperation = "destination-out";
-      ld.ctx.fillStyle = "rgba(0,0,0," + fade + ")";
-      ld.ctx.fillRect(0, 0, cw, ch);
-    });
+    const now = performance.now();
+    animTime += 0.016;
 
-    // Stamp queued points onto every layer
-    if (drawing) {
-      const pts = lbPoints.splice(0);
-      for (let i = 0; i < pts.length; i++) stamp(pts[i].x, pts[i].y);
+    // Prune expired trail points
+    while (trailPoints.length > 0 && now - trailPoints[0].time > TRAIL_LIFESPAN) {
+      trailPoints.shift();
+    }
+
+    // Focal alpha: fade in when active, fade out when idle
+    const timeSinceMove = now - lastMoveTime;
+    if (isInside && timeSinceMove < 1600) {
+      focalAlpha = Math.min(focalAlpha + 0.08, 1);
+    } else {
+      focalAlpha = Math.max(focalAlpha - 0.02, 0);
+    }
+
+    // Stop rAF when completely settled and invisible
+    if (focalAlpha <= 0 && trailPoints.length === 0) {
+      ctx.clearRect(0, 0, cw, ch);
+      isTicking = false;
+      return;
+    }
+
+    ctx.clearRect(0, 0, cw, ch);
+
+    // 1. Draw trail points (soft glowing liquid light wake behind movement)
+    if (trailPoints.length > 0) {
+      const rAura = trailAuraCvs.width / 2;
+      const rCore = trailCoreCvs.width / 2;
+      ctx.globalCompositeOperation = "source-over";
+
+      for (let i = 0; i < trailPoints.length; i++) {
+        const pt = trailPoints[i];
+        const age = now - pt.time;
+        const progress = age / TRAIL_LIFESPAN;
+        const alpha = Math.max(0, 1 - progress);
+
+        // Draw soft champagne aura particle
+        ctx.globalAlpha = alpha * 0.85;
+        ctx.drawImage(trailAuraCvs, pt.x - rAura, pt.y - rAura);
+
+        // Draw warm fiery orange core particle
+        ctx.globalAlpha = alpha * 0.95;
+        ctx.drawImage(trailCoreCvs, pt.x - rCore, pt.y - rCore);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // 2. Physics interpolation for the focal aura
+    if (focalAlpha > 0) {
+      const prevCoreX = coreX;
+      const prevCoreY = coreY;
+
+      // Orange core tracks cursor quickly
+      coreX += (targetX - coreX) * 0.22;
+      coreY += (targetY - coreY) * 0.22;
+
+      // Measure velocity for stretch & organic deformation
+      velX = coreX - prevCoreX;
+      velY = coreY - prevCoreY;
+
+      // Organic champagne aura lags gently behind (creates the natural asymmetry seen in reference)
+      auraX += (targetX - auraX) * 0.11;
+      auraY += (targetY - auraY) * 0.11;
+
+      const auraR = AURA_RADIUS * dpr;
+      const coreR = ORB_RADIUS * dpr;
+
+      // ── Outer Champagne Aura with Delicate Amber Rim ──
+      ctx.save();
+      ctx.globalAlpha = focalAlpha;
+
+      drawOrganicBlob(auraX, auraY, auraR, animTime, velX, velY);
+
+      // Body fill: soft luminous champagne/butter-yellow gradient
+      const auraGrad = ctx.createRadialGradient(auraX, auraY, 0, auraX, auraY, auraR * 1.15);
+      auraGrad.addColorStop(0,    "rgba(248, 238, 178, 0.44)");
+      auraGrad.addColorStop(0.65, "rgba(245, 230, 165, 0.32)");
+      auraGrad.addColorStop(0.88, "rgba(240, 212, 138, 0.18)");
+      auraGrad.addColorStop(1,    "rgba(235, 190, 110, 0.05)");
+      ctx.fillStyle = auraGrad;
+      ctx.fill();
+
+      // Perimeter rim: thin, elegant amber-coral outline (matching reference pic)
+      ctx.strokeStyle = "rgba(224, 110, 48, 0.48)";
+      ctx.lineWidth = 2.4 * dpr;
+      ctx.shadowColor = "rgba(235, 120, 50, 0.35)";
+      ctx.shadowBlur = 8 * dpr;
+      ctx.stroke();
+      ctx.restore();
+
+      // ── Inner Vibrant Orange Glowing Orb ──
+      ctx.save();
+      ctx.globalAlpha = focalAlpha;
+      ctx.beginPath();
+      ctx.arc(coreX, coreY, coreR, 0, Math.PI * 2);
+
+      const coreGrad = ctx.createRadialGradient(coreX, coreY, 0, coreX, coreY, coreR);
+      coreGrad.addColorStop(0,    "rgba(238, 88, 18, 0.90)");     // deep fiery orange
+      coreGrad.addColorStop(0.42, "rgba(246, 122, 28, 0.72)");    // warm glowing body
+      coreGrad.addColorStop(0.78, "rgba(252, 160, 48, 0.32)");    // radiant falloff
+      coreGrad.addColorStop(1,    "rgba(255, 180, 60, 0)");        // soft edge
+      ctx.fillStyle = coreGrad;
+      ctx.fill();
+      ctx.restore();
     }
 
     requestAnimationFrame(tick);
   }
 
-  // ── Pointer listener ───────────────────────────────────────────────────────
-  window.addEventListener("pointermove", function (e) {
-    lbRect = container.getBoundingClientRect();
-    const x = (e.clientX - lbRect.left) * dpr;
-    const y = (e.clientY - lbRect.top)  * dpr;
+  let lastX = null, lastY = null;
 
-    // Ignore if well outside the canvas
-    if (x < -baseRadius || x > cw + baseRadius || y < -baseRadius || y > ch + baseRadius) {
-      lbLast = null;
+  window.addEventListener("pointermove", function (e) {
+    rect = container.getBoundingClientRect();
+    const x = (e.clientX - rect.left) * dpr;
+    const y = (e.clientY - rect.top)  * dpr;
+    const pad = AURA_RADIUS * dpr;
+
+    // Check if pointer is near or inside the hero
+    if (x < -pad || x > cw + pad || y < -pad || y > ch + pad) {
+      isInside = false;
+      lastX = null;
+      lastY = null;
       return;
     }
 
-    const np = { x, y };
-    if (lbLast) {
-      const dx   = np.x - lbLast.x, dy = np.y - lbLast.y;
+    isInside = true;
+    targetX = x;
+    targetY = y;
+    lastMoveTime = performance.now();
+
+    // If starting fresh, snap core and aura to avoid flying across screen
+    if (coreX < -500) {
+      coreX = x;
+      coreY = y;
+      auraX = x;
+      auraY = y;
+    }
+
+    // Interpolate points into trail
+    if (lastX !== null && lastY !== null) {
+      const dx = x - lastX;
+      const dy = y - lastY;
       const dist = Math.hypot(dx, dy);
-      const step = Math.max(baseRadius * 0.3, 1);
-      const n    = Math.min(Math.ceil(dist / step), 60);
+      const step = Math.max(16 * dpr, 1);
+      const n = Math.min(Math.ceil(dist / step), 24);
+      const now = performance.now();
+
       for (let i = 1; i <= n; i++) {
-        lbPoints.push({ x: lbLast.x + dx * (i / n), y: lbLast.y + dy * (i / n) });
+        trailPoints.push({
+          x: lastX + dx * (i / n),
+          y: lastY + dy * (i / n),
+          time: now,
+        });
       }
     } else {
-      lbPoints.push(np);
+      trailPoints.push({ x, y, time: performance.now() });
     }
-    lbLast = np;
+
+    lastX = x;
+    lastY = y;
     schedule();
   }, { passive: true });
 
+  window.addEventListener("pointerleave", function () {
+    isInside = false;
+    lastX = null;
+    lastY = null;
+  });
+
   document.addEventListener("visibilitychange", function () {
-    if (!document.hidden && lbIdle < FADE_FRAMES) schedule();
+    if (!document.hidden && focalAlpha > 0) schedule();
   });
 }());
 
