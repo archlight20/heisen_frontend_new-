@@ -179,18 +179,8 @@ if (heroVideo) {
   };
   const whenIdle = (fn) => ("requestIdleCallback" in window ? requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 300));
   const afterLoad = (fn) => (document.readyState === "complete" ? fn() : window.addEventListener("load", fn, { once: true }));
-  if (window.matchMedia("(min-width: 1024px)").matches) {
-    // Desktop: the video is the hero backdrop, start it as soon as the page has finished loading
-    afterLoad(() => whenIdle(loadHeroVideo));
-  } else if ("IntersectionObserver" in window) {
-    // Tablet / phone: the video sits below the text, load it only when it is about to scroll into view
-    const io = new IntersectionObserver((entries) => {
-      if (entries.some((e) => e.isIntersecting)) { io.disconnect(); afterLoad(loadHeroVideo); }
-    }, { rootMargin: "300px 0px" });
-    io.observe(heroVideo);
-  } else {
-    afterLoad(loadHeroVideo);
-  }
+  // Video is the hero backdrop on both desktop and mobile, start it as soon as the page has loaded
+  afterLoad(() => whenIdle(loadHeroVideo));
 }
 
 // Centre the hex under the HEISENWORKS watermark on wide screens, shrinking it only as much as needed
