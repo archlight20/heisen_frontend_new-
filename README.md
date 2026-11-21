@@ -75,5 +75,5 @@ node heisenworks_frontend/scripts/verify-all.mjs
 
 ## Notes on Media & Deployment
 
-- Hover preview videos in `heisenworks_frontend/assets/videos/` are web-optimized muted H.264 MP4s with `+faststart` enabled (`zod-living-walkthrough.mp4` was compressed from 22.5 MB to 2.76 MB; the original master is preserved in `archive/old-versions/`).
+- Hover preview videos in `heisenworks_frontend/assets/videos/` are web-optimized muted H.264 MP4s with `+faststart` enabled for instant streaming (`zod-living-walkthrough.mp4` is delivered in Full HD 1080p with dead audio stripped and moov atom positioned at byte 0 for zero-latency playback).
 - `vercel.json` handles `/studio` → `/team` 301 redirects, clean subpage rewrites into `heisenworks_frontend/pages/`, immutable media caching, and native Vercel `/api/*` routing.

@@ -124,17 +124,30 @@ async function runTests() {
   // Test API Endpoints
   console.log('\n--- Testing API Endpoints ---');
 
-  // Contact API Success
+  // Contact API: a valid lead is accepted (200 with RESEND_API_KEY, graceful 503 without)
   const contactRes = await fetchUrl('/api/contact', 'POST', JSON.stringify({
     name: 'Test Client',
     email: 'client@example.com',
+    whatsapp: '+91 98765 43210',
+    service: 'Not sure yet',
     project: 'Testing contact inquiry'
   }));
-  if (contactRes.status === 200) {
-    console.log('[PASS] POST /api/contact -> HTTP 200');
+  const hasResend = Boolean(process.env.RESEND_API_KEY);
+  if (contactRes.status === (hasResend ? 200 : 503)) {
+    console.log(`[PASS] POST /api/contact (valid lead) -> HTTP ${contactRes.status}${hasResend ? '' : ' (email not configured)'}`);
     passed++;
   } else {
-    console.error(`[FAIL] POST /api/contact -> HTTP ${contactRes.status}`);
+    console.error(`[FAIL] POST /api/contact (valid lead) -> HTTP ${contactRes.status}`);
+    failed++;
+  }
+
+  // Contact API: server-side validation rejects a bad lead
+  const invalidRes = await fetchUrl('/api/contact', 'POST', JSON.stringify({ name: '', email: 'not-an-email', whatsapp: '123' }));
+  if (invalidRes.status === 422) {
+    console.log('[PASS] POST /api/contact (invalid lead) -> HTTP 422');
+    passed++;
+  } else {
+    console.error(`[FAIL] POST /api/contact (invalid lead) -> HTTP ${invalidRes.status}`);
     failed++;
   }
 
@@ -152,32 +165,41 @@ async function runTests() {
     failed++;
   }
 
-  // Reviews API GET
+  // Reviews API GET (Google). Without credentials it must fail gracefully with 503 + JSON.
   const reviewsGet = await fetchUrl('/api/reviews');
-  if (reviewsGet.status === 200 && reviewsGet.body.includes('Cybershield')) {
-    console.log('[PASS] GET /api/reviews -> HTTP 200 (Contains seed verified reviews)');
+  let reviewsJson = null;
+  try { reviewsJson = JSON.parse(reviewsGet.body); } catch {}
+  const hasKeys = Boolean(process.env.GOOGLE_PLACES_API_KEY && process.env.GOOGLE_PLACE_ID);
+  if (reviewsJson && Array.isArray(reviewsJson.reviews) &&
+      (hasKeys ? reviewsGet.status === 200 && reviewsJson.source === 'google' : reviewsGet.status === 503)) {
+    console.log(`[PASS] GET /api/reviews -> HTTP ${reviewsGet.status} (${hasKeys ? reviewsJson.reviews.length + ' Google reviews' : 'not configured, graceful 503'})`);
     passed++;
   } else {
     console.error(`[FAIL] GET /api/reviews -> HTTP ${reviewsGet.status}`);
     failed++;
   }
 
-  // Reviews API POST (pending submission)
-  const reviewsPost = await fetchUrl('/api/reviews', 'POST', JSON.stringify({
-    name: 'Elena Rostova',
-    company: 'FlyLab Avionics',
-    rating: 5,
-    reviewText: 'Exceptional real-time WebGL performance.'
-  }));
-  if (reviewsPost.status === 200 && reviewsPost.body.includes('submitted for moderation')) {
-    console.log('[PASS] POST /api/reviews -> HTTP 200 (Pending submission)');
+  // Write-review redirect points at Google
+  const writeRes = await fetchUrl('/api/reviews?write=1');
+  if (writeRes.status === 302 && /google\.com/.test(writeRes.headers.location || '')) {
+    console.log('[PASS] GET /api/reviews?write=1 -> 302 to Google');
+    passed++;
+  } else {
+    console.error(`[FAIL] GET /api/reviews?write=1 -> HTTP ${writeRes.status}`);
+    failed++;
+  }
+
+  // On-site review submission is disabled (reviews live on Google)
+  const reviewsPost = await fetchUrl('/api/reviews', 'POST', JSON.stringify({ name: 'Test', reviewText: 'Test' }));
+  if (reviewsPost.status === 405) {
+    console.log('[PASS] POST /api/reviews -> HTTP 405 (reviews are left on Google)');
     passed++;
   } else {
     console.error(`[FAIL] POST /api/reviews -> HTTP ${reviewsPost.status}`);
     failed++;
   }
 
-  // SEO & Security Audits
+  // SEO & Security Audits  // SEO & Security Audits
   console.log('\n--- Testing SEO & Security Hardening ---');
 
   // Custom 404 Page Check
