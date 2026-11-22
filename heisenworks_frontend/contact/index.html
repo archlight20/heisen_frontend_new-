@@ -186,7 +186,7 @@
           <p style="font-size: 0.9375rem; color: #64748b; margin-bottom: 1.5rem;">Fill out this form and we'll reply within one business day.</p>
 
           <div id="contact-page-error-banner" class="modal-error-banner" style="display:none;" role="alert">
-            <strong>Something went wrong connecting to the dispatch service.</strong>
+            <strong id="contact-page-error-title">Something went wrong connecting to the dispatch service.</strong>
             <p style="margin-top:0.35rem;">Please message us directly so your message is preserved:</p>
             <div style="margin-top:0.5rem; display:flex; flex-wrap:wrap; gap:0.5rem;">
               <a href="https://wa.me/919186061401?text=Hi%20HeisenWorks%2C%20I%20tried%20contacting%20you%20via%20the%20contact%20page" target="_blank" rel="noopener noreferrer">WhatsApp: +91 91860 61401</a>
@@ -204,6 +204,10 @@
             <div class="form-field">
               <label class="form-label" for="page-email">Work Email</label>
               <input type="email" id="page-email" name="email" autocomplete="email" spellcheck="false" class="form-input" placeholder="you@company.com" required />
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="page-whatsapp">WhatsApp number</label>
+              <input type="tel" id="page-whatsapp" name="whatsapp" autocomplete="tel" inputmode="tel" class="form-input" placeholder="+91 98765 43210" required />
             </div>
             <div class="form-field">
               <label class="form-label" for="page-service">Service Needed</label>
@@ -246,6 +250,8 @@
   // Page-specific contact submission handler
   const pageForm = document.getElementById('standalone-contact-form');
   const pageErrorBanner = document.getElementById('contact-page-error-banner');
+  const pageErrorTitle = document.getElementById('contact-page-error-title');
+  const pageErrorDefault = pageErrorTitle ? pageErrorTitle.textContent : '';
   const pageSuccess = document.getElementById('contact-page-success');
   const pageFormWrap = document.getElementById('contact-page-form-wrap');
   const pageBtn = document.getElementById('page-submit-btn');
@@ -255,12 +261,14 @@
     pageForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (pageErrorBanner) pageErrorBanner.style.display = 'none';
+      if (pageErrorTitle) pageErrorTitle.textContent = pageErrorDefault;
 
       const hp = document.getElementById('page-hp')?.value || '';
       if (hp.trim() !== '') return;
 
       const nameVal = document.getElementById('page-name')?.value || '';
       const emailVal = document.getElementById('page-email')?.value || '';
+      const whatsappVal = document.getElementById('page-whatsapp')?.value || '';
       const serviceVal = document.getElementById('page-service')?.value || '';
       const msgVal = document.getElementById('page-msg')?.value || '';
 
@@ -277,13 +285,22 @@
           body: JSON.stringify({
             name: nameVal,
             email: emailVal,
-            project: '[' + serviceVal + '] ' + msgVal,
+            whatsapp: whatsappVal,
+            service: serviceVal,
+            project: msgVal,
             _hp_verify: hp
           }),
           signal: controller.signal
         });
         clearTimeout(timeoutId);
 
+        if (res.status === 422) {
+          // Validation failed: show what to fix instead of the generic outage message
+          const data = await res.json().catch(() => ({}));
+          if (pageErrorTitle) pageErrorTitle.textContent = Object.values(data.errors || {}).join(' ') || data.error || pageErrorDefault;
+          if (pageErrorBanner) pageErrorBanner.style.display = 'block';
+          return;
+        }
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
         if (data.ok || data.success) {
