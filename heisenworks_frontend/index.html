@@ -1395,15 +1395,15 @@
           <input type="text" name="_hp_verify" id="req-hp" style="display:none" tabindex="-1" autocomplete="off" />
           <div class="form-field">
             <label class="form-label" for="req-name">Name</label>
-            <input type="text" id="req-name" class="form-input" placeholder="Your name" required />
+            <input type="text" id="req-name" name="name" autocomplete="name" class="form-input" placeholder="Your name" required />
           </div>
           <div class="form-field">
             <label class="form-label" for="req-email">Email</label>
-            <input type="email" id="req-email" class="form-input" placeholder="you@company.com" required />
+            <input type="email" id="req-email" name="email" autocomplete="email" spellcheck="false" class="form-input" placeholder="you@company.com" required />
           </div>
           <div class="form-field">
             <label class="form-label" for="req-project">Project</label>
-            <textarea id="req-project" rows="4" class="form-textarea"
+            <textarea id="req-project" name="project" autocomplete="off" rows="4" class="form-textarea"
               placeholder="A few words about your project, timeline, and budget." required></textarea>
           </div>
           <div class="modal-bottom-row">

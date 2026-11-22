@@ -27,16 +27,6 @@ a:focus-visible {
   outline-offset: 2px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
 
 html {
   font-size: 16px;
@@ -90,15 +80,6 @@ img {
   outline-offset: 2px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition: none !important;
-  }
-}
 
 /* Rem-based adaptive grid */
 @media (max-width: 1920px) {
@@ -157,25 +138,6 @@ img {
   max-width: var(--container-shell);
   margin-inline: auto;
   width: 100%;
-}
-
-/* Skip link */
-.skip-link {
-  position: fixed;
-  left: 1rem;
-  top: 1rem;
-  z-index: 150;
-  border-radius: 0.875rem;
-  background: #0a0a0a;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  color: #fff;
-  transform: translateY(-200%);
-  transition: transform 0.2s ease;
-}
-
-.skip-link:focus {
-  transform: translateY(0);
 }
 
 /* Icons */
@@ -267,9 +229,23 @@ img {
   padding: 0.875rem 1.75rem;
 }
 
+.pill-btn-dark {
+  background: #0a0a0a;
+}
+
+.pill-btn-dark:hover {
+  background: #1c1d22;
+}
+
 .pill-btn-dark .pill-inner {
   background: #0a0a0a;
   color: #fff;
+}
+
+.pill-btn-dark .pill-inner,
+.pill-btn-light .pill-inner {
+  flex: 1 1 auto;
+  justify-content: center;
 }
 
 .pill-btn-light .pill-inner {
@@ -647,7 +623,7 @@ html.hw-intro-active {
 }
 
 .clock-label {
-  color: rgba(17, 17, 17, 0.45);
+  color: rgba(17, 17, 17, 0.62);
 }
 
 .clock-time {
@@ -1021,11 +997,11 @@ html.hw-intro-active {
 }
 
 .hero-card-caption {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: rgba(17, 17, 17, 0.45);
+  color: rgba(17, 17, 17, 0.62);
 }
 
 .hero-card-title {
@@ -1053,7 +1029,7 @@ html.hw-intro-active {
 .hero-dash {
   height: 0.25rem;
   border-radius: 9999px;
-  transition: all 0.3s ease;
+  transition: width 0.3s var(--ease-out), background-color 0.3s var(--ease-out);
 }
 
 .hero-dash.active {
@@ -1174,7 +1150,7 @@ html.hw-intro-active {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.025em;
-  color: rgba(17, 17, 17, 0.6);
+  color: rgba(17, 17, 17, 0.74);
   opacity: 0;
   transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -1356,7 +1332,7 @@ html.hw-intro-active {
 
 .socials-label {
   font-size: 0.875rem;
-  color: rgba(17, 17, 17, 0.45);
+  color: rgba(17, 17, 17, 0.62);
 }
 
 .social-chips-row {
@@ -1538,7 +1514,7 @@ html.hw-intro-active {
 
 .tile-ghost {
   background: rgba(241, 240, 238, 0.6);
-  color: rgba(17, 17, 17, 0.35);
+  color: rgba(17, 17, 17, 0.5);
 }
 
 /* PORTFOLIO SECTION */
@@ -2032,7 +2008,7 @@ html.hw-intro-active {
   width: 1.75rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: rgba(17, 17, 17, 0.4);
+  color: rgba(17, 17, 17, 0.6);
 }
 
 @media (min-width: 640px) {
@@ -2064,7 +2040,7 @@ html.hw-intro-active {
   display: none;
   max-width: 20rem;
   font-size: 0.875rem;
-  color: rgba(17, 17, 17, 0.55);
+  color: rgba(17, 17, 17, 0.68);
   line-height: 1.4;
 }
 
@@ -2373,7 +2349,7 @@ html.hw-intro-active {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.025em;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-muted-dark);
   margin-bottom: 1.25rem;
 }
 
@@ -2534,7 +2510,7 @@ body.nav-menu-open #header,
 .nav-menu-idx {
   font-size: 1rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.55);
   transition: color 0.3s ease;
 }
 
@@ -2717,7 +2693,7 @@ body.nav-menu-open #header,
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.025em;
-  color: rgba(17, 17, 17, 0.5);
+  color: rgba(17, 17, 17, 0.7);
 }
 
 .form-input,
@@ -2757,7 +2733,7 @@ body.nav-menu-open #header,
 
 .modal-note {
   font-size: 0.75rem;
-  color: rgba(17, 17, 17, 0.45);
+  color: rgba(17, 17, 17, 0.64);
 }
 
 /* Modal Success State */
@@ -3052,7 +3028,7 @@ body.nav-menu-open #header,
   .portfolio-top-meta {
     margin-bottom: 0.85rem;
     z-index: 8;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: margin-bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .portfolio-meta-info {
@@ -3110,7 +3086,7 @@ body.nav-menu-open #header,
   .portfolio-card .tag-chip {
     white-space: nowrap;
     flex-shrink: 0;
-    font-size: 0.625rem;
+    font-size: 0.6875rem;
     padding: 0.25rem 0.6rem;
   }
 
@@ -3745,7 +3721,7 @@ body.nav-menu-open #header,
 
 #reviews .reviews-google-count {
   font-size: 0.8125rem;
-  color: #777777;
+  color: #64748b;
   padding-left: 0.35rem;
   border-left: 1px solid rgba(17, 17, 17, 0.12);
 }
@@ -4028,7 +4004,7 @@ body.nav-menu-open #header,
   font-family: "JetBrains Mono", monospace;
   font-size: 0.8125rem;
   font-weight: 400;
-  color: #8d8d8d;
+  color: #6b6b6b;
 }
 
 /* Review Text timing container */

@@ -1,66 +1,72 @@
+// Regenerates the Live Server route copies from the single source of truth in pages/.
+//
+//   pages/<name>.html   -> edit these (the only tracked copy)
+//   <name>.html         -> generated, gitignored (Live Server: /team.html)
+//   <name>/index.html   -> generated, gitignored (Live Server: /team/)
+//
+// Production (vercel.json) and scripts/server.mjs both serve pages/ directly and never read the copies.
+//
+//   node scripts/restore-routes.mjs           write the copies
+//   node scripts/restore-routes.mjs --check   exit 1 if any copy is missing or stale
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const WEB_ROOT = path.resolve('e:/personal project/heisenwork_website/heisenworks_frontend');
+const WEB_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PAGES = ['contact', 'pricing', 'privacy', 'reviews', 'services', 'team', 'terms', 'work'];
+const REDIRECTS = { studio: '/team', faq: '/pricing' };   // mirrors vercel.json / server.mjs
+const CHECK = process.argv.includes('--check');
 
+const redirectHtml = (to) => `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Redirecting to ${to}...</title>
+  <meta http-equiv="refresh" content="0; url=${to}" />
+  <link rel="canonical" href="https://heisenworks.in${to}" />
+</head>
+<body>
+  <script>location.replace('${to}');</script>
+  <p>Redirecting to <a href="${to}">${to}</a>...</p>
+</body>
+</html>
+`;
+
+const outputs = [];   // [absolute path, content]
 for (const name of PAGES) {
   const src = path.join(WEB_ROOT, 'pages', name + '.html');
   if (!fs.existsSync(src)) {
     console.error('Source missing:', src);
+    process.exitCode = 1;
     continue;
   }
   const content = fs.readFileSync(src, 'utf8');
-
-  // 1. Root .html file (e.g. team.html)
-  fs.writeFileSync(path.join(WEB_ROOT, name + '.html'), content, 'utf8');
-
-  // 2. Directory index file (e.g. team/index.html)
-  const dir = path.join(WEB_ROOT, name);
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'index.html'), content, 'utf8');
-
-  console.log(`[RESTORED] /${name} -> both ${name}.html and ${name}/index.html`);
+  outputs.push([path.join(WEB_ROOT, name + '.html'), content]);
+  outputs.push([path.join(WEB_ROOT, name, 'index.html'), content]);
+}
+for (const [name, to] of Object.entries(REDIRECTS)) {
+  const content = redirectHtml(to);
+  outputs.push([path.join(WEB_ROOT, name + '.html'), content]);
+  outputs.push([path.join(WEB_ROOT, name, 'index.html'), content]);
 }
 
-// Studio redirect to /team (handles Live Server / static hosts without server-side redirects)
-const studioHtml = `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Redirecting to /team...</title>
-  <meta http-equiv="refresh" content="0; url=/team" />
-  <link rel="canonical" href="https://heisenworks.in/team" />
-</head>
-<body>
-  <script>location.replace('/team');</script>
-  <p>Redirecting to <a href="/team">/team</a>...</p>
-</body>
-</html>
-`;
-fs.writeFileSync(path.join(WEB_ROOT, 'studio.html'), studioHtml, 'utf8');
-const studioDir = path.join(WEB_ROOT, 'studio');
-fs.mkdirSync(studioDir, { recursive: true });
-fs.writeFileSync(path.join(studioDir, 'index.html'), studioHtml, 'utf8');
-console.log('[RESTORED] /studio redirect -> studio.html and studio/index.html');
+let stale = 0;
+for (const [file, content] of outputs) {
+  const rel = path.relative(WEB_ROOT, file).split(path.sep).join('/');
+  const current = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : null;
+  if (CHECK) {
+    if (current !== content) { stale++; console.error(`[STALE] ${rel}`); }
+    continue;
+  }
+  if (current === content) continue;
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, content, 'utf8');
+  console.log(`[WROTE] ${rel}`);
+}
 
-// FAQ redirect to /pricing (handles Live Server / static hosts without server-side redirects)
-const faqHtml = `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Redirecting to /pricing...</title>
-  <meta http-equiv="refresh" content="0; url=/pricing" />
-  <link rel="canonical" href="https://heisenworks.in/pricing" />
-</head>
-<body>
-  <script>location.replace('/pricing');</script>
-  <p>Redirecting to <a href="/pricing">/pricing</a>...</p>
-</body>
-</html>
-`;
-fs.writeFileSync(path.join(WEB_ROOT, 'faq.html'), faqHtml, 'utf8');
-const faqDir = path.join(WEB_ROOT, 'faq');
-fs.mkdirSync(faqDir, { recursive: true });
-fs.writeFileSync(path.join(faqDir, 'index.html'), faqHtml, 'utf8');
-console.log('[RESTORED] /faq redirect -> faq.html and faq/index.html');
+if (CHECK) {
+  if (stale) { console.error(`${stale} route copies out of date. Run: node scripts/restore-routes.mjs`); process.exit(1); }
+  console.log('Route copies are in sync with pages/.');
+} else {
+  console.log(`Route copies in sync (${outputs.length} files).`);
+}

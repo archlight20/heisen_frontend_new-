@@ -2,6 +2,12 @@
 
 Official marketing and studio website for **HeisenWorks** (`heisenworks.in`), built with plain HTML5, CSS3, vanilla JavaScript, and Vercel Serverless Functions.
 
+## Editing pages (single source of truth)
+
+Edit only `heisenworks_frontend/pages/*.html`. Production (`vercel.json`) and `scripts/server.mjs` serve `pages/` directly.
+The root `<page>.html` and `<page>/index.html` files exist only so VS Code Live Server can open clean URLs; they are generated and gitignored.
+After editing a page, run `node heisenworks_frontend/scripts/restore-routes.mjs` (add `--check` to verify nothing is stale).
+
 ## Folder Structure
 
 ```text

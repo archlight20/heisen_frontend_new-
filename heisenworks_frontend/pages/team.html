@@ -100,7 +100,7 @@
       font-weight: 500;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--amber-primary, #cf8047);
+      color: var(--amber-ink, #9c4f1b);
     }
 
     .tp-eyebrow::before {
@@ -152,7 +152,7 @@
       border-radius: var(--radius-pill, 9999px);
       background: rgba(207, 128, 71, 0.1);
       border: 1px solid rgba(207, 128, 71, 0.28);
-      color: #b15f2c;
+      color: var(--amber-ink, #9c4f1b);
       font-family: var(--font-mono, "JetBrains Mono", monospace);
       font-size: 0.74rem;
       font-weight: 600;
@@ -277,7 +277,7 @@
 
     .tp-hero h1 em {
       font-style: normal;
-      color: var(--amber-primary, #cf8047);
+      color: var(--amber-ink, #9c4f1b);
     }
 
     @keyframes tp-rise {
@@ -493,7 +493,7 @@
       width: var(--w);
     }
 
-    .tp-num h3 {
+    .tp-num h2 {
       font-size: 1.05rem;
       font-family: var(--font-sans, "Onest", sans-serif);
       font-weight: 600;
@@ -669,7 +669,7 @@
     .tp-mail-link svg {
       width: 18px;
       height: 18px;
-      color: var(--amber-primary, #cf8047);
+      color: var(--amber-ink, #9c4f1b);
     }
 
     .tp-todo {
@@ -747,7 +747,7 @@
     }
 
     .tp-dept-label b {
-      color: var(--amber-primary, #cf8047);
+      color: var(--amber-ink, #9c4f1b);
       font-weight: 600;
     }
 
@@ -1144,7 +1144,7 @@
       padding: 20px 38px;
       border-radius: var(--radius-pill, 9999px);
       background: var(--amber-primary, #cf8047);
-      color: #ffffff;
+      color: #1a0f07;
       font-family: var(--font-sans, "Onest", sans-serif);
       font-weight: 700;
       font-size: 1.05rem;
@@ -1176,8 +1176,12 @@
 
     .tp-wa:hover {
       transform: translateY(-4px);
-      background: #b15f2c;
+      background: #e39a63;
       box-shadow: 0 16px 40px -10px rgba(207, 128, 71, 0.45);
+    }
+
+    .tp-wa:active {
+      transform: scale(0.97);
     }
 
     .tp-wa svg {
@@ -1248,6 +1252,7 @@
 </head>
 
 <body class="tp-page">
+<a href="#main" class="skip-link">Skip to content</a>
 
   <!-- NAVBAR (Reused exactly from standard site structure with Team active) -->
   <header id="header">
@@ -1336,7 +1341,7 @@
     </div>
   </div>
 
-  <main>
+  <main id="main">
 
     <!-- ============ 1. HERO ============ -->
     <section class="tp-hero" aria-labelledby="hero-title">
@@ -1376,7 +1381,7 @@
           <div class="tp-lbl">Hackathons led by our founder</div>
         </div>
         <div class="tp-num tp-reveal" style="--d:.2s">
-          <h3>Hands-on experience in the team</h3>
+          <h2>Hands-on experience in the team</h2>
           <ul class="tp-exp-list">
             <li><span>Mohd. Naved</span><span class="tp-bar"><i style="--w:100%"></i></span><span class="tp-pill">4+
                 yrs</span></li>
@@ -1617,15 +1622,15 @@
           <input type="text" name="_hp_verify" id="req-hp" style="display:none" tabindex="-1" autocomplete="off" />
           <div class="form-field">
             <label class="form-label" for="req-name">Name</label>
-            <input type="text" id="req-name" class="form-input" placeholder="Your name" required />
+            <input type="text" id="req-name" name="name" autocomplete="name" class="form-input" placeholder="Your name" required />
           </div>
           <div class="form-field">
             <label class="form-label" for="req-email">Email</label>
-            <input type="email" id="req-email" class="form-input" placeholder="you@company.com" required />
+            <input type="email" id="req-email" name="email" autocomplete="email" spellcheck="false" class="form-input" placeholder="you@company.com" required />
           </div>
           <div class="form-field">
             <label class="form-label" for="req-project">Project Details</label>
-            <textarea id="req-project" rows="4" class="form-textarea"
+            <textarea id="req-project" name="project" autocomplete="off" rows="4" class="form-textarea"
               placeholder="A few words about your scope, timeline, and goals." required></textarea>
           </div>
           <div
@@ -1681,7 +1686,7 @@
           <div class="form-field">
             <label class="form-label">Rating</label>
             <div style="display:flex; gap:0.5rem; align-items:center;">
-              <select id="review-stars-val" class="form-select" style="max-width:140px;">
+              <select id="review-stars-val" class="form-select" aria-label="Star rating" style="max-width:140px;">
                 <option value="5">5 ★★★★★</option>
                 <option value="4">4 ★★★★☆</option>
                 <option value="3">3 ★★★☆☆</option>
@@ -1691,16 +1696,16 @@
           </div>
           <div class="form-field">
             <label class="form-label" for="review-name">Your Full Name</label>
-            <input type="text" id="review-name" class="form-input" placeholder="e.g. Vikramaditya Sharma" required />
+            <input type="text" id="review-name" name="name" autocomplete="name" class="form-input" placeholder="e.g. Vikramaditya Sharma" required />
           </div>
           <div class="form-field">
             <label class="form-label" for="review-tag">Company or Project Name</label>
-            <input type="text" id="review-tag" class="form-input" placeholder="e.g. Cybershield Technologies"
+            <input type="text" id="review-tag" name="company" autocomplete="organization" class="form-input" placeholder="e.g. Cybershield Technologies"
               required />
           </div>
           <div class="form-field">
             <label class="form-label" for="review-desc">Review</label>
-            <textarea id="review-desc" rows="4" class="form-textarea"
+            <textarea id="review-desc" name="review" autocomplete="off" rows="4" class="form-textarea"
               placeholder="How did HeisenWorks impact your engineering or design outcomes?" required></textarea>
           </div>
           <button type="submit" class="pill-btn pill-btn-dark" id="review-submit-btn"

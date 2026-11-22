@@ -107,12 +107,15 @@
       font-weight: 600;
       font-size: 0.95rem;
       text-decoration: none;
-      transition: all 0.25s ease;
+      transition: transform 0.16s var(--ease-out, ease-out), background-color 0.25s ease, box-shadow 0.25s ease;
     }
     .notfound-btn-primary {
       background: #cf8047;
-      color: #ffffff;
+      color: #1a0f07;
       border: 1px solid transparent;
+    }
+    .notfound-btn:active {
+      transform: scale(0.97);
     }
     .notfound-btn-primary:hover {
       background: #e39a63;
@@ -132,6 +135,7 @@
   </style>
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <header id="header">
   <div class="header-inner">
@@ -155,7 +159,7 @@
   </div>
 </header>
 
-<main class="notfound-main">
+<main id="main" class="notfound-main">
   <div class="notfound-bg-glow" aria-hidden="true"></div>
   <div class="notfound-card">
     <span class="notfound-badge">404 Error · Void Coordinates</span>

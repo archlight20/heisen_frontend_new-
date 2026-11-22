@@ -94,6 +94,7 @@
   </script>
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <header id="header">
   <div class="header-inner">
@@ -170,7 +171,7 @@
 </div>
 
 
-<main style="padding-top: calc(5.5rem + var(--sat));">
+<main id="main" style="padding-top: calc(5.5rem + var(--sat));">
   <section style="padding-block: clamp(3.5rem, 8vw, 5.5rem); background: #fbfbfb; border-bottom: 1px solid var(--border);">
     <div class="shell">
       <div class="eyebrow eyebrow-dark" style="margin-bottom: 1.25rem;">Pricing &amp; Engagements</div>
@@ -298,15 +299,15 @@
         <input type="text" name="_hp_verify" id="req-hp" style="display:none" tabindex="-1" autocomplete="off" />
         <div class="form-field">
           <label class="form-label" for="req-name">Name</label>
-          <input type="text" id="req-name" class="form-input" placeholder="Your name" required />
+          <input type="text" id="req-name" name="name" autocomplete="name" class="form-input" placeholder="Your name" required />
         </div>
         <div class="form-field">
           <label class="form-label" for="req-email">Email</label>
-          <input type="email" id="req-email" class="form-input" placeholder="you@company.com" required />
+          <input type="email" id="req-email" name="email" autocomplete="email" spellcheck="false" class="form-input" placeholder="you@company.com" required />
         </div>
         <div class="form-field">
           <label class="form-label" for="req-project">Project Details</label>
-          <textarea id="req-project" rows="4" class="form-textarea" placeholder="A few words about your scope, timeline, and goals." required></textarea>
+          <textarea id="req-project" name="project" autocomplete="off" rows="4" class="form-textarea" placeholder="A few words about your scope, timeline, and goals." required></textarea>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-top:1.5rem;">
           <span style="font-size:0.8125rem; color:#64748b;">We reply within one business day.</span>
@@ -355,7 +356,7 @@
         <div class="form-field">
           <label class="form-label">Rating</label>
           <div style="display:flex; gap:0.5rem; align-items:center;">
-            <select id="review-stars-val" class="form-select" style="max-width:140px;">
+            <select id="review-stars-val" class="form-select" aria-label="Star rating" style="max-width:140px;">
               <option value="5">5 ★★★★★</option>
               <option value="4">4 ★★★★☆</option>
               <option value="3">3 ★★★☆☆</option>
@@ -365,15 +366,15 @@
         </div>
         <div class="form-field">
           <label class="form-label" for="review-name">Your Full Name</label>
-          <input type="text" id="review-name" class="form-input" placeholder="e.g. Vikramaditya Sharma" required />
+          <input type="text" id="review-name" name="name" autocomplete="name" class="form-input" placeholder="e.g. Vikramaditya Sharma" required />
         </div>
         <div class="form-field">
           <label class="form-label" for="review-tag">Company or Project Name</label>
-          <input type="text" id="review-tag" class="form-input" placeholder="e.g. Cybershield Technologies" required />
+          <input type="text" id="review-tag" name="company" autocomplete="organization" class="form-input" placeholder="e.g. Cybershield Technologies" required />
         </div>
         <div class="form-field">
           <label class="form-label" for="review-desc">Review</label>
-          <textarea id="review-desc" rows="4" class="form-textarea" placeholder="How did HeisenWorks impact your engineering or design outcomes?" required></textarea>
+          <textarea id="review-desc" name="review" autocomplete="off" rows="4" class="form-textarea" placeholder="How did HeisenWorks impact your engineering or design outcomes?" required></textarea>
         </div>
         <button type="submit" class="pill-btn pill-btn-dark" id="review-submit-btn" style="width:100%; margin-top:1rem;">
           <span class="pill-inner"><span id="review-submit-text">Submit for Verification</span></span>
@@ -441,7 +442,7 @@
         <p class="footer-tagline">
           Independent engineering and design studio crafting resilient websites, telemetry interfaces, and brand systems.
         </p>
-        <p style="margin-top:0.75rem; font-size:0.8125rem; color:#64748b;">
+        <p style="margin-top:0.75rem; font-size:0.8125rem; color: var(--text-muted-dark);">
           Est. 2025 · Independent engineering &amp; design studio crafting high-performance digital products.
         </p>
       </div>

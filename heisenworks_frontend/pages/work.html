@@ -52,6 +52,7 @@
   </script>
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <header id="header">
   <div class="header-inner">
@@ -128,7 +129,7 @@
 </div>
 
 
-<main style="padding-top: calc(5.5rem + var(--sat));">
+<main id="main" style="padding-top: calc(5.5rem + var(--sat));">
   <section style="padding-block: clamp(3.5rem, 8vw, 6rem); background: #fbfbfb; border-bottom: 1px solid var(--border);">
     <div class="shell">
       <div class="eyebrow eyebrow-dark" style="margin-bottom: 1.25rem;">Case Studies</div>
@@ -160,7 +161,7 @@
               <span style="font-family: var(--font-mono); font-size: 0.875rem; color: var(--amber-primary);">01 / 2025</span>
               <span class="eyebrow eyebrow-light" style="font-size: 0.6875rem;">Web &amp; Systems</span>
             </div>
-            <h3 style="font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.85rem; color: #fff;">CyberRange CTF Platform</h3>
+            <h2 style="font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.85rem; color: #fff;">CyberRange CTF Platform</h2>
             <p style="font-size: 0.9375rem; line-height: 1.6; color: #94a3b8; margin-bottom: 1.25rem;">
               Self-hosted cybersecurity training and CTF platform for universities. Students tackle 26 disposable, hardened Docker labs covering SQL injection, XSS, IDOR, and JWT flaws with real-time instructor analytics.
             </p>
@@ -183,7 +184,7 @@
               <span style="font-family: var(--font-mono); font-size: 0.875rem; color: var(--amber-primary);">02 / 2025</span>
               <span class="eyebrow eyebrow-light" style="font-size: 0.6875rem;">3D &amp; Motion</span>
             </div>
-            <h3 style="font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.85rem; color: #fff;">FlyWire Neural Simulator</h3>
+            <h2 style="font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.85rem; color: #fff;">FlyWire Neural Simulator</h2>
             <p style="font-size: 0.9375rem; line-height: 1.6; color: #94a3b8; margin-bottom: 1.25rem;">
               In-browser whole-brain spiking neural network simulator powered by the FlyWire connectome. Features 139,255 neurons and 2.7M unscripted synapses responding to live sensory stimuli with 60fps WebGL rendering.
             </p>
@@ -205,7 +206,7 @@
               <span style="font-family: var(--font-mono); font-size: 0.875rem; color: var(--amber-primary);">03 / 2024</span>
               <span class="eyebrow eyebrow-light" style="font-size: 0.6875rem;">Web &amp; Systems</span>
             </div>
-            <h3 style="font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.85rem; color: #fff;">Off-Grid Survival Assistant</h3>
+            <h2 style="font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.85rem; color: #fff;">Off-Grid Survival Assistant</h2>
             <p style="font-size: 0.9375rem; line-height: 1.6; color: #94a3b8; margin-bottom: 1.25rem;">
               Offline-first emergency assistant engineered for disaster relief, infrastructure collapse, and prolonged isolation. Pairs a local Ollama LLM with WHO first-aid retrieval and offline OpenStreetMap turn-by-turn routing.
             </p>
@@ -227,7 +228,7 @@
               <span style="font-family: var(--font-mono); font-size: 0.875rem; color: var(--amber-primary);">04 / 2026</span>
               <span class="eyebrow eyebrow-light" style="font-size: 0.6875rem;">Web &amp; Systems</span>
             </div>
-            <h3 style="font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.85rem; color: #fff;">ZOD Living</h3>
+            <h2 style="font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.85rem; color: #fff;">ZOD Living</h2>
             <p style="font-size: 0.9375rem; line-height: 1.6; color: #94a3b8; margin-bottom: 1.25rem;">
               Interactive digital presence for ZOD Living student hostel in Greater Noida. Features an immersive scroll-driven virtual building tour, transparent room tiers with live AC/Non-AC pricing, and frictionless direct booking via WhatsApp.
             </p>
@@ -307,15 +308,15 @@
         <input type="text" name="_hp_verify" id="req-hp" style="display:none" tabindex="-1" autocomplete="off" />
         <div class="form-field">
           <label class="form-label" for="req-name">Name</label>
-          <input type="text" id="req-name" class="form-input" placeholder="Your name" required />
+          <input type="text" id="req-name" name="name" autocomplete="name" class="form-input" placeholder="Your name" required />
         </div>
         <div class="form-field">
           <label class="form-label" for="req-email">Email</label>
-          <input type="email" id="req-email" class="form-input" placeholder="you@company.com" required />
+          <input type="email" id="req-email" name="email" autocomplete="email" spellcheck="false" class="form-input" placeholder="you@company.com" required />
         </div>
         <div class="form-field">
           <label class="form-label" for="req-project">Project Details</label>
-          <textarea id="req-project" rows="4" class="form-textarea" placeholder="A few words about your scope, timeline, and goals." required></textarea>
+          <textarea id="req-project" name="project" autocomplete="off" rows="4" class="form-textarea" placeholder="A few words about your scope, timeline, and goals." required></textarea>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-top:1.5rem;">
           <span style="font-size:0.8125rem; color:#64748b;">We reply within one business day.</span>
@@ -364,7 +365,7 @@
         <div class="form-field">
           <label class="form-label">Rating</label>
           <div style="display:flex; gap:0.5rem; align-items:center;">
-            <select id="review-stars-val" class="form-select" style="max-width:140px;">
+            <select id="review-stars-val" class="form-select" aria-label="Star rating" style="max-width:140px;">
               <option value="5">5 ★★★★★</option>
               <option value="4">4 ★★★★☆</option>
               <option value="3">3 ★★★☆☆</option>
@@ -374,15 +375,15 @@
         </div>
         <div class="form-field">
           <label class="form-label" for="review-name">Your Full Name</label>
-          <input type="text" id="review-name" class="form-input" placeholder="e.g. Vikramaditya Sharma" required />
+          <input type="text" id="review-name" name="name" autocomplete="name" class="form-input" placeholder="e.g. Vikramaditya Sharma" required />
         </div>
         <div class="form-field">
           <label class="form-label" for="review-tag">Company or Project Name</label>
-          <input type="text" id="review-tag" class="form-input" placeholder="e.g. Cybershield Technologies" required />
+          <input type="text" id="review-tag" name="company" autocomplete="organization" class="form-input" placeholder="e.g. Cybershield Technologies" required />
         </div>
         <div class="form-field">
           <label class="form-label" for="review-desc">Review</label>
-          <textarea id="review-desc" rows="4" class="form-textarea" placeholder="How did HeisenWorks impact your engineering or design outcomes?" required></textarea>
+          <textarea id="review-desc" name="review" autocomplete="off" rows="4" class="form-textarea" placeholder="How did HeisenWorks impact your engineering or design outcomes?" required></textarea>
         </div>
         <button type="submit" class="pill-btn pill-btn-dark" id="review-submit-btn" style="width:100%; margin-top:1rem;">
           <span class="pill-inner"><span id="review-submit-text">Submit for Verification</span></span>
@@ -450,7 +451,7 @@
         <p class="footer-tagline">
           Independent engineering and design studio crafting resilient websites, telemetry interfaces, and brand systems.
         </p>
-        <p style="margin-top:0.75rem; font-size:0.8125rem; color:#64748b;">
+        <p style="margin-top:0.75rem; font-size:0.8125rem; color: var(--text-muted-dark);">
           Est. 2025 · Independent engineering & design studio crafting high-performance digital products.
         </p>
       </div>

@@ -27,6 +27,9 @@
   --accent-blue: #38bdf8;
   --text-muted: #64748b;
   --text-light-muted: #94a3b8;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);   /* strong ease-out for UI interactions */
+  --text-muted-dark: #8b95a5;   /* muted text on dark surfaces, 6.5:1 on #090a0c */
+  --amber-ink: #9c4f1b;         /* amber for text on light surfaces, 5.9:1 on white */
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
@@ -98,11 +101,18 @@ img {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Fewer, gentler animations: movement stops, but opacity and colour changes still confirm state */
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+    transition-property: opacity, color, background-color, border-color, box-shadow !important;
+    transition-duration: 0.15s !important;
+  }
+
+  .pill-btn:hover,
+  .pill-btn:active {
+    transform: none;
   }
 }
 
@@ -420,7 +430,7 @@ img {
   justify-content: center;
   border-radius: var(--radius-pill);
   font-weight: 600;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s, background 0.2s, color 0.2s;
+  transition: transform 0.16s var(--ease-out), box-shadow 0.2s, background 0.2s, color 0.2s;
   cursor: pointer;
   min-height: 48px;
   touch-action: manipulation;
@@ -431,7 +441,7 @@ img {
 }
 
 .pill-btn:active {
-  transform: translateY(0);
+  transform: scale(0.97);
 }
 
 .pill-btn-dark {
@@ -469,12 +479,12 @@ img {
 
 .pill-btn-amber {
   background: var(--amber-primary);
-  color: #ffffff;
+  color: #1a0f07;
   border: 1px solid transparent;
 }
 
 .pill-btn-amber:hover {
-  background: #b15f2c;
+  background: #e39a63;
   box-shadow: 0 4px 14px rgba(207, 128, 71, 0.3);
 }
 
@@ -660,7 +670,7 @@ body.nav-menu-open #header,
   justify-content: space-between;
   font-family: var(--font-mono);
   font-size: 0.8125rem;
-  color: #64748b;
+  color: var(--text-muted-dark);
   border-top: 1px solid var(--dark-border);
   padding-top: 1.25rem;
 }
@@ -1069,7 +1079,7 @@ body.nav-menu-open #header,
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #64748b;
+  color: var(--text-muted-dark);
   margin-bottom: 1.25rem;
 }
 
@@ -1100,7 +1110,7 @@ body.nav-menu-open #header,
   border-top: 1px solid var(--dark-border);
   padding-top: 2rem;
   font-size: 0.8125rem;
-  color: #64748b;
+  color: var(--text-muted-dark);
 }
 
 @media (min-width: 640px) {
@@ -1194,3 +1204,40 @@ body.nav-menu-open #header,
   }
 }
 
+/* Skip link */
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 150;
+  border-radius: 0.875rem;
+  background: #0a0a0a;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: #fff;
+  transform: translateY(-200%);
+  transition: transform 0.2s ease;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* Hit areas: footer and legal links meet the 24px minimum target size */
+footer a,
+.footer-legal-bar a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+}
+
+.nav-menu-start-cta {
+  min-height: 44px;
+}
+
+/* Keyboard focus: one visible ring for every control, including ones that reset outline for mouse users */
+:where(a, button, [role="button"], summary, select, input, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--amber-primary) !important;
+  outline-offset: 2px;
+}
