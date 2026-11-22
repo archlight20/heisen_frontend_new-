@@ -177,30 +177,42 @@
     .tp-hero-bg {
       position: absolute;
       inset: 0;
-      z-index: -2;
-      display: grid;
-      place-items: center;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
     }
 
-    .tp-hero-bg .tp-ph {
-      position: relative;
+    .tp-hero-bg img {
       width: 100%;
       height: 100%;
+      object-fit: cover;
+      object-position: center 25%;
+      opacity: 0.18;
+      display: block;
+    }
+
+    /* Smooth bottom fade — image merges seamlessly into white page */
+    .tp-hero-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.35) 45%, rgba(255, 255, 255, 0.85) 75%, #ffffff 96%);
+      pointer-events: none;
     }
 
     .tp-hero::before {
       content: "";
       position: absolute;
       inset: 0;
-      z-index: -1;
+      z-index: 2;
+      pointer-events: none;
       background:
-        linear-gradient(to top, #ffffff 8%, rgba(255, 255, 255, 0.88) 50%, rgba(255, 255, 255, 0.55) 100%),
         radial-gradient(60% 50% at 85% 20%, rgba(207, 128, 71, 0.12), transparent 70%);
     }
 
     .tp-hero-glow {
       position: absolute;
-      z-index: -1;
+      z-index: 2;
       width: 540px;
       height: 540px;
       right: -100px;
@@ -209,6 +221,12 @@
       background: radial-gradient(circle, rgba(207, 128, 71, 0.16), transparent 65%);
       filter: blur(28px);
       animation: tp-float 9s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .tp-hero .tp-wrap {
+      position: relative;
+      z-index: 3;
     }
 
     @keyframes tp-float {
@@ -986,89 +1004,6 @@
       }
     }
 
-    /* ==========================================================================
-   7. BEHIND THE SCENES
-   ========================================================================== */
-    .tp-bts {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      grid-auto-rows: 150px;
-      gap: 16px;
-    }
-
-    .tp-bts figure {
-      position: relative;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
-      background: #f8fafc;
-      margin: 0;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-    }
-
-    .tp-bts figure .tp-ph {
-      transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
-    }
-
-    .tp-bts figure picture,
-    .tp-bts figure img {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .tp-bts figure img {
-      object-fit: cover;
-      object-position: center;
-      transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
-    }
-
-    .tp-bts figure:hover .tp-ph,
-    .tp-bts figure:hover img {
-      transform: scale(1.05);
-    }
-
-    .tp-bts .tp-bts-a {
-      grid-column: span 3;
-      grid-row: span 3;
-    }
-
-    .tp-bts .tp-bts-b {
-      grid-column: span 3;
-      grid-row: span 1;
-    }
-
-    .tp-bts .tp-bts-c {
-      grid-column: span 2;
-      grid-row: span 2;
-    }
-
-    .tp-bts .tp-bts-e {
-      grid-column: span 2;
-      grid-row: span 2;
-    }
-
-    .tp-bts .tp-bts-f {
-      grid-column: span 2;
-      grid-row: span 2;
-    }
-
-    @media (max-width: 760px) {
-      .tp-bts {
-        grid-template-columns: 1fr 1fr;
-        grid-auto-rows: 150px;
-      }
-
-      .tp-bts figure {
-        grid-column: span 1 !important;
-        grid-row: span 1 !important;
-      }
-
-      .tp-bts .tp-bts-a {
-        grid-column: span 2 !important;
-        grid-row: span 2 !important;
-      }
-    }
 
     /* ==========================================================================
    8. JOIN US
@@ -1344,8 +1279,11 @@
       <!-- Photo placeholder for Hero Group Photo:
        Replace .tp-ph inside .tp-hero-bg with <img src="assets/images/team/group.jpg" alt="The HeisenWorks team" style="width:100%;height:100%;object-fit:cover"> once approved photo exists -->
       <div class="tp-hero-bg" aria-hidden="true">
-        <div class="tp-ph" style="position:relative;width:100%;height:100%"><span>Image required · team group
-            photo</span></div>
+        <picture>
+          <source srcset="assets/images/team/team-office.webp" type="image/webp" />
+          <img src="assets/images/team/team-office.jpg" alt="HeisenWorks team at work" aria-hidden="true"
+            width="1024" height="576" fetchpriority="high" decoding="async" />
+        </picture>
       </div>
       <div class="tp-hero-glow" aria-hidden="true"></div>
       <div class="tp-wrap">
@@ -1514,43 +1452,6 @@
             <h3>We Grow Talent</h3>
             <p>Our interns learn on real client work, guided by experienced leads.</p>
           </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ 7. BEHIND THE SCENES ============ -->
-    <section class="tp-section" style="padding-top:0" aria-labelledby="bts-title">
-      <div class="tp-wrap">
-        <div class="tp-section-head tp-reveal">
-          <span class="tp-eyebrow">Behind the scenes</span>
-          <h2 id="bts-title" class="tp-h2">The people and the place.</h2>
-        </div>
-        <!-- 5 real, approved photos only. Replace each .tp-ph with <img src="assets/images/team/bts-X.jpg" alt="describe the photo" style="width:100%;height:100%;object-fit:cover"> -->
-        <div class="tp-bts">
-          <!-- Slot 1 (hero landscape) -->
-          <figure class="tp-bts-a tp-reveal">
-            <picture>
-              <source srcset="assets/images/team/team-office.webp" type="image/webp" />
-              <img src="assets/images/team/team-office.jpg" alt="HeisenWorks team collaborating at the studio"
-                width="1024" height="576" loading="lazy" decoding="async" />
-            </picture>
-          </figure>
-          <!-- Slot 2 -->
-          <figure class="tp-bts-b tp-reveal" style="--d:.08s">
-            <div class="tp-ph"><span>Image required</span></div>
-          </figure>
-          <!-- Slot 3 -->
-          <figure class="tp-bts-c tp-reveal" style="--d:.16s">
-            <div class="tp-ph"><span>Image required</span></div>
-          </figure>
-          <!-- Slot 4 -->
-          <figure class="tp-bts-e tp-reveal" style="--d:.08s">
-            <div class="tp-ph"><span>Image required</span></div>
-          </figure>
-          <!-- Slot 5 -->
-          <figure class="tp-bts-f tp-reveal" style="--d:.16s">
-            <div class="tp-ph"><span>Image required</span></div>
-          </figure>
         </div>
       </div>
     </section>
