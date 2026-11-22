@@ -4,7 +4,7 @@ async function fetchUrl(urlPath, method = 'GET', body = null) {
   return new Promise((resolve, reject) => {
     const options = {
       hostname: '127.0.0.1',
-      port: 8080,
+      port: process.env.PORT || 8080,
       path: urlPath,
       method: method,
       headers: {
@@ -170,41 +170,7 @@ async function runTests() {
     failed++;
   }
 
-  // Reviews API GET (Google). Without credentials it must fail gracefully with 503 + JSON.
-  const reviewsGet = await fetchUrl('/api/reviews');
-  let reviewsJson = null;
-  try { reviewsJson = JSON.parse(reviewsGet.body); } catch {}
-  const hasKeys = Boolean(process.env.GOOGLE_PLACES_API_KEY && process.env.GOOGLE_PLACE_ID);
-  if (reviewsJson && Array.isArray(reviewsJson.reviews) &&
-      (hasKeys ? reviewsGet.status === 200 && reviewsJson.source === 'google' : reviewsGet.status === 503)) {
-    console.log(`[PASS] GET /api/reviews -> HTTP ${reviewsGet.status} (${hasKeys ? reviewsJson.reviews.length + ' Google reviews' : 'not configured, graceful 503'})`);
-    passed++;
-  } else {
-    console.error(`[FAIL] GET /api/reviews -> HTTP ${reviewsGet.status}`);
-    failed++;
-  }
-
-  // Write-review redirect points at Google
-  const writeRes = await fetchUrl('/api/reviews?write=1');
-  if (writeRes.status === 302 && /google\.com/.test(writeRes.headers.location || '')) {
-    console.log('[PASS] GET /api/reviews?write=1 -> 302 to Google');
-    passed++;
-  } else {
-    console.error(`[FAIL] GET /api/reviews?write=1 -> HTTP ${writeRes.status}`);
-    failed++;
-  }
-
-  // On-site review submission is disabled (reviews live on Google)
-  const reviewsPost = await fetchUrl('/api/reviews', 'POST', JSON.stringify({ name: 'Test', reviewText: 'Test' }));
-  if (reviewsPost.status === 405) {
-    console.log('[PASS] POST /api/reviews -> HTTP 405 (reviews are left on Google)');
-    passed++;
-  } else {
-    console.error(`[FAIL] POST /api/reviews -> HTTP ${reviewsPost.status}`);
-    failed++;
-  }
-
-  // SEO & Security Audits  // SEO & Security Audits
+  // SEO & Security Audits
   console.log('\n--- Testing SEO & Security Hardening ---');
 
   // Custom 404 Page Check

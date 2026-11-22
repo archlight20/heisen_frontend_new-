@@ -1,7 +1,8 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
+import { handleLead } from '../../lib/lead.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,81 +35,34 @@ const SECURITY_HEADERS = {
   'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' blob:; connect-src 'self' https://cloudflareinsights.com;"
 };
 
-// Reuse the real Vercel functions in /api (contact.js, reviews.js) so dev matches production.
-const apiHandlers = {};
-    function loadApiHandler(name) {
-    if(!apiHandlers[name]) {
-      const file = path.resolve(__dirname, '../../api', name + '.js');
-      apiHandlers[name] = import(pathToFileURL(file).href).then((m) => m.default);
-    }
-return apiHandlers[name];
-}
-const loadReviewsHandler = () => loadApiHandler('reviews');
-
-// Minimal Vercel-style res.status().json() shim for plain Node http responses
-function vercelRes(res) {
-  res.status = (code) => { res.statusCode = code; return res; };
-  res.json = (obj) => {
-    if (!res.getHeader('Content-Type')) res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    for (const [k, v] of Object.entries(SECURITY_HEADERS)) res.setHeader(k, v);
-    res.end(JSON.stringify(obj));
-    return res;
-  };
-  return res;
-}
-
 const server = http.createServer((req, res) => {
-  // CORS Preflight handler
-  if (req.method === 'OPTIONS') {
-    res.writeHead(204, {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, HEAD, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      ...SECURITY_HEADERS
-    });
-    res.end();
-    return;
-  }
-
   const urlObj = new URL(req.url, `http://${req.headers.host || '127.0.0.1'}`);
   const pathname = urlObj.pathname.replace(/\/+$/, '') || '/';
 
-  // API: Contact / lead form (runs the real Vercel function, api/contact.js)
+  // API: lead form, same handler as production (lib/lead.js)
   if (pathname === '/api/contact') {
+    if (req.method !== 'POST') {
+      res.writeHead(405, { 'Content-Type': 'application/json', ...SECURITY_HEADERS });
+      res.end(JSON.stringify({ ok: false, error: 'Method not allowed' }));
+      return;
+    }
     let body = '';
     req.on('data', (chunk) => {
       body += chunk;
       if (body.length > 1e6) req.destroy();
     });
-    req.on('end', () => {
-      let parsed = {};
-      try { parsed = body ? JSON.parse(body) : {}; } catch { parsed = body; }
-      const vreq = Object.assign(req, { body: parsed, query: Object.fromEntries(urlObj.searchParams) });
-      loadApiHandler('contact')
-        .then((handler) => handler(vreq, vercelRes(res)))
-        .catch((err) => {
-          console.error('Contact handler failed:', err);
-          if (!res.headersSent) res.writeHead(500, { 'Content-Type': 'application/json', ...SECURITY_HEADERS });
-          res.end(JSON.stringify({ ok: false, error: 'Contact handler failed' }));
-        });
+    req.on('end', async () => {
+      const result = await handleLead(body, { ip: req.socket.remoteAddress, env: process.env });
+      res.writeHead(result.status, {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'no-store',
+        ...result.headers,
+        ...SECURITY_HEADERS
+      });
+      res.end(JSON.stringify(result.json));
     });
     return;
   }
-
-  // API: Reviews Endpoint (live Google reviews via api/reviews.js)
-  if (pathname === '/api/reviews') {
-          const vreq = Object.assign(req, { query: Object.fromEntries(urlObj.searchParams) });
-          loadReviewsHandler()
-            .then((handler) => handler(vreq, vercelRes(res)))
-            .catch((err) => {
-              console.error('Reviews handler failed:', err);
-              if (!res.headersSent) {
-                res.writeHead(500, { 'Content-Type': 'application/json', ...SECURITY_HEADERS });
-              }
-              res.end(JSON.stringify({ ok: false, error: 'Reviews handler failed', reviews: [] }));
-            });
-        return;
-      }
 
   // Only allow GET and HEAD for static file serving
   if (req.method !== 'GET' && req.method !== 'HEAD') {
@@ -153,7 +107,8 @@ const server = http.createServer((req, res) => {
       let filePath = path.resolve(WEB_ROOT, '.' + normalizedRelPath);
 
       // Strict containment check: ensure target path is inside WEB_ROOT
-      if (!filePath.startsWith(WEB_ROOT)) {
+      const relToWebRoot = path.relative(WEB_ROOT, filePath);
+      if (relToWebRoot.startsWith('..') || path.isAbsolute(relToWebRoot)) {
         res.writeHead(403, { 'Content-Type': 'text/plain', ...SECURITY_HEADERS });
         res.end('403 Forbidden');
         return;
