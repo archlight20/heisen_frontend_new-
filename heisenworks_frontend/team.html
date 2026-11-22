@@ -182,21 +182,36 @@
       overflow: hidden;
     }
 
-    .tp-hero-bg img {
+    .tp-hero-bg picture {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      object-position: center 25%;
-      opacity: 0.18;
       display: block;
     }
 
-    /* Smooth bottom fade — image merges seamlessly into white page */
+    .tp-hero-bg img {
+      width: 100%;
+      height: 125%;
+      object-fit: cover;
+      object-position: center top;
+      transform: translateY(-16%);
+      opacity: 0.8;
+      display: block;
+    }
+
+    /* Smooth bottom fade matching reference: clear top, fades to white across bottom ~50% */
     .tp-hero-bg::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.35) 45%, rgba(255, 255, 255, 0.85) 75%, #ffffff 96%);
+      background: linear-gradient(to bottom,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0) 50%,
+        rgba(255, 255, 255, 0.3) 68%,
+        rgba(255, 255, 255, 0.78) 85%,
+        #ffffff 98%
+      );
       pointer-events: none;
     }
 
@@ -331,7 +346,56 @@
       }
     }
 
-    @media (max-width: 720px) {
+    @media (max-width: 768px) {
+      .tp-hero {
+        min-height: auto;
+        padding: clamp(210px, 58vw, 300px) 0 60px;
+        align-items: flex-start;
+      }
+
+      .tp-hero-bg {
+        height: auto;
+        bottom: auto;
+        top: 60px;
+        left: 0;
+        right: 0;
+      }
+
+      .tp-hero-bg picture {
+        position: relative;
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .tp-hero-bg img {
+        width: 100%;
+        height: auto;
+        max-height: none;
+        object-fit: contain;
+        object-position: center top;
+        transform: none;
+        opacity: 1;
+      }
+
+      /* Dual fade matching reference: top fade (0% -> 22%) and bottom fade (50% -> 98%) */
+      .tp-hero-bg::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom,
+          #ffffff 0%,
+          rgba(255, 255, 255, 0.7) 6%,
+          rgba(255, 255, 255, 0.2) 14%,
+          rgba(255, 255, 255, 0) 22%,
+          rgba(255, 255, 255, 0) 50%,
+          rgba(255, 255, 255, 0.3) 68%,
+          rgba(255, 255, 255, 0.78) 85%,
+          #ffffff 98%
+        );
+        pointer-events: none;
+      }
+
       .tp-scroll-cue {
         display: none;
       }
@@ -1281,8 +1345,8 @@
       <div class="tp-hero-bg" aria-hidden="true">
         <picture>
           <source srcset="assets/images/team/team-office.webp" type="image/webp" />
-          <img src="assets/images/team/team-office.jpg" alt="HeisenWorks team at work" aria-hidden="true"
-            width="1024" height="576" fetchpriority="high" decoding="async" />
+          <img src="assets/images/team/team-office.jpg" alt="HeisenWorks team at work" aria-hidden="true" width="1024"
+            height="576" fetchpriority="high" decoding="async" />
         </picture>
       </div>
       <div class="tp-hero-glow" aria-hidden="true"></div>

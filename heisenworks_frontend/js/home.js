@@ -221,751 +221,687 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(layoutHero
 let heroLayoutTimer;
 window.addEventListener("resize", () => { clearTimeout(heroLayoutTimer); heroLayoutTimer = setTimeout(layoutHeroVideo, 120); });
 
-// 5b. Atmospheric Liquid Orange Aura — cursor hover effect over hero video
-(function liquidAura() {
-  if (prefersReducedMotion) return;
+// 5b. Orange Ambient Glow — cursor hover effect over hero video
+if (!prefersReducedMotion) {
+  const canvas = document.getElementById("hero-canvas");
+  if (canvas && heroLiquidWrap) {
+    const ctx = canvas.getContext("2d");
+    const brushRadius = 190;
+    const decay = 0.016;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // 5b. Orange Paint-Brush Trail — cursor hover effect over hero video
+    (function orangeBrush() {
+      // ── Constants ──────────────────────────────────────────────────────────────
+      const BRUSH_RADIUS = 143;              // CSS px
+      const DECAY = 0.016;
+      const FADE_FRAMES = 120;
+      const BRUSH_COLOR = [241, 106, 33];  // vivid orange RGB
+      const BRUSH_OPACITY = 0.85;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-  const container = document.getElementById("hero-liquid");
-  const canvas    = document.getElementById("hero-canvas");
-  if (!container || !canvas) return;
+      let rect = heroLiquidWrap.getBoundingClientRect();
+      let cWidth = 0;
+      let cHeight = 0;
+      // Skip for reduced-motion visitors — video plays, no canvas
+      if (prefersReducedMotion) return;
 
-  const ctx = canvas.getContext("2d");
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const brushCanvas = document.createElement("canvas");
+      const brushCtx = brushCanvas.getContext("2d");
+      const container = document.getElementById("hero-liquid");
+      const canvas = document.getElementById("hero-canvas");
+      if (!container || !canvas) return;
 
-  // Aura & Orb Dimensions (CSS px)
-  const ORB_RADIUS     = 105;   // Glowing orange orb radius
-  const AURA_RADIUS    = 195;   // Outer organic champagne aura radius
-  const TRAIL_LIFESPAN = 1200;  // Trail persistence in ms
+      function resizeCanvas() {
+        rect = heroLiquidWrap.getBoundingClientRect();
+        cWidth = Math.round(rect.width * dpr);
+        cHeight = Math.round(rect.height * dpr);
+        if (cWidth === 0 || cHeight === 0) return;
+        const ctx = canvas.getContext("2d");
+        const radius = BRUSH_RADIUS * dpr;
+        const diam = Math.ceil(radius * 2);
+        const [r, g, b] = BRUSH_COLOR;
 
-  let cw = 0, ch = 0;
-  let rect = { left: 0, top: 0 };
+        canvas.width = cWidth;
+        canvas.height = cHeight;
+        canvas.style.width = `${rect.width}px`;
+        canvas.style.height = `${rect.height}px`;
+        // ── Offscreen brush canvas — pre-rendered once per resize ─────────────────
+        const brushCvs = document.createElement("canvas");
+        brushCvs.width = diam;
+        brushCvs.height = diam;
+        const brushCtx = brushCvs.getContext("2d");
 
-  // Pre-rendered offscreen sprites for high-performance trail rendering
-  const trailAuraCvs = document.createElement("canvas");
-  const trailAuraCtx = trailAuraCvs.getContext("2d");
-  const trailCoreCvs = document.createElement("canvas");
-  const trailCoreCtx = trailCoreCvs.getContext("2d");
+        const radius = brushRadius * dpr;
+        const diam = Math.ceil(radius * 2);
+        brushCanvas.width = diam;
+        brushCanvas.height = diam;
+        function buildBrush() {
+          const c = radius;
+          brushCtx.clearRect(0, 0, diam, diam);
+          const grad = brushCtx.createRadialGradient(c, c, 0, c, c, radius);
+          grad.addColorStop(0, `rgba(${r},${g},${b},1)`);
+          grad.addColorStop(0.55, `rgba(${r},${g},${b},0.82)`);
+          grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+          brushCtx.fillStyle = grad;
+          brushCtx.fillRect(0, 0, diam, diam);
+        }
 
-  function buildSprites() {
-    const rAura = Math.ceil(AURA_RADIUS * 0.72 * dpr);
-    const dAura = rAura * 2;
-    trailAuraCvs.width  = dAura;
-    trailAuraCvs.height = dAura;
-    trailAuraCtx.clearRect(0, 0, dAura, dAura);
-    const gAura = trailAuraCtx.createRadialGradient(rAura, rAura, 0, rAura, rAura, rAura);
-    gAura.addColorStop(0,    "rgba(248, 238, 178, 0.22)");
-    gAura.addColorStop(0.65, "rgba(245, 230, 165, 0.12)");
-    gAura.addColorStop(1,    "rgba(240, 212, 138, 0)");
-    trailAuraCtx.fillStyle = gAura;
-    trailAuraCtx.beginPath();
-    trailAuraCtx.arc(rAura, rAura, rAura, 0, Math.PI * 2);
-    trailAuraCtx.fill();
-
-    const rCore = Math.ceil(ORB_RADIUS * 0.68 * dpr);
-    const dCore = rCore * 2;
-    trailCoreCvs.width  = dCore;
-    trailCoreCvs.height = dCore;
-    trailCoreCtx.clearRect(0, 0, dCore, dCore);
-    const gCore = trailCoreCtx.createRadialGradient(rCore, rCore, 0, rCore, rCore, rCore);
-    gCore.addColorStop(0,   "rgba(240, 95, 20, 0.45)");
-    gCore.addColorStop(0.5, "rgba(246, 122, 28, 0.25)");
-    gCore.addColorStop(1,   "rgba(252, 160, 48, 0)");
-    trailCoreCtx.fillStyle = gCore;
-    trailCoreCtx.beginPath();
-    trailCoreCtx.arc(rCore, rCore, rCore, 0, Math.PI * 2);
-    trailCoreCtx.fill();
-  }
-
-  function resize() {
-    rect = container.getBoundingClientRect();
-    cw = Math.round(rect.width  * dpr);
-    ch = Math.round(rect.height * dpr);
-    if (!cw || !ch) return;
-    canvas.width  = cw;
-    canvas.height = ch;
-    canvas.style.width  = rect.width  + "px";
-    canvas.style.height = rect.height + "px";
-    buildSprites();
-  }
-
-  resize();
-  new ResizeObserver(resize).observe(container);
-
-  // Motion & Physics State
-  let targetX = -1000, targetY = -1000;
-  let coreX = -1000, coreY = -1000;
-  let auraX = -1000, auraY = -1000;
-  let velX = 0, velY = 0;
-  let isInside = false;
-  let trailPoints = [];
-  let lastMoveTime = 0;
-  let focalAlpha = 0;
-  let isTicking = false;
-  let animTime = 0;
-
-  function schedule() {
-    if (!isTicking) {
-      isTicking = true;
-      requestAnimationFrame(tick);
-    }
-  }
-
-  // Draw organic closed curve through array of radial points
-  function drawOrganicBlob(cx, cy, baseR, time, vx, vy) {
-    const numPoints = 12;
-    const points = [];
-    const speed = Math.hypot(vx, vy);
-    const moveAngle = Math.atan2(vy, vx);
-
-    for (let i = 0; i < numPoints; i++) {
-      const theta = (i * Math.PI * 2) / numPoints;
-      // Fluid undulation waves matching the reference organic contour
-      const wave1 = Math.sin(theta * 2 + time * 1.6) * 0.12;
-      const wave2 = Math.cos(theta * 3 - time * 1.1) * 0.08;
-      // Dynamic stretch along direction of motion
-      const stretch = speed > 0.5 ? Math.cos(theta - moveAngle) * Math.min(speed * 0.0025, 0.25) : 0;
-      const r = baseR * (1 + wave1 + wave2 + stretch);
-      points.push({
-        x: cx + Math.cos(theta) * r,
-        y: cy + Math.sin(theta) * r,
-      });
-    }
-
-    ctx.beginPath();
-    // Connect points using smooth curves through midpoints
-    const firstMidX = (points[0].x + points[numPoints - 1].x) / 2;
-    const firstMidY = (points[0].y + points[numPoints - 1].y) / 2;
-    ctx.moveTo(firstMidX, firstMidY);
-
-    for (let i = 0; i < numPoints; i++) {
-      const nextIdx = (i + 1) % numPoints;
-      const midX = (points[i].x + points[nextIdx].x) / 2;
-      const midY = (points[i].y + points[nextIdx].y) / 2;
-      ctx.quadraticCurveTo(points[i].x, points[i].y, midX, midY);
-    }
-    ctx.closePath();
-  }
-
-  function tick() {
-    if (document.hidden) {
-      isTicking = false;
-      return;
-    }
-
-    const now = performance.now();
-    animTime += 0.016;
-
-    // Prune expired trail points
-    while (trailPoints.length > 0 && now - trailPoints[0].time > TRAIL_LIFESPAN) {
-      trailPoints.shift();
-    }
-
-    // Focal alpha: fade in when active, fade out when idle
-    const timeSinceMove = now - lastMoveTime;
-    if (isInside && timeSinceMove < 1600) {
-      focalAlpha = Math.min(focalAlpha + 0.08, 1);
-    } else {
-      focalAlpha = Math.max(focalAlpha - 0.02, 0);
-    }
-
-    // Stop rAF when completely settled and invisible
-    if (focalAlpha <= 0 && trailPoints.length === 0) {
-      ctx.clearRect(0, 0, cw, ch);
-      isTicking = false;
-      return;
-    }
-
-    ctx.clearRect(0, 0, cw, ch);
-
-    // 1. Draw trail points (soft glowing liquid light wake behind movement)
-    if (trailPoints.length > 0) {
-      const rAura = trailAuraCvs.width / 2;
-      const rCore = trailCoreCvs.width / 2;
-      ctx.globalCompositeOperation = "source-over";
-
-      for (let i = 0; i < trailPoints.length; i++) {
-        const pt = trailPoints[i];
-        const age = now - pt.time;
-        const progress = age / TRAIL_LIFESPAN;
-        const alpha = Math.max(0, 1 - progress);
-
-        // Draw soft champagne aura particle
-        ctx.globalAlpha = alpha * 0.85;
-        ctx.drawImage(trailAuraCvs, pt.x - rAura, pt.y - rAura);
-
-        // Draw warm fiery orange core particle
-        ctx.globalAlpha = alpha * 0.95;
-        ctx.drawImage(trailCoreCvs, pt.x - rCore, pt.y - rCore);
+        const c = radius;
+        brushCtx.clearRect(0, 0, diam, diam);
+        const grad = brushCtx.createRadialGradient(c, c, 0, c, c, radius);
+        grad.addColorStop(0, "rgba(255, 175, 38, 0.26)");
+        grad.addColorStop(0.28, "rgba(246, 115, 16, 0.20)");
+        grad.addColorStop(0.6, "rgba(215, 75, 10, 0.12)");
+        grad.addColorStop(0.85, "rgba(175, 45, 6, 0.04)");
+        grad.addColorStop(1, "rgba(135, 25, 0, 0)");
+        brushCtx.fillStyle = grad;
+        brushCtx.beginPath();
+        brushCtx.arc(c, c, radius, 0, Math.PI * 2);
+        brushCtx.fill();
       }
-      ctx.globalAlpha = 1;
-    }
+      // ── Canvas sizing ──────────────────────────────────────────────────────────
+      let obRect = { left: 0, top: 0 };
+      let cw = 0, ch = 0;
 
-    // 2. Physics interpolation for the focal aura
-    if (focalAlpha > 0) {
-      const prevCoreX = coreX;
-      const prevCoreY = coreY;
+      resizeCanvas();
+      new ResizeObserver(resizeCanvas).observe(heroLiquidWrap);
+      function resize() {
+        obRect = container.getBoundingClientRect();
+        cw = Math.round(obRect.width * dpr);
+        ch = Math.round(obRect.height * dpr);
+        if (!cw || !ch) return;
+        canvas.width = cw;
+        canvas.height = ch;
+        canvas.style.width = obRect.width + "px";
+        canvas.style.height = obRect.height + "px";
+        buildBrush();  // re-render brush at new dpr-scaled size
+      }
 
-      // Orange core tracks cursor quickly
-      coreX += (targetX - coreX) * 0.22;
-      coreY += (targetY - coreY) * 0.22;
+      let points = [];
+      let lastPoint = null;
+      let idle = 0;
+      resize();
+      new ResizeObserver(resize).observe(container);
 
-      // Measure velocity for stretch & organic deformation
-      velX = coreX - prevCoreX;
-      velY = coreY - prevCoreY;
+      window.addEventListener("pointermove", (e) => {
+        rect = heroLiquidWrap.getBoundingClientRect();
+        const x = (e.clientX - rect.left) * dpr;
+        const y = (e.clientY - rect.top) * dpr;
+        const radius = brushRadius * dpr;
+        // ── Point queue & rAF state ────────────────────────────────────────────────
+        let obPoints = [];
+        let obLast = null;
+        let obIdle = 0;
+        let obTicking = false;
 
-      // Organic champagne aura lags gently behind (creates the natural asymmetry seen in reference)
-      auraX += (targetX - auraX) * 0.11;
-      auraY += (targetY - auraY) * 0.11;
+        if (x < -radius || x > cWidth + radius || y < -radius || y > cHeight + radius) {
+          lastPoint = null;
+          return;
+        }
+        function stamp(x, y) {
+          ctx.globalCompositeOperation = "source-over";
+          ctx.globalAlpha = BRUSH_OPACITY;
+          ctx.drawImage(brushCvs, x - radius, y - radius);
+          ctx.globalAlpha = 1;
+        }
 
-      const auraR = AURA_RADIUS * dpr;
-      const coreR = ORB_RADIUS * dpr;
+        const newPoint = { x, y };
+        if (lastPoint) {
+          const dx = newPoint.x - lastPoint.x;
+          const dy = newPoint.y - lastPoint.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < 12) return;
+          const step = Math.max(radius * 0.45, 25);
+          const n = Math.min(Math.ceil(dist / step), 10);
+          for (let i = 1; i <= n; i++) {
+            points.push({ x: lastPoint.x + dx * (i / n), y: lastPoint.y + dy * (i / n) });
+          }
+        } else {
+          points.push(newPoint);
+        }
+        lastPoint = newPoint;
+        scheduleTick();
+      }, { passive: true });
+      function schedule() {
+        if (!obTicking) { obTicking = true; requestAnimationFrame(tick); }
+      }
 
-      // ── Outer Champagne Aura with Delicate Amber Rim ──
-      ctx.save();
-      ctx.globalAlpha = focalAlpha;
+      function stamp(x, y) {
+        const radius = brushRadius * dpr;
+        const c = radius;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 0.65;
+        ctx.drawImage(brushCanvas, x - c, y - c);
+        ctx.globalAlpha = 1.0;
+        function tick() {
+          if (document.hidden) { obTicking = false; return; }
 
-      drawOrganicBlob(auraX, auraY, auraR, animTime, velX, velY);
+          const drawing = obPoints.length > 0;
+          if (drawing) obIdle = 0; else obIdle++;
 
-      // Body fill: soft luminous champagne/butter-yellow gradient
-      const auraGrad = ctx.createRadialGradient(auraX, auraY, 0, auraX, auraY, auraR * 1.15);
-      auraGrad.addColorStop(0,    "rgba(248, 238, 178, 0.44)");
-      auraGrad.addColorStop(0.65, "rgba(245, 230, 165, 0.32)");
-      auraGrad.addColorStop(0.88, "rgba(240, 212, 138, 0.18)");
-      auraGrad.addColorStop(1,    "rgba(235, 190, 110, 0.05)");
-      ctx.fillStyle = auraGrad;
-      ctx.fill();
+          // Once fully faded, clear and stop the loop
+          if (obIdle >= FADE_FRAMES) {
+            ctx.clearRect(0, 0, cw, ch);
+            obTicking = false;
+            return;
+          }
 
-      // Perimeter rim: thin, elegant amber-coral outline (matching reference pic)
-      ctx.strokeStyle = "rgba(224, 110, 48, 0.48)";
-      ctx.lineWidth = 2.4 * dpr;
-      ctx.shadowColor = "rgba(235, 120, 50, 0.35)";
-      ctx.shadowBlur = 8 * dpr;
-      ctx.stroke();
-      ctx.restore();
+          let isTicking = false;
+          function scheduleTick() {
+            if (!isTicking) { isTicking = true; requestAnimationFrame(tick); }
+            // Fade existing paint
+            const fade = drawing
+              ? DECAY
+              : Math.min(DECAY + obIdle * 0.004, 0.5);
+            ctx.globalCompositeOperation = "destination-out";
+            ctx.fillStyle = "rgba(0,0,0," + fade + ")";
+            ctx.fillRect(0, 0, cw, ch);
 
-      // ── Inner Vibrant Orange Glowing Orb ──
-      ctx.save();
-      ctx.globalAlpha = focalAlpha;
-      ctx.beginPath();
-      ctx.arc(coreX, coreY, coreR, 0, Math.PI * 2);
+            // Stamp queued points
+            if (drawing) {
+              const pts = obPoints.splice(0);
+              for (let i = 0; i < pts.length; i++) stamp(pts[i].x, pts[i].y);
+            }
 
-      const coreGrad = ctx.createRadialGradient(coreX, coreY, 0, coreX, coreY, coreR);
-      coreGrad.addColorStop(0,    "rgba(238, 88, 18, 0.90)");     // deep fiery orange
-      coreGrad.addColorStop(0.42, "rgba(246, 122, 28, 0.72)");    // warm glowing body
-      coreGrad.addColorStop(0.78, "rgba(252, 160, 48, 0.32)");    // radiant falloff
-      coreGrad.addColorStop(1,    "rgba(255, 180, 60, 0)");        // soft edge
-      ctx.fillStyle = coreGrad;
-      ctx.fill();
-      ctx.restore();
-    }
+            function tick() {
+              if (document.hidden) { isTicking = false; return; }
+              requestAnimationFrame(tick);
+            }
 
-    requestAnimationFrame(tick);
-  }
+            const drawing = points.length > 0;
+            if (drawing) idle = 0; else idle++;
+            // ── Pointer listener ───────────────────────────────────────────────────────
+            window.addEventListener("pointermove", function (e) {
+              obRect = container.getBoundingClientRect();
+              const x = (e.clientX - obRect.left) * dpr;
+              const y = (e.clientY - obRect.top) * dpr;
 
-  let lastX = null, lastY = null;
+              if (idle <= 120) {
+                const fade = drawing ? decay : Math.min(decay + idle * 0.004, 0.5);
+                ctx.globalCompositeOperation = "destination-out";
+                ctx.fillStyle = `rgba(0,0,0,${fade})`;
+                ctx.fillRect(0, 0, cWidth, cHeight);
+                // Ignore if well outside the canvas
+                if (x < -radius || x > cw + radius || y < -radius || y > ch + radius) {
+                  obLast = null;
+                  return;
+                }
 
-  window.addEventListener("pointermove", function (e) {
-    rect = container.getBoundingClientRect();
-    const x = (e.clientX - rect.left) * dpr;
-    const y = (e.clientY - rect.top)  * dpr;
-    const pad = AURA_RADIUS * dpr;
+                if (drawing) {
+                  for (let i = 0; i < points.length; i++) stamp(points[i].x, points[i].y);
+                  points = [];
+                }
 
-    // Check if pointer is near or inside the hero
-    if (x < -pad || x > cw + pad || y < -pad || y > ch + pad) {
-      isInside = false;
-      lastX = null;
-      lastY = null;
-      return;
-    }
+                if (idle === 120) ctx.clearRect(0, 0, cWidth, cHeight);
+                requestAnimationFrame(tick);
+              } else {
+                isTicking = false;
+                const np = { x, y };
+                if (obLast) {
+                  const dx = np.x - obLast.x, dy = np.y - obLast.y;
+                  const dist = Math.hypot(dx, dy);
+                  const step = Math.max(radius * 0.3, 1);
+                  const n = Math.min(Math.ceil(dist / step), 60);
+                  for (let i = 1; i <= n; i++) {
+                    obPoints.push({ x: obLast.x + dx * (i / n), y: obLast.y + dy * (i / n) });
+                  }
+                } else {
+                  obPoints.push(np);
+                }
+                obLast = np;
+                schedule();
+              }, { passive: true });
 
-    isInside = true;
-    targetX = x;
-    targetY = y;
-    lastMoveTime = performance.now();
+            document.addEventListener("visibilitychange", () => {
+              if (!document.hidden && idle < 120) scheduleTick();
+            });
+            scheduleTick();
+          }
+        }
+        document.addEventListener("visibilitychange", function () {
+          if (!document.hidden && obIdle < FADE_FRAMES) schedule();
+        });
+      } ());
 
-    // If starting fresh, snap core and aura to avoid flying across screen
-    if (coreX < -500) {
-      coreX = x;
-      coreY = y;
-      auraX = x;
-      auraY = y;
-    }
+      // 6. PageLoader Animation & Entrance Gating
+      let ready = false;
 
-    // Interpolate points into trail
-    if (lastX !== null && lastY !== null) {
-      const dx = x - lastX;
-      const dy = y - lastY;
-      const dist = Math.hypot(dx, dy);
-      const step = Math.max(16 * dpr, 1);
-      const n = Math.min(Math.ceil(dist / step), 24);
-      const now = performance.now();
+      const loader = document.getElementById("page-loader");
+      const loaderFill = document.getElementById("loader-fill-bar");
+      const loaderCounter = document.getElementById("loader-counter");
 
-      for (let i = 1; i <= n; i++) {
-        trailPoints.push({
-          x: lastX + dx * (i / n),
-          y: lastY + dy * (i / n),
-          time: now,
+      // Brand intro, first visit of a browser session only.
+      // Hides when BOTH: at least LOADER_MIN_MS since the page opened AND the page has loaded
+      // (window "load", or the hero video can play). Always hides by LOADER_MAX_MS, then fades out.
+      // js/intro-gate.js (in <head>) already decided whether to skip it: return visit or reduced motion.
+      const LOADER_DURATION_MS = 2000;
+      const LOADER_FADE_MS = 500;
+      const htmlEl = document.documentElement;
+      stopScroll();
+
+      let loaderDone = false;
+      const loaderStartTime = performance.now();
+
+      function finishLoader() {
+        if (loaderDone) return;
+        loaderDone = true;
+        if (loaderFill) loaderFill.style.width = "100%";
+        if (loaderCounter) loaderCounter.textContent = "100";
+        if (loader) loader.classList.add("loader-exit");
+        setTimeout(() => {
+          ready = true;
+          htmlEl.classList.remove("hw-intro-active");
+          startScroll();
+          if (loader) {
+            loader.style.display = "none";
+            loader.style.visibility = "hidden";
+          }
+          triggerHeroReveals();
+        }, LOADER_FADE_MS);
+      }
+
+      function animateLoader(now) {
+        if (loaderDone) return;
+        const elapsed = (now || performance.now()) - loaderStartTime;
+        const progress = Math.min(Math.floor((elapsed / LOADER_DURATION_MS) * 100), 100);
+        if (loaderFill) loaderFill.style.width = `${progress}%`;
+        if (loaderCounter) loaderCounter.textContent = String(progress).padStart(3, "0");
+        if (progress >= 100) {
+          finishLoader();
+        } else {
+          requestAnimationFrame(animateLoader);
+        }
+      }
+
+      // Run the loading banner animation on every page load
+      requestAnimationFrame(animateLoader);
+      setTimeout(finishLoader, LOADER_DURATION_MS + 200);
+
+      // Hero Reveals Gated on Ready
+      function triggerHeroReveals() {
+        // Header: delay 150ms
+        setTimeout(() => {
+          const header = document.getElementById("header");
+          if (header) header.classList.add("entered");
+        }, 150);
+
+        // Hero eyebrow: delay 200ms
+        setTimeout(() => {
+          const eyebrow = document.getElementById("hero-eyebrow");
+          if (eyebrow) eyebrow.classList.add("entered");
+        }, 200);
+
+        // Hero H1 lines: delay 250ms with 120ms stagger
+        const lines = document.querySelectorAll(".hero-line");
+        lines.forEach((line, idx) => {
+          setTimeout(
+            () => {
+              line.classList.add("entered");
+            },
+            250 + idx * 120,
+          );
+        });
+
+        // Watermark: delay 300ms
+        setTimeout(() => {
+          const wm = document.getElementById("hero-watermark");
+          if (wm) wm.classList.add("entered");
+        }, 300);
+
+        // HeroCard: delay 400ms
+        setTimeout(() => {
+          const card = document.getElementById("hero-card-container");
+          if (card) card.classList.add("entered");
+        }, 400);
+
+        // Partners: delay 550ms
+        setTimeout(() => {
+          const partners = document.getElementById("hero-partners");
+          if (partners) partners.classList.add("entered");
+        }, 550);
+
+        // Rating: delay 650ms
+        setTimeout(() => {
+          const rating = document.getElementById("hero-rating");
+          if (rating) rating.classList.add("entered");
+        }, 650);
+
+        // CTAs: delay 750ms
+        setTimeout(() => {
+          const ctas = document.getElementById("hero-ctas");
+          if (ctas) ctas.classList.add("entered");
+        }, 750);
+
+        // Status bar: delay 900ms
+        setTimeout(() => {
+          const status = document.getElementById("hero-status");
+          if (status) status.classList.add("entered");
+        }, 900);
+      }
+
+      // 7. HeroCard Carousel (Issue 16: real featured items & auto-timer)
+      const carouselItems = [
+        { caption: "Enterprise SOC", title: "CyberRange Telemetry" },
+        { caption: "Care Retainer", title: "Active Maintenance $10/mo" },
+        { caption: "Omnichannel Commerce", title: "Zodd Retail Experience" },
+      ];
+      let currentSlide = 0;
+      const captionEl = document.getElementById("carousel-caption");
+      const titleEl = document.getElementById("carousel-title");
+      const slideEl = document.getElementById("carousel-slide");
+      const dashes = document.querySelectorAll("#carousel-dashes .hero-dash");
+      const prevBtn = document.getElementById("carousel-prev");
+      const nextBtn = document.getElementById("carousel-next");
+      const cardClickZone = document.getElementById("hero-carousel-card");
+
+      function setSlide(index, direction = 1) {
+        if (!slideEl) return;
+        const total = carouselItems.length;
+        currentSlide = (index + total) % total;
+
+        // Animate outgoing
+        slideEl.style.opacity = "0";
+        slideEl.style.transform = `translateY(${direction * 14}px)`;
+
+        setTimeout(() => {
+          const item = carouselItems[currentSlide];
+          if (captionEl) captionEl.textContent = item.caption;
+          if (titleEl) titleEl.textContent = item.title;
+
+          dashes.forEach((dash, idx) => {
+            dash.className = `hero-dash ${idx === currentSlide ? "active" : "inactive"}`;
+          });
+
+          // Animate incoming
+          slideEl.style.transform = `translateY(${-direction * 14}px)`;
+          void slideEl.offsetWidth; // force reflow
+          slideEl.style.opacity = "1";
+          slideEl.style.transform = "translateY(0)";
+        }, 200);
+      }
+
+      if (prevBtn) {
+        prevBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          setSlide(currentSlide - 1, -1);
         });
       }
-    } else {
-      trailPoints.push({ x, y, time: performance.now() });
-    }
+      if (nextBtn) {
+        nextBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          setSlide(currentSlide + 1, 1);
+        });
+      }
+      if (cardClickZone) {
+        cardClickZone.addEventListener("click", (e) => {
+          if (
+            e.target.closest("#carousel-prev") ||
+            e.target.closest("#carousel-next")
+          )
+            return;
+          setSlide(currentSlide + 1, 1);
+        });
+      }
 
-    lastX = x;
-    lastY = y;
-    schedule();
-  }, { passive: true });
+      // 8. Word Reveal for About Statement
+      const statementEl = document.getElementById("about-statement");
+      if (statementEl) {
+        const rawText = statementEl.textContent.trim();
+        const mutedPart =
+          "digital products, brand systems, and the strategy that holds them together.";
+        const normalPart = "We partner with ambitious teams to ship ";
 
-  window.addEventListener("pointerleave", function () {
-    isInside = false;
-    lastX = null;
-    lastY = null;
-  });
+        statementEl.innerHTML = "";
 
-  document.addEventListener("visibilitychange", function () {
-    if (!document.hidden && focalAlpha > 0) schedule();
-  });
-}());
+        const normalWords = normalPart.trim().split(/\s+/);
+        const mutedWords = mutedPart.trim().split(/\s+/);
 
-// 6. PageLoader Animation & Entrance Gating
-let ready = false;
+        let wordIndex = 0;
+        normalWords.forEach((word) => {
+          const span = document.createElement("span");
+          span.className = "word-reveal-word";
+          span.textContent = word + "\u00A0";
+          span.style.transitionDelay = `${wordIndex * 35}ms`;
+          statementEl.appendChild(span);
+          wordIndex++;
+        });
 
-const loader = document.getElementById("page-loader");
-const loaderFill = document.getElementById("loader-fill-bar");
-const loaderCounter = document.getElementById("loader-counter");
+        mutedWords.forEach((word) => {
+          const span = document.createElement("span");
+          span.className = "word-reveal-word";
+          span.style.color = "#8d8d8d";
+          span.textContent = word + "\u00A0";
+          span.style.transitionDelay = `${wordIndex * 35}ms`;
+          statementEl.appendChild(span);
+          wordIndex++;
+        });
 
-// Brand intro, first visit of a browser session only.
-// Hides when BOTH: at least LOADER_MIN_MS since the page opened AND the page has loaded
-// (window "load", or the hero video can play). Always hides by LOADER_MAX_MS, then fades out.
-// js/intro-gate.js (in <head>) already decided whether to skip it: return visit or reduced motion.
-const LOADER_DURATION_MS = 2000;
-const LOADER_FADE_MS = 500;
-const htmlEl = document.documentElement;
-stopScroll();
+        const wordObserver = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                statementEl
+                  .querySelectorAll(".word-reveal-word")
+                  .forEach((w) => w.classList.add("entered"));
+                obs.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.2 },
+        );
+        wordObserver.observe(statementEl);
+      }
 
-let loaderDone = false;
-const loaderStartTime = performance.now();
+      // 9. Scroll-based Intersection Observer for other sections
+      const scrollRevealObserver = new IntersectionObserver(
+        (entries, obs) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("entered");
+              // Also trigger any nested line reveals
+              entry.target
+                .querySelectorAll(".scroll-reveal-line, .line-reveal-inner")
+                .forEach((l) => l.classList.add("entered"));
+              obs.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.05 },
+      );
 
-function finishLoader() {
-  if (loaderDone) return;
-  loaderDone = true;
-  if (loaderFill) loaderFill.style.width = "100%";
-  if (loaderCounter) loaderCounter.textContent = "100";
-  if (loader) loader.classList.add("loader-exit");
-  setTimeout(() => {
-    ready = true;
-    htmlEl.classList.remove("hw-intro-active");
-    startScroll();
-    if (loader) {
-      loader.style.display = "none";
-      loader.style.visibility = "hidden";
-    }
-    triggerHeroReveals();
-  }, LOADER_FADE_MS);
-}
+      document
+        .querySelectorAll(
+          ".scroll-reveal, .scroll-reveal-line, .line-reveal-clip, .portfolio-h2, .services-h2, .stats-h2, .footer-cta-h2",
+        )
+        .forEach((el) => {
+          scrollRevealObserver.observe(el);
+        });
 
-function animateLoader(now) {
-  if (loaderDone) return;
-  const elapsed = (now || performance.now()) - loaderStartTime;
-  const progress = Math.min(Math.floor((elapsed / LOADER_DURATION_MS) * 100), 100);
-  if (loaderFill) loaderFill.style.width = `${progress}%`;
-  if (loaderCounter) loaderCounter.textContent = String(progress).padStart(3, "0");
-  if (progress >= 100) {
-    finishLoader();
-  } else {
-    requestAnimationFrame(animateLoader);
-  }
-}
+      // 10. Stats Scroll Count-Up Trigger
+      // Trigger from start: "top bottom" to end: "center center"
+      const statsGrid = document.getElementById("stats-grid");
+      const counters = document.querySelectorAll(".stat-counter");
+      let statsCompleted = false;
 
-// Run the loading banner animation on every page load
-requestAnimationFrame(animateLoader);
-setTimeout(finishLoader, LOADER_DURATION_MS + 200);
+      function handleStatsCount() {
+        if (statsCompleted || !statsGrid) return;
+        const rect = statsGrid.getBoundingClientRect();
+        const winH = window.innerHeight;
 
-// Hero Reveals Gated on Ready
-function triggerHeroReveals() {
-  // Header: delay 150ms
-  setTimeout(() => {
-    const header = document.getElementById("header");
-    if (header) header.classList.add("entered");
-  }, 150);
+        // start: top bottom => rect.top === winH
+        // end: center center => rect.top + rect.height/2 === winH/2
+        const startY = winH;
+        const endY = winH / 2 - rect.height / 2;
+        const currentY = rect.top;
 
-  // Hero eyebrow: delay 200ms
-  setTimeout(() => {
-    const eyebrow = document.getElementById("hero-eyebrow");
-    if (eyebrow) eyebrow.classList.add("entered");
-  }, 200);
+        let progress = 0;
+        if (currentY <= startY) {
+          progress = (startY - currentY) / (startY - endY);
+          progress = Math.min(1, Math.max(0, progress));
+        }
 
-  // Hero H1 lines: delay 250ms with 120ms stagger
-  const lines = document.querySelectorAll(".hero-line");
-  lines.forEach((line, idx) => {
-    setTimeout(
-      () => {
-        line.classList.add("entered");
-      },
-      250 + idx * 120,
-    );
-  });
+        counters.forEach((counter) => {
+          const target = parseInt(counter.getAttribute("data-target"), 10) || 0;
+          const currentVal = Math.round(progress * target);
+          counter.textContent = currentVal;
+        });
 
-  // Watermark: delay 300ms
-  setTimeout(() => {
-    const wm = document.getElementById("hero-watermark");
-    if (wm) wm.classList.add("entered");
-  }, 300);
+        if (progress >= 1) {
+          statsCompleted = true;
+          window.removeEventListener("scroll", handleStatsCount);
+        }
+      }
+      window.addEventListener("scroll", handleStatsCount, { passive: true });
+      handleStatsCount();
 
-  // HeroCard: delay 400ms
-  setTimeout(() => {
-    const card = document.getElementById("hero-card-container");
-    if (card) card.classList.add("entered");
-  }, 400);
+      // 11. NavMenu Overlay Controls
+      const navMenu = document.getElementById("nav-menu");
+      window.openNavMenu = function () {
+        if (!navMenu) return;
+        navMenu.classList.add("open");
+        document.body.classList.add("nav-menu-open");
+        stopScroll();
+      };
+      window.closeNavMenu = function () {
+        if (!navMenu) return;
+        navMenu.classList.remove("open");
+        document.body.classList.remove("nav-menu-open");
+        startScroll();
+      };
+      window.navMenuSelect = function (id) {
+        window.closeNavMenu();
+        if (id === "contact") {
+          setTimeout(() => window.openRequestModal(), 200);
+        } else {
+          setTimeout(() => window.scrollToTarget(id), 200);
+        }
+      };
 
-  // Partners: delay 550ms
-  setTimeout(() => {
-    const partners = document.getElementById("hero-partners");
-    if (partners) partners.classList.add("entered");
-  }, 550);
+      // 12. "Start a project" modal: open/close, focus trap and submit live in js/main.js
+      const requestModal = document.getElementById("request-modal");
 
-  // Rating: delay 650ms
-  setTimeout(() => {
-    const rating = document.getElementById("hero-rating");
-    if (rating) rating.classList.add("entered");
-  }, 650);
-
-  // CTAs: delay 750ms
-  setTimeout(() => {
-    const ctas = document.getElementById("hero-ctas");
-    if (ctas) ctas.classList.add("entered");
-  }, 750);
-
-  // Status bar: delay 900ms
-  setTimeout(() => {
-    const status = document.getElementById("hero-status");
-    if (status) status.classList.add("entered");
-  }, 900);
-}
-
-// 7. HeroCard Carousel (Issue 16: real featured items & auto-timer)
-const carouselItems = [
-  { caption: "Enterprise SOC", title: "CyberRange Telemetry" },
-  { caption: "Care Retainer", title: "Active Maintenance $10/mo" },
-  { caption: "Omnichannel Commerce", title: "Zodd Retail Experience" },
-];
-let currentSlide = 0;
-const captionEl = document.getElementById("carousel-caption");
-const titleEl = document.getElementById("carousel-title");
-const slideEl = document.getElementById("carousel-slide");
-const dashes = document.querySelectorAll("#carousel-dashes .hero-dash");
-const prevBtn = document.getElementById("carousel-prev");
-const nextBtn = document.getElementById("carousel-next");
-const cardClickZone = document.getElementById("hero-carousel-card");
-
-function setSlide(index, direction = 1) {
-  if (!slideEl) return;
-  const total = carouselItems.length;
-  currentSlide = (index + total) % total;
-
-  // Animate outgoing
-  slideEl.style.opacity = "0";
-  slideEl.style.transform = `translateY(${direction * 14}px)`;
-
-  setTimeout(() => {
-    const item = carouselItems[currentSlide];
-    if (captionEl) captionEl.textContent = item.caption;
-    if (titleEl) titleEl.textContent = item.title;
-
-    dashes.forEach((dash, idx) => {
-      dash.className = `hero-dash ${idx === currentSlide ? "active" : "inactive"}`;
-    });
-
-    // Animate incoming
-    slideEl.style.transform = `translateY(${-direction * 14}px)`;
-    void slideEl.offsetWidth; // force reflow
-    slideEl.style.opacity = "1";
-    slideEl.style.transform = "translateY(0)";
-  }, 200);
-}
-
-if (prevBtn) {
-  prevBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    setSlide(currentSlide - 1, -1);
-  });
-}
-if (nextBtn) {
-  nextBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    setSlide(currentSlide + 1, 1);
-  });
-}
-if (cardClickZone) {
-  cardClickZone.addEventListener("click", (e) => {
-    if (
-      e.target.closest("#carousel-prev") ||
-      e.target.closest("#carousel-next")
-    )
-      return;
-    setSlide(currentSlide + 1, 1);
-  });
-}
-
-// 8. Word Reveal for About Statement
-const statementEl = document.getElementById("about-statement");
-if (statementEl) {
-  const rawText = statementEl.textContent.trim();
-  const mutedPart =
-    "digital products, brand systems, and the strategy that holds them together.";
-  const normalPart = "We partner with ambitious teams to ship ";
-
-  statementEl.innerHTML = "";
-
-  const normalWords = normalPart.trim().split(/\s+/);
-  const mutedWords = mutedPart.trim().split(/\s+/);
-
-  let wordIndex = 0;
-  normalWords.forEach((word) => {
-    const span = document.createElement("span");
-    span.className = "word-reveal-word";
-    span.textContent = word + "\u00A0";
-    span.style.transitionDelay = `${wordIndex * 35}ms`;
-    statementEl.appendChild(span);
-    wordIndex++;
-  });
-
-  mutedWords.forEach((word) => {
-    const span = document.createElement("span");
-    span.className = "word-reveal-word";
-    span.style.color = "#8d8d8d";
-    span.textContent = word + "\u00A0";
-    span.style.transitionDelay = `${wordIndex * 35}ms`;
-    statementEl.appendChild(span);
-    wordIndex++;
-  });
-
-  const wordObserver = new IntersectionObserver(
-    (entries, obs) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          statementEl
-            .querySelectorAll(".word-reveal-word")
-            .forEach((w) => w.classList.add("entered"));
-          obs.unobserve(entry.target);
+      // Escape key listener for all overlays
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          if (requestModal && requestModal.classList.contains("open")) {
+            window.closeRequestModal();
+          } else if (navMenu && navMenu.classList.contains("open")) {
+            window.closeNavMenu();
+          }
         }
       });
-    },
-    { threshold: 0.2 },
-  );
-  wordObserver.observe(statementEl);
-}
 
-// 9. Scroll-based Intersection Observer for other sections
-const scrollRevealObserver = new IntersectionObserver(
-  (entries, obs) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("entered");
-        // Also trigger any nested line reveals
-        entry.target
-          .querySelectorAll(".scroll-reveal-line, .line-reveal-inner")
-          .forEach((l) => l.classList.add("entered"));
-        obs.unobserve(entry.target);
+      // 12.1 Reviews are left on Google: review buttons are plain links (no on-site review form)
+
+      // 13. Portfolio Video Preview & Play/Pause Controls (Desktop Hover + Mobile Tap)
+      const previewPlayTimeouts = new Map();
+
+      function startPortfolioPreview(card, video) {
+        if (!video) return;
+
+        // Clear any pending timer for this card
+        if (previewPlayTimeouts.has(card)) {
+          clearTimeout(previewPlayTimeouts.get(card));
+          previewPlayTimeouts.delete(card);
+        }
+
+        // 1. Immediately activate smooth height-shrink transition and pause button state
+        card.classList.add("is-previewing");
+        const btn = card.querySelector(".portfolio-play-btn");
+        if (btn) btn.setAttribute("aria-label", "Pause video preview");
+
+        video.muted = true;
+        video.playsInline = true;
+
+        // 2. Delay video playback by 0.5s so the user experiences the card smoothly getting shorter first
+        const timer = setTimeout(() => {
+          if (card.classList.contains("is-previewing")) {
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+              playPromise.catch(() => { });
+            }
+          }
+          previewPlayTimeouts.delete(card);
+        }, 500);
+
+        previewPlayTimeouts.set(card, timer);
       }
-    });
-  },
-  { threshold: 0.05 },
-);
 
-document
-  .querySelectorAll(
-    ".scroll-reveal, .scroll-reveal-line, .line-reveal-clip, .portfolio-h2, .services-h2, .stats-h2, .footer-cta-h2",
-  )
-  .forEach((el) => {
-    scrollRevealObserver.observe(el);
-  });
+      function stopPortfolioPreview(card, video) {
+        if (!video) return;
 
-// 10. Stats Scroll Count-Up Trigger
-// Trigger from start: "top bottom" to end: "center center"
-const statsGrid = document.getElementById("stats-grid");
-const counters = document.querySelectorAll(".stat-counter");
-let statsCompleted = false;
+        // Clear any pending play timer
+        if (previewPlayTimeouts.has(card)) {
+          clearTimeout(previewPlayTimeouts.get(card));
+          previewPlayTimeouts.delete(card);
+        }
 
-function handleStatsCount() {
-  if (statsCompleted || !statsGrid) return;
-  const rect = statsGrid.getBoundingClientRect();
-  const winH = window.innerHeight;
+        // 1. Instantly trigger stretch transition back to idle
+        card.classList.remove("is-previewing");
+        const btn = card.querySelector(".portfolio-play-btn");
+        if (btn) btn.setAttribute("aria-label", "Play video preview");
 
-  // start: top bottom => rect.top === winH
-  // end: center center => rect.top + rect.height/2 === winH/2
-  const startY = winH;
-  const endY = winH / 2 - rect.height / 2;
-  const currentY = rect.top;
-
-  let progress = 0;
-  if (currentY <= startY) {
-    progress = (startY - currentY) / (startY - endY);
-    progress = Math.min(1, Math.max(0, progress));
-  }
-
-  counters.forEach((counter) => {
-    const target = parseInt(counter.getAttribute("data-target"), 10) || 0;
-    const currentVal = Math.round(progress * target);
-    counter.textContent = currentVal;
-  });
-
-  if (progress >= 1) {
-    statsCompleted = true;
-    window.removeEventListener("scroll", handleStatsCount);
-  }
-}
-window.addEventListener("scroll", handleStatsCount, { passive: true });
-handleStatsCount();
-
-// 11. NavMenu Overlay Controls
-const navMenu = document.getElementById("nav-menu");
-window.openNavMenu = function () {
-  if (!navMenu) return;
-  navMenu.classList.add("open");
-  document.body.classList.add("nav-menu-open");
-  stopScroll();
-};
-window.closeNavMenu = function () {
-  if (!navMenu) return;
-  navMenu.classList.remove("open");
-  document.body.classList.remove("nav-menu-open");
-  startScroll();
-};
-window.navMenuSelect = function (id) {
-  window.closeNavMenu();
-  if (id === "contact") {
-    setTimeout(() => window.openRequestModal(), 200);
-  } else {
-    setTimeout(() => window.scrollToTarget(id), 200);
-  }
-};
-
-// 12. "Start a project" modal: open/close, focus trap and submit live in js/main.js
-const requestModal = document.getElementById("request-modal");
-
-// Escape key listener for all overlays
-window.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") {
-    if (requestModal && requestModal.classList.contains("open")) {
-      window.closeRequestModal();
-    } else if (navMenu && navMenu.classList.contains("open")) {
-      window.closeNavMenu();
-    }
-  }
-});
-
-// 12.1 Reviews are left on Google: review buttons are plain links (no on-site review form)
-
-// 13. Portfolio Video Preview & Play/Pause Controls (Desktop Hover + Mobile Tap)
-const previewPlayTimeouts = new Map();
-
-function startPortfolioPreview(card, video) {
-  if (!video) return;
-
-  // Clear any pending timer for this card
-  if (previewPlayTimeouts.has(card)) {
-    clearTimeout(previewPlayTimeouts.get(card));
-    previewPlayTimeouts.delete(card);
-  }
-
-  // 1. Immediately activate smooth height-shrink transition and pause button state
-  card.classList.add("is-previewing");
-  const btn = card.querySelector(".portfolio-play-btn");
-  if (btn) btn.setAttribute("aria-label", "Pause video preview");
-
-  video.muted = true;
-  video.playsInline = true;
-
-  // 2. Delay video playback by 0.5s so the user experiences the card smoothly getting shorter first
-  const timer = setTimeout(() => {
-    if (card.classList.contains("is-previewing")) {
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => { });
+        // 2. Pause and reset video
+        video.pause();
+        video.currentTime = 0;
       }
-    }
-    previewPlayTimeouts.delete(card);
-  }, 500);
 
-  previewPlayTimeouts.set(card, timer);
-}
+      document.querySelectorAll(".portfolio-card").forEach((card) => {
+        const video = card.querySelector(".portfolio-preview-video");
+        const playBtn = card.querySelector(".portfolio-play-btn");
+        const videoPreview = card.querySelector(".portfolio-video-preview");
+        if (!video) return;
 
-function stopPortfolioPreview(card, video) {
-  if (!video) return;
+        video.muted = true;
+        video.playsInline = true;
 
-  // Clear any pending play timer
-  if (previewPlayTimeouts.has(card)) {
-    clearTimeout(previewPlayTimeouts.get(card));
-    previewPlayTimeouts.delete(card);
-  }
+        // Play/Pause button click (touch on mobile & click on desktop)
+        if (playBtn) {
+          playBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const isPlaying = card.classList.contains("is-previewing") && !video.paused;
+            if (isPlaying) {
+              stopPortfolioPreview(card, video);
+            } else {
+              // Stop any other active cards so only one video plays at a time
+              document.querySelectorAll(".portfolio-card.is-previewing").forEach((other) => {
+                if (other !== card) {
+                  const otherVideo = other.querySelector(".portfolio-preview-video");
+                  stopPortfolioPreview(other, otherVideo);
+                }
+              });
+              startPortfolioPreview(card, video);
+            }
+          });
+        }
 
-  // 1. Instantly trigger stretch transition back to idle
-  card.classList.remove("is-previewing");
-  const btn = card.querySelector(".portfolio-play-btn");
-  if (btn) btn.setAttribute("aria-label", "Play video preview");
+        // Tapping/clicking the playing preview video pauses it
+        if (videoPreview) {
+          videoPreview.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (card.classList.contains("is-previewing")) {
+              stopPortfolioPreview(card, video);
+            }
+          });
+        }
 
-  // 2. Pause and reset video
-  video.pause();
-  video.currentTime = 0;
-}
-
-document.querySelectorAll(".portfolio-card").forEach((card) => {
-  const video = card.querySelector(".portfolio-preview-video");
-  const playBtn = card.querySelector(".portfolio-play-btn");
-  const videoPreview = card.querySelector(".portfolio-video-preview");
-  if (!video) return;
-
-  video.muted = true;
-  video.playsInline = true;
-
-  // Play/Pause button click (touch on mobile & click on desktop)
-  if (playBtn) {
-    playBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const isPlaying = card.classList.contains("is-previewing") && !video.paused;
-      if (isPlaying) {
-        stopPortfolioPreview(card, video);
-      } else {
-        // Stop any other active cards so only one video plays at a time
-        document.querySelectorAll(".portfolio-card.is-previewing").forEach((other) => {
-          if (other !== card) {
-            const otherVideo = other.querySelector(".portfolio-preview-video");
-            stopPortfolioPreview(other, otherVideo);
+        // Desktop fine pointer hover preview
+        card.addEventListener("mouseenter", () => {
+          if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+            startPortfolioPreview(card, video);
           }
         });
-        startPortfolioPreview(card, video);
-      }
-    });
-  }
 
-  // Tapping/clicking the playing preview video pauses it
-  if (videoPreview) {
-    videoPreview.addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (card.classList.contains("is-previewing")) {
-        stopPortfolioPreview(card, video);
-      }
-    });
-  }
+        card.addEventListener("mouseleave", () => {
+          if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+            stopPortfolioPreview(card, video);
+          }
+        });
 
-  // Desktop fine pointer hover preview
-  card.addEventListener("mouseenter", () => {
-    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-      startPortfolioPreview(card, video);
-    }
-  });
-
-  card.addEventListener("mouseleave", () => {
-    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-      stopPortfolioPreview(card, video);
-    }
-  });
-
-  // Ensure video restarts smoothly on loop
-  video.addEventListener("ended", () => {
-    video.currentTime = 0;
-    video.play().catch(() => { });
-  });
-});
+        // Ensure video restarts smoothly on loop
+        video.addEventListener("ended", () => {
+          video.currentTime = 0;
+          video.play().catch(() => { });
+        });
+      });
