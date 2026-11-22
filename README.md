@@ -4,9 +4,9 @@ Official marketing and studio website for **HeisenWorks** (`heisenworks.in`), bu
 
 ## Editing pages (single source of truth)
 
-Edit only `heisenworks_frontend/pages/*.html`. Production (`vercel.json`) and `scripts/server.mjs` serve `pages/` directly.
-The root `<page>.html` and `<page>/index.html` files exist only so VS Code Live Server can open clean URLs; they are generated and gitignored.
-After editing a page, run `node heisenworks_frontend/scripts/restore-routes.mjs` (add `--check` to verify nothing is stale).
+Edit `heisenworks_frontend/pages/*.html`, never the root `<page>.html` or `<page>/index.html` files.
+Those are generated copies, and they MUST be committed: the production host serves `heisenworks_frontend/` as static files, so `/team` only resolves because `team.html` exists. (`vercel.json` rewrites are not what serves production.)
+After editing a page, run `node heisenworks_frontend/scripts/restore-routes.mjs`, then commit `pages/` and the regenerated copies together. `--check` fails if any copy is stale.
 
 ## Folder Structure
 

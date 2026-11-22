@@ -1,10 +1,11 @@
-// Regenerates the Live Server route copies from the single source of truth in pages/.
+// Regenerates the route copies from the single source of truth in pages/.
 //
-//   pages/<name>.html   -> edit these (the only tracked copy)
-//   <name>.html         -> generated, gitignored (Live Server: /team.html)
-//   <name>/index.html   -> generated, gitignored (Live Server: /team/)
+//   pages/<name>.html   -> edit these
+//   <name>.html         -> generated, COMMITTED (production serves /team from team.html)
+//   <name>/index.html   -> generated, COMMITTED (/team/ and Live Server)
 //
-// Production (vercel.json) and scripts/server.mjs both serve pages/ directly and never read the copies.
+// The production host serves heisenworks_frontend/ as static files, so these copies must stay in git.
+// Never edit them by hand: edit pages/, run this script, commit all of it.
 //
 //   node scripts/restore-routes.mjs           write the copies
 //   node scripts/restore-routes.mjs --check   exit 1 if any copy is missing or stale

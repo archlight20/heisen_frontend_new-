@@ -21,25 +21,3 @@ Thumbs.db
 desktop.ini
 *.log
 *.swp
-
-# Generated Live Server route copies (source of truth: heisenworks_frontend/pages/). Rebuild: node heisenworks_frontend/scripts/restore-routes.mjs
-heisenworks_frontend/contact.html
-heisenworks_frontend/contact/
-heisenworks_frontend/pricing.html
-heisenworks_frontend/pricing/
-heisenworks_frontend/privacy.html
-heisenworks_frontend/privacy/
-heisenworks_frontend/reviews.html
-heisenworks_frontend/reviews/
-heisenworks_frontend/services.html
-heisenworks_frontend/services/
-heisenworks_frontend/team.html
-heisenworks_frontend/team/
-heisenworks_frontend/terms.html
-heisenworks_frontend/terms/
-heisenworks_frontend/work.html
-heisenworks_frontend/work/
-heisenworks_frontend/studio.html
-heisenworks_frontend/studio/
-heisenworks_frontend/faq.html
-heisenworks_frontend/faq/
