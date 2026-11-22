@@ -178,14 +178,24 @@
       position: absolute;
       inset: 0;
       z-index: -2;
-      display: grid;
-      place-items: center;
     }
 
-    .tp-hero-bg .tp-ph {
-      position: relative;
+    .tp-hero-bg img {
       width: 100%;
       height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      opacity: 0.08;
+      display: block;
+    }
+
+    /* Smooth bottom fade — image merges into white page */
+    .tp-hero-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, #ffffff 18%, rgba(255,255,255,0.72) 55%, rgba(255,255,255,0) 100%);
+      pointer-events: none;
     }
 
     .tp-hero::before {
@@ -194,7 +204,6 @@
       inset: 0;
       z-index: -1;
       background:
-        linear-gradient(to top, #ffffff 8%, rgba(255, 255, 255, 0.88) 50%, rgba(255, 255, 255, 0.55) 100%),
         radial-gradient(60% 50% at 85% 20%, rgba(207, 128, 71, 0.12), transparent 70%);
     }
 
@@ -1344,8 +1353,11 @@
       <!-- Photo placeholder for Hero Group Photo:
        Replace .tp-ph inside .tp-hero-bg with <img src="assets/images/team/group.jpg" alt="The HeisenWorks team" style="width:100%;height:100%;object-fit:cover"> once approved photo exists -->
       <div class="tp-hero-bg" aria-hidden="true">
-        <div class="tp-ph" style="position:relative;width:100%;height:100%"><span>Image required · team group
-            photo</span></div>
+        <picture>
+          <source srcset="assets/images/team/team-office.webp" type="image/webp" />
+          <img src="assets/images/team/team-office.jpg" alt="" aria-hidden="true"
+            width="1024" height="576" fetchpriority="low" decoding="async" />
+        </picture>
       </div>
       <div class="tp-hero-glow" aria-hidden="true"></div>
       <div class="tp-wrap">
@@ -1514,43 +1526,6 @@
             <h3>We Grow Talent</h3>
             <p>Our interns learn on real client work, guided by experienced leads.</p>
           </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ 7. BEHIND THE SCENES ============ -->
-    <section class="tp-section" style="padding-top:0" aria-labelledby="bts-title">
-      <div class="tp-wrap">
-        <div class="tp-section-head tp-reveal">
-          <span class="tp-eyebrow">Behind the scenes</span>
-          <h2 id="bts-title" class="tp-h2">The people and the place.</h2>
-        </div>
-        <!-- 5 real, approved photos only. Replace each .tp-ph with <img src="assets/images/team/bts-X.jpg" alt="describe the photo" style="width:100%;height:100%;object-fit:cover"> -->
-        <div class="tp-bts">
-          <!-- Slot 1 (hero landscape) -->
-          <figure class="tp-bts-a tp-reveal">
-            <picture>
-              <source srcset="assets/images/team/team-office.webp" type="image/webp" />
-              <img src="assets/images/team/team-office.jpg" alt="HeisenWorks team collaborating at the studio"
-                width="1024" height="576" loading="lazy" decoding="async" />
-            </picture>
-          </figure>
-          <!-- Slot 2 -->
-          <figure class="tp-bts-b tp-reveal" style="--d:.08s">
-            <div class="tp-ph"><span>Image required</span></div>
-          </figure>
-          <!-- Slot 3 -->
-          <figure class="tp-bts-c tp-reveal" style="--d:.16s">
-            <div class="tp-ph"><span>Image required</span></div>
-          </figure>
-          <!-- Slot 4 -->
-          <figure class="tp-bts-e tp-reveal" style="--d:.08s">
-            <div class="tp-ph"><span>Image required</span></div>
-          </figure>
-          <!-- Slot 5 -->
-          <figure class="tp-bts-f tp-reveal" style="--d:.16s">
-            <div class="tp-ph"><span>Image required</span></div>
-          </figure>
         </div>
       </div>
     </section>
