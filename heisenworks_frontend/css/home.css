@@ -2560,9 +2560,8 @@ body.nav-menu-open #header,
   color: #fff;
 }
 
-/* REQUEST & REVIEW MODALS */
-#request-modal,
-#review-modal {
+/* REQUEST MODAL */
+#request-modal {
   position: fixed;
   inset: 0;
   z-index: 110;
@@ -2579,14 +2578,12 @@ body.nav-menu-open #header,
 }
 
 @media (min-width: 640px) {
-  #request-modal,
-  #review-modal {
+  #request-modal {
     align-items: center;
   }
 }
 
-#request-modal.open,
-#review-modal.open {
+#request-modal.open {
   opacity: 1;
   pointer-events: auto;
 }
@@ -2613,8 +2610,7 @@ body.nav-menu-open #header,
   }
 }
 
-#request-modal.open .modal-panel,
-#review-modal.open .modal-panel {
+#request-modal.open .modal-panel {
   transform: translateY(0);
   opacity: 1;
 }

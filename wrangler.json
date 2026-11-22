@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "heisenworks",
+  "compatibility_date": "2024-11-01",
+  "main": "worker.js",
+  "assets": {
+    "directory": "./heisenworks_frontend",
+    "binding": "ASSETS"
+  },
+  "previews": {}
+}

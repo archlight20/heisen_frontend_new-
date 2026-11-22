@@ -248,65 +248,6 @@
   </div>
 </div>
 
-<!-- REVIEW MODAL -->
-<div id="review-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Leave a client review">
-  <div class="modal-panel" onclick="event.stopPropagation()">
-    <button class="modal-close-btn" onclick="window.closeReviewModal()" aria-label="Close review modal">
-      <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 4l16 16M20 4 4 20" />
-      </svg>
-    </button>
-    <div id="review-form-state">
-      <div class="modal-header">
-        <div class="eyebrow eyebrow-dark" style="margin-bottom:0.75rem;">Verified Testimonial</div>
-        <h2 class="modal-h2">Share Your Experience</h2>
-      </div>
-      <form class="modal-form" id="client-review-form">
-        <input type="text" name="_hp_verify" id="review-hp" style="display:none" tabindex="-1" autocomplete="off" />
-        <div class="form-field">
-          <label class="form-label">Rating</label>
-          <div style="display:flex; gap:0.5rem; align-items:center;">
-            <select id="review-stars-val" class="form-select" aria-label="Star rating" style="max-width:140px;">
-              <option value="5">5 ★★★★★</option>
-              <option value="4">4 ★★★★☆</option>
-              <option value="3">3 ★★★☆☆</option>
-            </select>
-            <span style="font-size:0.875rem; color:#64748b;">Exceptional Delivery</span>
-          </div>
-        </div>
-        <div class="form-field">
-          <label class="form-label" for="review-name">Your Full Name</label>
-          <input type="text" id="review-name" name="name" autocomplete="name" class="form-input" placeholder="e.g. Vikramaditya Sharma" required />
-        </div>
-        <div class="form-field">
-          <label class="form-label" for="review-tag">Company or Project Name</label>
-          <input type="text" id="review-tag" name="company" autocomplete="organization" class="form-input" placeholder="e.g. Cybershield Technologies" required />
-        </div>
-        <div class="form-field">
-          <label class="form-label" for="review-desc">Review</label>
-          <textarea id="review-desc" name="review" autocomplete="off" rows="4" class="form-textarea" placeholder="How did HeisenWorks impact your engineering or design outcomes?" required></textarea>
-        </div>
-        <button type="submit" class="pill-btn pill-btn-dark" id="review-submit-btn" style="width:100%; margin-top:1rem;">
-          <span class="pill-inner"><span id="review-submit-text">Submit for Verification</span></span>
-        </button>
-        <p class="form-privacy-note">All submissions are reviewed by our team to maintain authenticated client integrity. No fake endorsements.</p>
-      </form>
-    </div>
-    <div id="review-success-state" class="modal-success">
-      <div class="success-icon-badge">
-        <img src="assets/images/logos/heisenworks-logo-amber.png" alt="Success" width="36" height="36" style="width:2.25rem; height:2.25rem; object-fit:contain" loading="lazy" decoding="async" />
-      </div>
-      <h2 class="modal-h2">Review Submitted</h2>
-      <p style="color:#64748b; font-size:0.95rem; margin-top:0.5rem; max-width:360px;">
-        Thank you! Your testimonial has been submitted for moderation and will appear publicly once verified.
-      </p>
-      <button type="button" class="pill-btn pill-btn-dark" style="margin-top:1.5rem;" onclick="window.closeReviewModal()">
-        <span class="pill-inner">Close</span>
-      </button>
-    </div>
-  </div>
-</div>
-
 <!-- FLOATING WHATSAPP BUTTON (Issue 8) -->
 <a href="https://wa.me/919186061401?text=Hi%20HeisenWorks%2C%20I%20am%20interested%20in%20discussing%20a%20project"
    target="_blank" rel="noopener noreferrer" class="floating-whatsapp-btn" aria-label="Chat with HeisenWorks on WhatsApp">
