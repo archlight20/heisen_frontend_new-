@@ -1,0 +1,5 @@
+scripts/
+pages/
+.impeccable/
+.vscode/
+.playwright-mcp/

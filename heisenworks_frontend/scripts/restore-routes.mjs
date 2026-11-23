@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 
 const WEB_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PAGES = ['contact', 'pricing', 'privacy', 'reviews', 'services', 'team', 'terms', 'work'];
-const REDIRECTS = { studio: '/team', faq: '/pricing' };   // mirrors vercel.json / server.mjs
+const REDIRECTS = { studio: '/team', faq: '/pricing' };   // mirrors server.mjs
 const CHECK = process.argv.includes('--check');
 
 const redirectHtml = (to) => `<!doctype html>

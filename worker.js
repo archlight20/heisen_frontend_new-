@@ -18,11 +18,7 @@ export default {
       });
     }
 
-    // Static assets fallback (Cloudflare Workers Static Assets binding)
-    if (env && env.ASSETS && typeof env.ASSETS.fetch === "function") {
-      return env.ASSETS.fetch(request);
-    }
-
-    return new Response("Not Found", { status: 404 });
+    // Static assets (binding declared in wrangler.json)
+    return env.ASSETS.fetch(request);
   },
 };
