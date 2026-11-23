@@ -1,6 +1,6 @@
 # HeisenWorks Website
 
-Official marketing and studio website for **HeisenWorks** (`heisenworks.in`), built with plain HTML5, CSS3, vanilla JavaScript, and one Cloudflare Pages Function for the lead form.
+Official marketing and studio website for **HeisenWorks** (`heisenworks.in`), built with plain HTML5, CSS3, vanilla JavaScript, and one Cloudflare Worker (`worker.js`) for the lead form.
 
 ## Editing pages (single source of truth)
 
@@ -17,7 +17,8 @@ heisenwork_website/
 ├── lib/
 │   ├── lead.js                       # Lead validation, rate limit, Resend email (shared by prod + dev)
 │   └── *.test.mjs                    # node --test "lib/*.test.mjs"
-├── functions/api/contact.js          # Cloudflare Pages Function: POST /api/contact -> lib/lead.js
+├── worker.js                         # Cloudflare Worker: POST /api/contact -> lib/lead.js, everything else -> static assets
+├── wrangler.json                     # Worker config: assets dir, 404 page
 ├── docs/                             # Internal planning notes, checklists, & PDFs (not served publicly)
 │   ├── plan.md
 │   ├── problem-list.md
@@ -54,7 +55,7 @@ heisenwork_website/
     │   │   ├── og/                   # Open Graph / social sharing preview image
     │   │   └── team/                 # Founder & core team portraits
     │   └── videos/                   # Web-optimized H.264 MP4 hero & project hover videos
-    └── scripts/                      # Local dev tooling (blocked from HTTP serving)
+    └── scripts/                      # Local dev tooling (not deployed: listed in .assetsignore)
         ├── server.mjs                # Local Node.js multi-page & API dev server
         ├── templates.mjs             # Shared page template reference/generator
         └── verify-all.mjs            # Automated routing, asset, & API test suite
@@ -82,4 +83,4 @@ node heisenworks_frontend/scripts/verify-all.mjs
 ## Notes on Media & Deployment
 
 - Hover preview videos in `heisenworks_frontend/assets/videos/` are web-optimized muted H.264 MP4s with `+faststart` enabled for instant streaming (`zod-living-walkthrough.mp4` is delivered in Full HD 1080p with dead audio stripped and moov atom positioned at byte 0 for zero-latency playback).
-- Production is Cloudflare Pages: `heisenworks_frontend/_headers` sets security and cache headers, `/studio` and `/faq` redirect via generated stub pages, and `functions/api/contact.js` serves the lead form.
+- Production is a Cloudflare Worker with static assets (`wrangler.json`): `heisenworks_frontend/_headers` sets security and cache headers, `heisenworks_frontend/.assetsignore` keeps dev files (`scripts/`, `pages/`, dotfolders) off the live site, unknown URLs get `404.html`, `/studio` and `/faq` redirect via generated stub pages, and `worker.js` serves the lead form.

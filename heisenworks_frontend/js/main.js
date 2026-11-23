@@ -160,6 +160,7 @@
     function normalizePhone(raw) {
       let s = String(raw || '').replace(/[\s().-]/g, '');
       if (s.startsWith('00')) s = '+' + s.slice(2);
+      if (/^0\d{10}$/.test(s)) s = s.slice(1);   // same rule as lib/lead.js normalizePhone
       if (/^\d{10}$/.test(s)) s = '+91' + s;
       return /^\+[1-9]\d{6,14}$/.test(s) ? s : null;
     }
